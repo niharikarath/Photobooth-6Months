@@ -128,83 +128,73 @@ def bw_transform(img: Image.Image, contrast=1.1, sharpness=1.1):
     return rgb
 
 # ---------- UI: Landing ----------
-
 if st.session_state.stage == "landing":
-    st.markdown("""
-    <!-- Import handwriting font -->
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+    st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
+    st.markdown("<h1>📸 Enter the Photobooth</h1>", unsafe_allow_html=True)
+    st.markdown("<p class='muted'>Six months of laughs, photos, and tiny moments — make a polaroid strip for Aditya.</p>", unsafe_allow_html=True)
+    col1, col2 = st.columns([1,1])
+    with col1:
+        if st.button("Enter Photobooth", key="enter"):
+            st.session_state.photos = []
+            st.session_state.stage = "capture"
+            st.rerun()
+    with col2:
+        st.markdown("<small class='muted'>Want help with layout or fonts? I can add captions, sound, or an auto-timer.</small>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
-    <style>
-    .stApp {
-        background-color: #f3e5d0;
-        font-family: 'Helvetica', 'Arial', sans-serif;
-    }
-    .photobooth-card {
-        background-color: #f3e5d0;
-        border: 4px solid #a71d2a;
-        border-radius: 20px;
-        padding: 60px;
-        max-width: 780px;
-        margin: 80px auto;
-        text-align: center;
-        position: relative;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    }
-    .photobooth-card h1 {
-        color: #111;
-        font-size: 3rem;
-        margin-bottom: 12px;
-    }
-    .photobooth-card .muted {
-        color: #a71d2a;
-        font-size: 1.2rem;
-        margin-bottom: 30px;
-    }
-    div.stButton > button {
-        background-color: #a71d2a !important;
-        color: #f5e7dc !important;
-        border-radius: 14px !important;
-        font-weight: 700 !important;
-        padding: 20px 50px !important;
-        font-size: 22px !important;
-        transition: 0.3s !important;
-    }
-    div.stButton > button:hover {
-        background-color: #c8323b !important;
-    }
-    .handwriting-text {
-        font-family: 'Dancing Script', cursive;
-        color: #a71d2a;
-        font-size: 1.6rem;
-        margin: 10px 0;
-    }
-    .polaroid-img {
-        width: 100px;
-        height: 100px;
-        position: absolute;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-    }
-    </style>
+# ---------- UI: Capture ----------
+elif st.session_state.stage == "capture":
+    st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
+    st.markdown("<h2>Photobooth — Take 4 photos</h2>", unsafe_allow_html=True)
+    st.markdown("<p class='muted'>Click the camera icon to open your webcam. Take 4 photos — try different expressions!</p>", unsafe_allow_html=True)
 
-    <div class="photobooth-card">
-        <h1>📸 Enter the Photobooth</h1>
-        <p class="muted">Six months of laughs, photos, and tiny moments — make a strip for Aditya.</p>
+    cols = st.columns(4)
+    for i in range(4):
+        with cols[i]:
+            if i < len(st.session_state.photos):
+                st.image(st.session_state.photos[i], width=140, caption=f"#{i+1}")
+            else:
+                st.image(Image.new("RGB",(500,500),(0,0,0)), width=140, caption=f"#{i+1}")
 
-        <div class="handwriting-text">Happy 6 months of us, Aditya ❤️</div>
-        <div class="handwriting-text">Can't wait to kiss you in a photobooth one day 😘</div>
+    cam_file = st.camera_input("Smile! Click the camera button to take a photo.", key="camera_input")
+    if cam_file is not None:
+        st.session_state.last_camera_image = pil_from_streamlit_uploaded(cam_file)
 
-        <!-- Polaroid images scattered (replace URLs) -->
-        <img src="https://i.imgur.com/OJkZlYQ.png" class="polaroid-img" style="top:10px; left:20px; transform: rotate(-5deg);"/>
-        <img src="https://i.imgur.com/4aF0FQy.png" class="polaroid-img" style="top:50px; right:30px; transform: rotate(8deg);"/>
-        <img src="https://i.imgur.com/Y8VjL2D.png" class="polaroid-img" style="bottom:20px; left:50px; transform: rotate(-10deg);"/>
-    </div>
-    """, unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([1,1,1])
+    with col1:
+        if st.button("Add Photo to Strip", key="add_photo"):
+            if st.session_state.last_camera_image is None:
+                st.warning("Take a photo first using the camera above.")
+            elif len(st.session_state.photos) >= 4:
+                st.info("You already have 4 photos. Click 'Create Polaroid Strip'.")
+            else:
+                st.session_state.photos.append(st.session_state.last_camera_image.copy())
+                st.session_state.last_camera_image = None
+                st.rerun()
+    with col2:
+        if st.button("Retake Last Photo", key="retake"):
+            if st.session_state.photos:
+                st.session_state.photos.pop()
+                st.warning("Removed last photo from the strip. Take a new one using the camera above.")
+            else:
+                st.warning("No photos in the strip yet. Take a new photo using the camera above.")
+            st.session_state.last_camera_image = None
+            st.rerun()
+    with col3:
+        if st.button("Create Polaroid Strip", key="create_strip"):
+            if len(st.session_state.photos) < 4:
+                st.warning(f"Take {4 - len(st.session_state.photos)} more photo(s).")
+            else:
+                st.session_state.stage = "done"
+                st.rerun()
 
-    # Make sure the button is **outside the st.markdown block**
-    if st.button("Enter Photobooth", key="enter"):
+    if st.button("🏠 Back to Home"):
         st.session_state.photos = []
-        st.session_state.stage = "capture"
+        st.session_state.last_camera_image = None
+        st.session_state.stage = "landing"
         st.rerun()
+
+    st.markdown("</div>", unsafe_allow_html=True)
 
 # ---------- UI: Done ----------
 elif st.session_state.stage == "done":
@@ -309,4 +299,3 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
-
