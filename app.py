@@ -127,30 +127,43 @@ def bw_transform(img: Image.Image, contrast=1.1, sharpness=1.1):
 
 def start_countdown():
     countdown_placeholder = st.empty()
+    
+    # Base overlay style with opacity placeholder {}
     overlay_style = """
     <div style='position: fixed; top:0; left:0; width:100%; height:100%;
                 background-color: rgba(0,0,0,0.6); z-index: 900;
                 display:flex; justify-content:center; align-items:center;
                 flex-direction: column;'>
-        <h1 style='color:white; font-size:140px; margin:0;'>{}</h1>
+        <h1 style='color:white; font-size:140px; margin:0; opacity:{}'>{}</h1>
     </div>
     """
+    
     flash_style = """
     <div style='position: fixed; top:0; left:0; width:100%; height:100%;
                 background-color: rgba(255,255,255,0.9); z-index: 999;
                 display:flex; justify-content:center; align-items:center;'>
     </div>
     """
+    
     for count in ["3", "2", "1", "📸"]:
-        countdown_placeholder.markdown(overlay_style.format(count), unsafe_allow_html=True)
-        time.sleep(0.8)
+        # simulate fade-in in 5 steps
+        for opacity in [0.2, 0.4, 0.6, 0.8, 1.0]:
+            countdown_placeholder.markdown(overlay_style.format(opacity, count), unsafe_allow_html=True)
+            time.sleep(0.08)
+        
+        # Hold the number briefly
+        time.sleep(0.3)
+        
+        # On 📸 show flash effect
         if count == "📸":
             countdown_placeholder.markdown(flash_style, unsafe_allow_html=True)
             time.sleep(0.15)
-            countdown_placeholder.markdown(overlay_style.format(count), unsafe_allow_html=True)
+            countdown_placeholder.markdown(overlay_style.format(1, count), unsafe_allow_html=True)
             time.sleep(0.2)
+    
     countdown_placeholder.empty()
     st.info("Countdown finished! Click the camera button to take a photo.")
+
 
 # ---------- UI: Landing ----------
 if st.session_state.stage == "landing":
@@ -264,6 +277,7 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
