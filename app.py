@@ -23,10 +23,10 @@ st.markdown("""
     background-color: #f3e5d0; /* cream */
     border: 4px solid #a71d2a; /* deep red frame */
     border-radius: 16px;
-    padding: 60px;
+    padding: 40px;
     box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-    max-width: 900px;
-    margin: 80px auto;
+    max-width: 780px;
+    margin: 60px auto;
     text-align: center;
     position: relative;
 }
@@ -35,24 +35,23 @@ st.markdown("""
 .love-script {
     font-family: 'Pinyon Script', cursive;
     color: #a71d2a;
-    font-size: 1.8rem;
-    margin: 12px 0;
-    display: inline-block;
-    transform: rotate(-2deg);
+    font-size: 1.6rem;
+    margin: 8px 0;
+    transform: rotate(-3deg); /* slight tilt */
+    display: block;
 }
 
 /* Polaroid images */
 .polaroid-img {
-    width: 120px;
-    height: 120px;
+    width: 135px;  /* 35% bigger than 100px */
+    height: 135px;
     position: absolute;
-    box-shadow: 0 6px 12px rgba(0,0,0,0.4);
-    transition: 0.3s;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
 }
 
 /* Enter button container */
 .enter-container {
-    margin-top: 280px;
+    margin-top: 250px;
 }
 
 /* Buttons */
@@ -73,7 +72,7 @@ div.stButton > button:hover {
 
 # ---------- Session State ----------
 if "stage" not in st.session_state:
-    st.session_state.stage = "landing"
+    st.session_state.stage = "landing"  # landing, capture, done
 if "photos" not in st.session_state:
     st.session_state.photos = []
 if "last_camera_image" not in st.session_state:
@@ -108,11 +107,11 @@ if st.session_state.stage == "landing":
     # Scattered PNGs
     st.markdown(f"""
     <img src="{img_to_datauri('1.png')}" class="polaroid-img" style="top:20px; left:20px; transform:rotate(-6deg);" />
-    <img src="{img_to_datauri('2.png')}" class="polaroid-img" style="top:60px; right:20px; transform:rotate(6deg);" />
-    <img src="{img_to_datauri('3.png')}" class="polaroid-img" style="bottom:60px; left:40px; transform:rotate(-10deg);" />
-    <img src="{img_to_datauri('4.png')}" class="polaroid-img" style="bottom:80px; right:60px; transform:rotate(8deg);" />
-    <img src="{img_to_datauri('5.png')}" class="polaroid-img" style="top:200px; left:0px; transform:rotate(4deg);" />
-    <img src="{img_to_datauri('6.png')}" class="polaroid-img" style="top:240px; right:-20px; transform:rotate(-4deg);" />
+    <img src="{img_to_datauri('2.png')}" class="polaroid-img" style="top:40px; right:20px; transform:rotate(6deg);" />
+    <img src="{img_to_datauri('3.png')}" class="polaroid-img" style="bottom:40px; left:30px; transform:rotate(-10deg);" />
+    <img src="{img_to_datauri('4.png')}" class="polaroid-img" style="bottom:50px; right:40px; transform:rotate(8deg);" />
+    <img src="{img_to_datauri('5.png')}" class="polaroid-img" style="top:150px; left:-15px; transform:rotate(4deg);" />
+    <img src="{img_to_datauri('6.png')}" class="polaroid-img" style="top:170px; right:-10px; transform:rotate(-4deg);" />
     """, unsafe_allow_html=True)
 
     st.markdown('<div class="enter-container"></div>', unsafe_allow_html=True)
@@ -121,7 +120,7 @@ if st.session_state.stage == "landing":
         st.session_state.stage = "capture"
         st.session_state.photos = []
         st.session_state.last_camera_image = None
-        st.experimental_rerun()  # fixed modern rerun
+        st.stop()  # replaces experimental_rerun
 
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -134,9 +133,9 @@ elif st.session_state.stage == "capture":
     for i in range(4):
         with cols[i]:
             if i < len(st.session_state.photos):
-                st.image(st.session_state.photos[i], width=160, caption=f"#{i+1}")
+                st.image(st.session_state.photos[i], width=140, caption=f"#{i+1}")
             else:
-                st.image(Image.new("RGB",(500,500),(200,200,200)), width=160, caption=f"#{i+1}")
+                st.image(Image.new("RGB",(500,500),(200,200,200)), width=140, caption=f"#{i+1}")
 
     cam_file = st.camera_input("Smile! Click the camera button to take a photo.", key="camera_input")
     if cam_file is not None:
@@ -152,38 +151,36 @@ elif st.session_state.stage == "capture":
             else:
                 st.session_state.photos.append(st.session_state.last_camera_image.copy())
                 st.session_state.last_camera_image = None
-                st.experimental_rerun()  # fixed
-
+                st.stop()  # replaces rerun
     with col2:
         if st.button("Retake Last Photo", key="retake"):
             if st.session_state.photos:
                 st.session_state.photos.pop()
-                st.warning("Removed last photo. Take a new one above.")
+                st.warning("Removed last photo from the strip. Take a new one using the camera above.")
             else:
-                st.warning("No photos yet.")
+                st.warning("No photos in the strip yet. Take a new photo using the camera above.")
             st.session_state.last_camera_image = None
-            st.experimental_rerun()  # fixed
-
+            st.stop()  # replaces experimental_rerun
     with col3:
         if st.button("Create Polaroid Strip", key="create_strip"):
             if len(st.session_state.photos) < 4:
                 st.warning(f"Take {4 - len(st.session_state.photos)} more photo(s).")
             else:
                 st.session_state.stage = "done"
-                st.experimental_rerun()
+                st.stop()
 
     if st.button("🏠 Back to Home"):
         st.session_state.photos = []
         st.session_state.last_camera_image = None
         st.session_state.stage = "landing"
-        st.experimental_rerun()
+        st.stop()
 
     st.markdown("</div>", unsafe_allow_html=True)
 
 # ---------- Done Page ----------
 elif st.session_state.stage == "done":
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
-    st.markdown("<h2>✨ Your Photobooth Strip</h2>", unsafe_allow_html=True)
+    st.markdown("<h2>✨ Your Photobooth Strip</h2>")
 
     try:
         strip_images = []
@@ -221,7 +218,7 @@ elif st.session_state.stage == "done":
         buf = io.BytesIO()
         final_strip.save(buf, format="PNG")
 
-        st.image(final_strip, caption="Your Photobooth Strip", width=400)
+        st.image(final_strip, caption="Your Photobooth Strip", use_column_width=True)
 
         st.download_button(
             label="Download Photobooth Strip (PNG)",
@@ -236,18 +233,18 @@ elif st.session_state.stage == "done":
                 st.session_state.photos = []
                 st.session_state.last_camera_image = None
                 st.session_state.stage = "capture"
-                st.experimental_rerun()
+                st.stop()
         with col2:
             if st.button("Add a New Strip (Keep these)"):
                 st.session_state.last_camera_image = None
                 st.session_state.stage = "capture"
-                st.experimental_rerun()
+                st.stop()
 
         if st.button("🏠 Back to Home"):
             st.session_state.photos = []
             st.session_state.last_camera_image = None
             st.session_state.stage = "landing"
-            st.experimental_rerun()
+            st.stop()
 
     except Exception as e:
         st.error(f"Something went wrong while creating the strip: {e}")
