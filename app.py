@@ -3,7 +3,6 @@ import streamlit as st
 from PIL import Image, ImageOps, ImageEnhance, ImageDraw, ImageFont
 import io
 import random
-import time
 import base64
 
 # ---------- Page Config ----------
@@ -12,17 +11,17 @@ st.set_page_config(page_title="Photobooth — 6 Monthiversary", page_icon="📸"
 # ---------- Styling ----------
 st.markdown("""
 <style>
-/* Page background: cream with subtle red gradient */
+/* Page background & central card */
 .stApp {
-    background: linear-gradient(180deg, #f5e7dc 0%, #f2d5d0 100%);
-    color: #111;
+    background-color: #111;  /* black background */
+    color: #f5e7dc;          /* cream/off-white text */
     font-family: 'Helvetica', 'Arial', sans-serif;
 }
 
 /* Central photobooth card */
 .photobooth-card {
-    background-color: #111;
-    border: 4px solid #a71d2a;
+    background-color: #111; /* classic black photobooth */
+    border: 4px solid #a71d2a; /* deep red frame accent */
     border-radius: 16px;
     padding: 36px;
     box-shadow: 0 8px 25px rgba(0,0,0,0.6);
@@ -33,21 +32,21 @@ st.markdown("""
 
 /* Header text */
 .photobooth-card h1, .photobooth-card h2 {
-    color: #f5e7dc;
+    color: #f5e7dc; /* cream/off-white */
     margin-bottom: 12px;
 }
 
 /* Subtitle text */
 .photobooth-card .muted {
-    color: #e0c7b0;
+    color: #e0c7b0; /* softer cream */
     font-size: 1rem;
     line-height: 1.5;
 }
 
 /* Buttons */
 div.stButton > button, div.stDownloadButton > button {
-    background-color: #a71d2a !important;
-    color: #f5e7dc !important;
+    background-color: #a71d2a !important; /* deep red */
+    color: #f5e7dc !important; /* cream text */
     border-radius: 10px !important;
     font-weight: 600 !important;
     padding: 12px 28px !important;
@@ -55,14 +54,14 @@ div.stButton > button, div.stDownloadButton > button {
     transition: 0.3s !important;
 }
 div.stButton > button:hover, div.stDownloadButton > button:hover {
-    background-color: #c8323b !important;
+    background-color: #c8323b !important; /* lighter red on hover */
 }
 </style>
 """, unsafe_allow_html=True)
 
 # ---------- Session State ----------
 if "stage" not in st.session_state:
-    st.session_state.stage = "landing"
+    st.session_state.stage = "landing"  # landing, capture, done
 if "photos" not in st.session_state:
     st.session_state.photos = []
 if "last_camera_image" not in st.session_state:
@@ -185,26 +184,11 @@ elif st.session_state.stage == "capture":
                 st.rerun()
 
     # Back to Home button
-    st.markdown(
-        """
-        <div style="text-align:center; margin-top:20px;">
-            <button onclick="window.location.reload();" 
-                    style="
-                        background-color:#a71d2a;
-                        color:#f5e7dc;
-                        border:none;
-                        border-radius:10px;
-                        font-weight:600;
-                        padding:12px 28px;
-                        font-size:16px;
-                        cursor:pointer;
-                        transition:0.3s;">
-                🏠 Back to Home
-            </button>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    if st.button("🏠 Back to Home"):
+        st.session_state.photos = []
+        st.session_state.last_camera_image = None
+        st.session_state.stage = "landing"
+        st.rerun()
 
     st.markdown("</div>", unsafe_allow_html=True)
 
@@ -221,27 +205,33 @@ elif st.session_state.stage == "done":
             pol = make_polaroid(bw, photo_size=(640,640), bottom_extra=140, border_px=10, caption_text="", frame_color=(0,0,0))
             polaroids.append(pol)
 
-        strip = make_strip(polaroids, gap=24, background=(0,0,0))
-
-        # Convert to Base64
-        buf = io.BytesIO()
-        strip.save(buf, format="PNG")
-        base64_img = base64.b64encode(buf.getvalue()).decode()
-
-        # HTML/CSS animation
-        html_code = f"""
-        <div style="position: relative; width: fit-content; margin: auto; overflow: hidden; height: {strip.height + 20}px; background-color: #000;">
-            <img src="data:image/png;base64,{base64_img}" 
+        # Slide animation for each polaroid (printer effect)
+        html_polaroids = ""
+        delay = 0
+        for p in polaroids:
+            buf_ind = io.BytesIO()
+            p.save(buf_ind, format="PNG")
+            img_b64 = base64.b64encode(buf_ind.getvalue()).decode()
+            html_polaroids += f"""
+            <img src="data:image/png;base64,{img_b64}" 
                  style="
                     display: block; 
+                    margin: 20px auto; 
                     width: auto; 
-                    animation: slideDown 1.2s ease-out forwards;
-                    transform: translateY(-{strip.height}px);
+                    transform: translateY(-{p.height}px); 
+                    animation: slideDown 1s ease-out forwards;
+                    animation-delay: {delay}s;
                  "/>
+            """
+            delay += 0.5  # half-second delay between each photo
+
+        html_code = f"""
+        <div style="position: relative; width: fit-content; margin: auto; overflow: hidden; background-color: #000;">
+            {html_polaroids}
         </div>
         <style>
         @keyframes slideDown {{
-            0% {{ transform: translateY(-{strip.height}px); }}
+            0% {{ transform: translateY(-100%); }}
             100% {{ transform: translateY(0); }}
         }}
         </style>
@@ -249,6 +239,9 @@ elif st.session_state.stage == "done":
         st.markdown(html_code, unsafe_allow_html=True)
 
         # Download
+        buf = io.BytesIO()
+        strip = make_strip(polaroids, gap=24, background=(0,0,0))
+        strip.save(buf, format="PNG")
         st.download_button(
             label="Download Polaroid Strip (PNG)",
             data=buf.getvalue(),
@@ -257,7 +250,7 @@ elif st.session_state.stage == "done":
         )
 
         # Buttons
-        col1, col2 = st.columns([1,1])
+        col1, col2, col3 = st.columns([1,1,1])
         with col1:
             if st.button("Retake All"):
                 st.session_state.photos = []
@@ -270,28 +263,12 @@ elif st.session_state.stage == "done":
                 st.session_state.last_camera_image = None
                 st.session_state.stage = "capture"
                 st.rerun()
-
-        # Back to Home button
-        st.markdown(
-            """
-            <div style="text-align:center; margin-top:20px;">
-                <button onclick="window.location.reload();" 
-                        style="
-                            background-color:#a71d2a;
-                            color:#f5e7dc;
-                            border:none;
-                            border-radius:10px;
-                            font-weight:600;
-                            padding:12px 28px;
-                            font-size:16px;
-                            cursor:pointer;
-                            transition:0.3s;">
-                    🏠 Back to Home
-                </button>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+        with col3:
+            if st.button("🏠 Back to Home"):
+                st.session_state.photos = []
+                st.session_state.last_camera_image = None
+                st.session_state.stage = "landing"
+                st.rerun()
 
     except Exception as e:
         st.error(f"Something went wrong while creating the strip: {e}")
