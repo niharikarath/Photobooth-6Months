@@ -10,10 +10,17 @@ import random
 
 st.set_page_config(page_title="Photobooth — 6 Monthiversary", page_icon="📸", layout="centered")
 
-# ---------- Global button fix ----------
+# ---------- Session state ----------
+if "stage" not in st.session_state:
+    st.session_state.stage = "landing"  # landing, capture, done
+if "photos" not in st.session_state:
+    st.session_state.photos = []  # list of PIL Images
+if "last_camera_image" not in st.session_state:
+    st.session_state.last_camera_image = None
+
+# ---------- Global button CSS ----------
 st.markdown("""
 <style>
-/* Make all buttons fully visible, styled, and higher z-index */
 div.stButton > button, 
 div.stDownloadButton > button {
     display: inline-block !important;
@@ -27,159 +34,18 @@ div.stDownloadButton > button {
     border-radius: 8px !important;
     border: none !important;
     transition: 0.3s !important;
-    z-index: 9999 !important;  /* ensure clickable above overlays */
+    z-index: 9999 !important;
 }
 div.stButton > button:hover,
 div.stDownloadButton > button:hover {
     background-color: #555 !important;
 }
-
-/* Center the download button if needed */
 div.stDownloadButton {
     text-align: center;
     margin-top: 10px;
 }
 </style>
 """, unsafe_allow_html=True)
-
-# ---------- Styling ----------
-st.markdown(
-    """
-    <style>
-    /* Page background & central card */
-    .stApp {
-      background-color: #f6f6f7;
-      color: #111;
-      font-family: 'Helvetica', 'Arial', sans-serif;
-    }
-    .photobooth-card {
-      background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
-      border-radius: 14px;
-      padding: 28px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-      max-width: 760px;
-      margin: auto;
-    }
-    .big-btn {
-      background-color:#111;
-      color:white;
-      padding:10px 20px;
-      border-radius:8px;
-      font-weight:600;
-    }
-    .muted {
-      color: #666;
-      font-size:14px;
-    }
-    .center {
-      text-align:center;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-# ---------- Button Fix CSS ----------
-st.markdown("""
-<style>
-/* Make all buttons fully visible and styled */
-div.stButton > button {
-    display: inline-block !important;
-    opacity: 1 !important;
-    min-width: 160px !important;
-    min-height: 50px !important;
-    font-size: 16px !important;
-    font-weight: 600 !important;
-    color: #fff !important;
-    background-color: #111 !important;
-    border-radius: 8px !important;
-    border: none !important;
-    transition: 0.3s !important;
-}
-div.stButton > button:hover {
-    background-color: #555 !important;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# ---------- Session state ----------
-if "stage" not in st.session_state:
-    st.session_state.stage = "landing"  # landing, capture, done
-if "photos" not in st.session_state:
-    st.session_state.photos = []  # list of PIL Images
-if "last_camera_image" not in st.session_state:
-    st.session_state.last_camera_image = None
-
-# ---------- Helper functions ----------
-def pil_from_streamlit_uploaded(uploaded_file):
-    if uploaded_file is None:
-        return None
-    return Image.open(uploaded_file).convert("RGB")
-
-def make_polaroid(photo: Image.Image,
-                  photo_size=(600,600),
-                  frame_color=(255,255,255),
-                  bottom_extra=120,
-                  border_px=6,
-                  caption_text=""):
-    """
-    Wrap a square image into a polaroid frame (white border, larger bottom margin).
-    Returns a PIL Image.
-    """
-    # Resize and crop to square keeping aspect
-    photo = ImageOps.fit(photo, photo_size, Image.LANCZOS)
-    # Create frame
-    frame_w = photo_size[0] + border_px*2
-    frame_h = photo_size[1] + border_px*2 + bottom_extra
-    frame = Image.new("RGB", (frame_w, frame_h), frame_color)
-    # Paste photo
-    frame.paste(photo, (border_px, border_px))
-    # Add thin border line (subtle)
-    draw = ImageDraw.Draw(frame)
-    draw.rectangle([0,0,frame_w-1, frame_h-1], outline=(200,200,200), width=1)
-    # Add caption text if provided
-    if caption_text:
-        try:
-            # Use a fallback font
-            font = ImageFont.truetype("DejaVuSans.ttf", size=28)
-        except Exception:
-            font = ImageFont.load_default()
-        w, h = draw.textsize(caption_text, font=font)
-        text_x = (frame_w - w) // 2
-        text_y = photo_size[1] + border_px + (bottom_extra - h) // 2
-        draw.text((text_x, text_y), caption_text, fill=(80,80,80), font=font)
-    return frame
-
-def make_strip(polaroids, gap=18, background=(245,245,246)):
-    """
-    Stack polaroid frames vertically into a single strip with small gaps.
-    polaroids: list of PIL images (all same width).
-    """
-    widths = [im.width for im in polaroids]
-    assert len(set(widths)) == 1, "All polaroids must be same width"
-    w = widths[0]
-    total_h = sum(im.height for im in polaroids) + gap*(len(polaroids)-1)
-    strip = Image.new("RGB", (w, total_h), background)
-    y = 0
-    for im in polaroids:
-        # small random tilt for authentic look
-        angle = random.uniform(-4, 4)
-        rotated = im.rotate(angle, expand=True, fillcolor=background)
-        # paste centered
-        x = (w - rotated.width) // 2
-        strip.paste(rotated, (x, y), rotated.convert("RGBA"))
-        y += rotated.height + gap
-    return strip
-
-def bw_transform(img: Image.Image, contrast=1.1, sharpness=1.1):
-    """Convert to stylish black & white"""
-    gray = ImageOps.grayscale(img)
-    # convert back to RGB so polaroid is RGB
-    rgb = gray.convert("RGB")
-    rgb = ImageEnhance.Contrast(rgb).enhance(contrast)
-    rgb = ImageEnhance.Sharpness(rgb).enhance(sharpness)
-    # subtle film grain (optional)
-    return rgb
 
 # ---------- UI: Landing ----------
 if st.session_state.stage == "landing":
@@ -194,12 +60,10 @@ if st.session_state.stage == "landing":
             st.session_state.stage = "capture"
             st.rerun()
     with col2:
-        st.write("")
-        st.write("")
         st.markdown("<small class='muted'>Want help with layout or fonts? I can add captions, sound, or an auto-timer.</small>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ---------- UI: Capture (refactored) ----------
+# ---------- UI: Capture ----------
 elif st.session_state.stage == "capture":
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
     st.markdown("<h2 class='center'>Photobooth — Take 4 photos</h2>", unsafe_allow_html=True)
@@ -217,23 +81,24 @@ elif st.session_state.stage == "capture":
 
     st.write("")
 
-# --- Countdown overlay ---
-countdown_placeholder = st.empty()
-def start_countdown():
-    import time
-    overlay_style = """
-    <div style='position: fixed; top:0; left:0; width:100%; height:100%;
-                background-color: rgba(0,0,0,0.6); z-index: 900;  /* lower than buttons */
-                display:flex; justify-content:center; align-items:center;
-                flex-direction: column;'>
-        <h1 style='color:white; font-size:140px; margin:0;'>{}</h1>
-    </div>
-    """
-    for count in ["3", "2", "1", "📸"]:
-        countdown_placeholder.markdown(overlay_style.format(count), unsafe_allow_html=True)
-        time.sleep(0.8)
-    countdown_placeholder.empty()  # remove overlay completely
-    st.info("Countdown finished! Click the camera button to take a photo.")
+    # Countdown overlay placeholder
+    countdown_placeholder = st.empty()
+
+    def start_countdown():
+        import time
+        overlay_style = """
+        <div style='position: fixed; top:0; left:0; width:100%; height:100%;
+                    background-color: rgba(0,0,0,0.6); z-index: 900;
+                    display:flex; justify-content:center; align-items:center;
+                    flex-direction: column;'>
+            <h1 style='color:white; font-size:140px; margin:0;'>{}</h1>
+        </div>
+        """
+        for count in ["3", "2", "1", "📸"]:
+            countdown_placeholder.markdown(overlay_style.format(count), unsafe_allow_html=True)
+            time.sleep(0.8)
+        countdown_placeholder.empty()
+        st.info("Countdown finished! Click the camera button to take a photo.")
 
     # Start Countdown button
     st.markdown("<div class='center'>", unsafe_allow_html=True)
@@ -241,7 +106,7 @@ def start_countdown():
         start_countdown()
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # Always-visible camera input
+    # Camera input
     cam_file = st.camera_input("Smile! Click the camera button to take a photo.", key="camera_input")
     if cam_file is not None:
         st.session_state.last_camera_image = pil_from_streamlit_uploaded(cam_file)
@@ -272,7 +137,7 @@ def start_countdown():
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # ---------- UI: Done (compose the strip) ---------- (updated for black frame)
+# ---------- UI: Done ----------
 elif st.session_state.stage == "done":
     st.markdown('<div class="photobooth-card center">', unsafe_allow_html=True)
     st.markdown("<h2>✨ Your Polaroid Strip</h2>", unsafe_allow_html=True)
@@ -288,7 +153,7 @@ elif st.session_state.stage == "done":
 
         strip = make_strip(polaroids, gap=24, background=(250,250,250))
 
-        # --- Add classic black photobooth frame ---
+        # Add classic black photobooth frame
         frame_thickness = 40
         canvas = Image.new("RGB", (strip.width + frame_thickness*2, strip.height + frame_thickness*2), (0,0,0))
         canvas.paste(strip, (frame_thickness, frame_thickness))
@@ -323,8 +188,8 @@ elif st.session_state.stage == "done":
 
     except Exception as e:
         st.error(f"Something went wrong while creating the strip: {e}")
-    st.markdown("</div>", unsafe_allow_html=True)
 
+    st.markdown("</div>", unsafe_allow_html=True)
 
 
 
