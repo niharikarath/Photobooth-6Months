@@ -259,7 +259,7 @@ elif st.session_state.stage == "done":
             mime="image/png"
         )
 
-    # ---------- Add / Retake / Create buttons ----------
+  # ---------- Add / Retake / Create buttons ----------
 col1, col2, col3 = st.columns([1,1,1])
 
 with col1:
@@ -278,12 +278,11 @@ with col2:
         # Remove last photo from the strip if any
         if st.session_state.photos:
             st.session_state.photos.pop()
-            st.warning("Removed last photo from the strip. Take a new one using the camera below.")
+            st.warning("Removed last photo from the strip. Take a new one using the camera above.")
         else:
-            st.warning("No photos in the strip yet. Take a new photo using the camera below.")
+            st.warning("No photos in the strip yet. Take a new photo using the camera above.")
         # Reset camera input so user can retake
         st.session_state.last_camera_image = None
-        st.session_state.camera_counter += 1
         st.rerun()
 
 with col3:
@@ -293,8 +292,3 @@ with col3:
         else:
             st.session_state.stage = "done"
             st.rerun()
-
-    except Exception as e:
-        st.error(f"Something went wrong while creating the strip: {e}")
-
-    st.markdown("</div>", unsafe_allow_html=True)
