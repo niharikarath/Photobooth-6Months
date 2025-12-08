@@ -179,7 +179,7 @@ elif st.session_state.stage == "capture":
             else:
                 st.session_state.photos.append(st.session_state.last_camera_image.copy())
                 st.session_state.last_camera_image = None
-                st.experimental_rerun()
+                st.rerun()
     with col2:
         if st.button("Retake Last Photo", key="retake"):
             st.session_state.last_camera_image = None
@@ -190,7 +190,7 @@ elif st.session_state.stage == "capture":
                 st.warning(f"Take {4 - len(st.session_state.photos)} more photo(s).")
             else:
                 st.session_state.stage = "done"
-                st.experimental_rerun()
+                st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
 # ---------- UI: Done (compose the strip) ----------
@@ -239,16 +239,17 @@ elif st.session_state.stage == "done":
                 st.session_state.photos = []
                 st.session_state.last_camera_image = None
                 st.session_state.stage = "capture"
-                st.experimental_rerun()
+                st.rerun()
         with col2:
             if st.button("Add a New Strip (Keep these)"):
                 st.session_state.photos = []
                 st.session_state.last_camera_image = None
                 st.session_state.stage = "capture"
-                st.experimental_rerun()
+                st.rerun()
 
     except Exception as e:
         st.error(f"Something went wrong while creating the strip: {e}")
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
