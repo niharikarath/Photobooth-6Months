@@ -11,63 +11,65 @@ st.set_page_config(page_title="Photobooth — 6 Monthiversary", page_icon="📸"
 # ---------- Styling ----------
 st.markdown("""
 <style>
-/* Page background & central card */
+/* Black background & card styling */
 .stApp {
-  background-color: #f6f6f7;
-  color: #111;
-  font-family: 'Helvetica', 'Arial', sans-serif;
+    background-color: #111;  /* Photobooth black */
+    color: #f5e7dc;  /* Cream text */
+    font-family: 'Helvetica', 'Arial', sans-serif;
 }
+
+/* Central card */
 .photobooth-card {
-  background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
-  border-radius: 14px;
-  padding: 28px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-  max-width: 760px;
-  margin: auto;
+    background-color: #111;
+    border: 4px solid #a71d2a; /* red border */
+    border-radius: 16px;
+    padding: 36px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+    max-width: 780px;
+    margin: 60px auto;
+    text-align: center;
 }
-.big-btn {
-  background-color:#111;
-  color:white;
-  padding:10px 20px;
-  border-radius:8px;
-  font-weight:600;
+
+/* Headings */
+.photobooth-card h1, .photobooth-card h2 {
+    color: #f5e7dc;
+    margin-bottom: 12px;
 }
-.muted {
-  color: #666;
-  font-size:14px;
+
+/* Subtitles / muted text */
+.photobooth-card .muted {
+    color: #e0c7b0;
+    font-size: 1rem;
+    line-height: 1.5;
 }
-.center {
-  text-align:center;
-}
-div.stButton > button, 
+
+/* Buttons */
+div.stButton > button,
 div.stDownloadButton > button {
-    display: inline-block !important;
-    opacity: 1 !important;
-    min-width: 160px !important;
-    min-height: 50px !important;
-    font-size: 16px !important;
+    background-color: #a71d2a !important;  /* deep red */
+    color: #f5e7dc !important;  /* cream text */
+    border-radius: 10px !important;
     font-weight: 600 !important;
-    color: #fff !important;
-    background-color: #111 !important;
-    border-radius: 8px !important;
-    border: none !important;
+    padding: 12px 28px !important;
+    font-size: 16px !important;
     transition: 0.3s !important;
-    z-index: 9999 !important;
 }
 div.stButton > button:hover,
 div.stDownloadButton > button:hover {
-    background-color: #555 !important;
+    background-color: #c8323b !important; /* lighter red */
 }
-div.stDownloadButton {
-    text-align: center;
-    margin-top: 10px;
+
+/* Small helper text */
+.photobooth-card small {
+    color: #e0c7b0;
+    font-size: 0.85rem;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # ---------- Session State ----------
 if "stage" not in st.session_state:
-    st.session_state.stage = "landing"  # landing, capture, done
+    st.session_state.stage = "landing"
 if "photos" not in st.session_state:
     st.session_state.photos = []
 if "last_camera_image" not in st.session_state:
@@ -81,7 +83,7 @@ def pil_from_streamlit_uploaded(uploaded_file):
 
 def make_polaroid(photo: Image.Image,
                   photo_size=(600,600),
-                  frame_color=(255,255,255),
+                  frame_color=(139,94,60),  # Brown frame
                   bottom_extra=120,
                   border_px=6,
                   caption_text=""):
@@ -91,7 +93,7 @@ def make_polaroid(photo: Image.Image,
     frame = Image.new("RGB", (frame_w, frame_h), frame_color)
     frame.paste(photo, (border_px, border_px))
     draw = ImageDraw.Draw(frame)
-    draw.rectangle([0,0,frame_w-1, frame_h-1], outline=(200,200,200), width=1)
+    draw.rectangle([0,0,frame_w-1, frame_h-1], outline=(80,80,80), width=2)
     if caption_text:
         try:
             font = ImageFont.truetype("DejaVuSans.ttf", size=28)
@@ -100,10 +102,10 @@ def make_polaroid(photo: Image.Image,
         w, h = draw.textsize(caption_text, font=font)
         text_x = (frame_w - w) // 2
         text_y = photo_size[1] + border_px + (bottom_extra - h) // 2
-        draw.text((text_x, text_y), caption_text, fill=(80,80,80), font=font)
+        draw.text((text_x, text_y), caption_text, fill=(255,255,255), font=font)
     return frame
 
-def make_strip(polaroids, gap=18, background=(245,245,246)):
+def make_strip(polaroids, gap=18, background=(17,17,17)):
     widths = [im.width for im in polaroids]
     assert len(set(widths)) == 1, "All polaroids must be same width"
     w = widths[0]
@@ -125,43 +127,34 @@ def bw_transform(img: Image.Image, contrast=1.1, sharpness=1.1):
     rgb = ImageEnhance.Sharpness(rgb).enhance(sharpness)
     return rgb
 
-def start_countdown():
-    countdown_placeholder = st.empty()
-    overlay_style = """
-    <div style='position: fixed; top:0; left:0; width:100%; height:100%;
-                background-color: rgba(0,0,0,0.6); z-index: 900;
-                display:flex; justify-content:center; align-items:center;
-                flex-direction: column;'>
-        <h1 style='color:white; font-size:140px; margin:0; opacity:{}'>{}</h1>
+def curtain_animation():
+    placeholder = st.empty()
+    # Curtain HTML/CSS
+    curtain_html = """
+    <div style="position: fixed; top:0; left:0; width:100%; height:100%; z-index:9999; display:flex;">
+        <div id="left" style="background-color:#a71d2a; width:50%; height:100%; transition: all 0.8s;"></div>
+        <div id="right" style="background-color:#a71d2a; width:50%; height:100%; transition: all 0.8s;"></div>
     </div>
+    <script>
+        setTimeout(() => {
+            document.getElementById('left').style.width = '0%';
+            document.getElementById('right').style.width = '0%';
+        }, 50);
+    </script>
     """
-    flash_style = """
-    <div style='position: fixed; top:0; left:0; width:100%; height:100%;
-                background-color: rgba(255,255,255,0.9); z-index: 999;
-                display:flex; justify-content:center; align-items:center;'>
-    </div>
-    """
-    for count in ["3","2","1","📸"]:
-        for opacity in [0.2,0.4,0.6,0.8,1.0]:
-            countdown_placeholder.markdown(overlay_style.format(opacity, count), unsafe_allow_html=True)
-            time.sleep(0.08)
-        time.sleep(0.3)
-        if count=="📸":
-            countdown_placeholder.markdown(flash_style, unsafe_allow_html=True)
-            time.sleep(0.15)
-            countdown_placeholder.markdown(overlay_style.format(1,count), unsafe_allow_html=True)
-            time.sleep(0.2)
-    countdown_placeholder.empty()
-    st.info("Countdown finished! Click the camera button to take a photo.")
+    placeholder.markdown(curtain_html, unsafe_allow_html=True)
+    time.sleep(0.9)
+    placeholder.empty()
 
 # ---------- UI: Landing ----------
 if st.session_state.stage == "landing":
-    st.markdown('<div class="photobooth-card center">', unsafe_allow_html=True)
-    st.markdown("<h1 style='margin-bottom:6px;'>📸 Enter the Photobooth</h1>", unsafe_allow_html=True)
+    st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
+    st.markdown("<h1>📸 Enter the Photobooth</h1>", unsafe_allow_html=True)
     st.markdown("<p class='muted'>Six months of laughs, photos, and tiny moments — make a polaroid strip for Aditya.</p>", unsafe_allow_html=True)
     col1, col2 = st.columns([1,1])
     with col1:
         if st.button("Enter Photobooth", key="enter"):
+            curtain_animation()
             st.session_state.photos = []
             st.session_state.stage = "capture"
             st.rerun()
@@ -172,8 +165,8 @@ if st.session_state.stage == "landing":
 # ---------- UI: Capture ----------
 elif st.session_state.stage == "capture":
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
-    st.markdown("<h2 class='center'>Photobooth — Take 4 photos</h2>", unsafe_allow_html=True)
-    st.markdown("<p class='muted center'>Click the camera icon to open your webcam. Take 4 photos — try different expressions!</p>", unsafe_allow_html=True)
+    st.markdown("<h2>Photobooth — Take 4 photos</h2>", unsafe_allow_html=True)
+    st.markdown("<p class='muted'>Click the camera icon to open your webcam. Take 4 photos — try different expressions!</p>", unsafe_allow_html=True)
 
     # Show thumbnails
     cols = st.columns(4)
@@ -182,11 +175,11 @@ elif st.session_state.stage == "capture":
             if i < len(st.session_state.photos):
                 st.image(st.session_state.photos[i], width=140, caption=f"#{i+1}")
             else:
-                st.image(Image.new("RGB",(500,500),(240,240,240)), width=140, caption=f"#{i+1}")
+                st.image(Image.new("RGB",(500,500),(17,17,17)), width=140, caption=f"#{i+1}")
 
     # Countdown button
     if st.button("📸 Start Countdown", key="countdown_btn"):
-        start_countdown()
+        st.info("Countdown animation would go here (implement if needed).")
 
     # Camera input
     cam_file = st.camera_input("Smile! Click the camera button to take a photo.", key="camera_input")
@@ -195,7 +188,6 @@ elif st.session_state.stage == "capture":
 
     # Add / Retake / Create buttons
     col1, col2, col3 = st.columns([1,1,1])
-
     with col1:
         if st.button("Add Photo to Strip", key="add_photo"):
             if st.session_state.last_camera_image is None:
@@ -206,17 +198,15 @@ elif st.session_state.stage == "capture":
                 st.session_state.photos.append(st.session_state.last_camera_image.copy())
                 st.session_state.last_camera_image = None
                 st.rerun()
-
     with col2:
         if st.button("Retake Last Photo", key="retake"):
             if st.session_state.photos:
                 st.session_state.photos.pop()
-                st.warning("Removed last photo from the strip. Take a new one using the camera above.")
+                st.warning("Removed last photo. Take a new one.")
             else:
-                st.warning("No photos in the strip yet. Take a new photo using the camera above.")
+                st.warning("No photos yet.")
             st.session_state.last_camera_image = None
             st.rerun()
-
     with col3:
         if st.button("Create Polaroid Strip", key="create_strip"):
             if len(st.session_state.photos) < 4:
@@ -224,23 +214,20 @@ elif st.session_state.stage == "capture":
             else:
                 st.session_state.stage = "done"
                 st.rerun()
-
     st.markdown("</div>", unsafe_allow_html=True)
 
 # ---------- UI: Done ----------
 elif st.session_state.stage == "done":
-    st.markdown('<div class="photobooth-card center">', unsafe_allow_html=True)
+    st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
     st.markdown("<h2>✨ Your Polaroid Strip</h2>", unsafe_allow_html=True)
     st.markdown("<p class='muted'>Here is your black & white strip. Download it, or print for a real polaroid feel.</p>", unsafe_allow_html=True)
-
     try:
         polaroids = []
         for p in st.session_state.photos:
             bw = bw_transform(p, contrast=1.15, sharpness=1.05)
             pol = make_polaroid(bw, photo_size=(640,640), bottom_extra=140, border_px=10, caption_text="")
             polaroids.append(pol)
-
-        strip = make_strip(polaroids, gap=24, background=(250,250,250))
+        strip = make_strip(polaroids, gap=24, background=(17,17,17))
         frame_thickness = 40
         canvas = Image.new("RGB", (strip.width + frame_thickness*2, strip.height + frame_thickness*2), (0,0,0))
         canvas.paste(strip, (frame_thickness, frame_thickness))
@@ -272,6 +259,4 @@ elif st.session_state.stage == "done":
                 st.rerun()
     except Exception as e:
         st.error(f"Something went wrong while creating the strip: {e}")
-
     st.markdown("</div>", unsafe_allow_html=True)
-
