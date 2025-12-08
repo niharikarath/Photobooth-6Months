@@ -216,6 +216,8 @@ elif st.session_state.stage == "capture":
                 st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
+import base64
+
 # ---------- UI: Done ----------
 elif st.session_state.stage == "done":
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
@@ -231,32 +233,36 @@ elif st.session_state.stage == "done":
 
         strip = make_strip(polaroids, gap=24, background=(0,0,0))  # black background
 
-        # ---------- Printer Animation ----------
-        placeholder = st.empty()
-        canvas_height = strip.height + 80
-        canvas_width = strip.width + 80
-        full_canvas = Image.new("RGB", (canvas_width, canvas_height), (0,0,0))
-        frame_thickness = 40
+        # ---------- Convert strip to Base64 for HTML ----------
+        buf = io.BytesIO()
+        strip.save(buf, format="PNG")
+        base64_img = base64.b64encode(buf.getvalue()).decode()
 
-        # Animate strip sliding down like a printer
-        for i in range(0, strip.height + 1, 20):
-            frame = full_canvas.copy()
-            frame.paste(strip.crop((0, 0, strip.width, i)), (frame_thickness, frame_thickness))
-            placeholder.image(frame, use_column_width=False)
-            time.sleep(0.05)
+        # ---------- Printer Animation using CSS ----------
+        html_code = f"""
+        <div style="position: relative; width: fit-content; margin: auto; overflow: hidden; height: {strip.height + 20}px; background-color: #000;">
+            <img src="data:image/png;base64,{base64_img}" 
+                 style="
+                    display: block; 
+                    width: auto; 
+                    animation: slideDown 1.2s ease-out forwards;
+                    transform: translateY(-{strip.height}px);
+                 "/>
+        </div>
 
-        # Ensure final frame is fully displayed
-        full_frame = full_canvas.copy()
-        full_frame.paste(strip, (frame_thickness, frame_thickness))
-        placeholder.image(full_frame, use_column_width=False, caption="Polaroid strip preview")
+        <style>
+        @keyframes slideDown {{
+            0% {{ transform: translateY(-{strip.height}px); }}
+            100% {{ transform: translateY(0); }}
+        }}
+        </style>
+        """
+        st.markdown(html_code, unsafe_allow_html=True)
 
         # ---------- Download ----------
-        buf = io.BytesIO()
-        full_frame.save(buf, format="PNG")
-        byte_im = buf.getvalue()
         st.download_button(
             label="Download Polaroid Strip (PNG)",
-            data=byte_im,
+            data=buf.getvalue(),
             file_name="polaroid_strip.png",
             mime="image/png"
         )
