@@ -310,4 +310,3 @@ elif st.session_state.stage == "done":
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-
