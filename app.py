@@ -131,67 +131,63 @@ def bw_transform(img: Image.Image, contrast=1.1, sharpness=1.1):
 
 if st.session_state.stage == "landing":
     st.markdown("""
-    <!-- Import handwriting font -->
+    <!-- Import Pinyon Script -->
     <link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&display=swap" rel="stylesheet">
 
     <style>
     .stApp {
-        background-color: #f3e5d0;
-        font-family: 'Helvetica', 'Arial', sans-serif;
+        background-color: #f3e5d0 !important;
+        font-family: 'Helvetica', sans-serif;
     }
+
     .photobooth-card {
         background-color: #f3e5d0;
         border: 4px solid #a71d2a;
         border-radius: 20px;
-        padding: 60px;
-        max-width: 820px;
+        padding: 50px;
+        max-width: 900px;
         margin: 80px auto;
         text-align: center;
         position: relative;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.35);
     }
-    .photobooth-card h1 {
-        color: #111;
-        font-size: 3rem;
-        margin-bottom: 15px;
-    }
+
     .love-script {
         font-family: 'Pinyon Script', cursive;
         color: #a71d2a;
-        font-size: 2.2rem;
-        margin: 8px 0;
-    }
-    .polaroid-img {
-        width: 85px;
-        height: 85px;
-        position: absolute;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        font-size: 2.3rem;
+        margin: 12px 0;
     }
 
-    /* Central button spacing — full 5cm (~190px) radius empty area */
+    .polaroid-img {
+        width: 90px;
+        height: 90px;
+        position: absolute;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.35);
+        border-radius: 6px;
+    }
+
     .enter-container {
-        margin-top: 80px;
-        margin-bottom: 80px;
-        padding: 190px 0;
+        padding: 190px 0;   /* 5cm radius */
     }
 
     div.stButton > button {
         background-color: #a71d2a !important;
         color: #f5e7dc !important;
-        border-radius: 16px !important;
+        border-radius: 18px !important;
         font-weight: 800 !important;
-        padding: 22px 60px !important;
-        font-size: 26px !important;
-        transition: 0.3s !important;
+        padding: 22px 65px !important;
+        font-size: 28px !important;
         border: 2px solid #7d101c !important;
+        transition: 0.3s !important;
     }
+
     div.stButton > button:hover {
         background-color: #c8323b !important;
     }
     </style>
 
     <div class="photobooth-card">
-        <h1>📸 Enter the Photobooth</h1>
 
         <!-- Romantic statements -->
         <div class="love-script">I can’t wait to kiss you in a photobooth one day</div>
@@ -200,22 +196,23 @@ if st.session_state.stage == "landing":
         <div class="love-script">Happy 6 months, my love</div>
 
         <!-- Scattered PNGs -->
-        <img src="https://i.imgur.com/OJkZlYQ.png" class="polaroid-img" style="top:15px; left:20px; transform: rotate(-6deg);" />
-        <img src="https://i.imgur.com/4aF0FQy.png" class="polaroid-img" style="top:40px; right:20px; transform: rotate(7deg);" />
-        <img src="https://i.imgur.com/Y8VjL2D.png" class="polaroid-img" style="bottom:30px; left:40px; transform: rotate(-9deg);" />
-        <img src="https://i.imgur.com/e9elZQZ.png" class="polaroid-img" style="bottom:55px; right:45px; transform: rotate(10deg);" />
-        <img src="https://i.imgur.com/7wa0a2b.png" class="polaroid-img" style="top:160px; left:-10px; transform: rotate(4deg);" />
-        <img src="https://i.imgur.com/JmYq5iC.png" class="polaroid-img" style="top:180px; right:-10px; transform: rotate(-3deg);" />
+        <img src="1.png" class="polaroid-img" style="top:20px; left:20px; transform: rotate(-6deg);" />
+        <img src="2.png" class="polaroid-img" style="top:35px; right:20px; transform: rotate(8deg);" />
+        <img src="3.png" class="polaroid-img" style="bottom:35px; left:40px; transform: rotate(-10deg);" />
+        <img src="4.png" class="polaroid-img" style="bottom:55px; right:40px; transform: rotate(6deg);" />
+        <img src="5.png" class="polaroid-img" style="top:150px; left:-10px; transform: rotate(4deg);" />
+        <img src="6.png" class="polaroid-img" style="top:170px; right:-12px; transform: rotate(-5deg);" />
 
-        <!-- 5cm radius space reserved for the big button -->
+        <!-- Reserved blank space for button -->
         <div class="enter-container"></div>
+
     </div>
     """, unsafe_allow_html=True)
 
-    # Button OUTSIDE the markdown, positioned below the empty space
-    if st.button("Enter Photobooth", key="enter"):
-        st.session_state.photos = []
+    # BUTTON must be outside HTML for Streamlit to read it
+    if st.button("Enter Photobooth", key="enter_button"):
         st.session_state.stage = "capture"
+        st.session_state.photos = []
         st.rerun()
 
 # ---------- UI: Done ----------
@@ -321,4 +318,5 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
