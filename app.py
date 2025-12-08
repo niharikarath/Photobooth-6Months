@@ -183,6 +183,13 @@ elif st.session_state.stage == "capture":
             else:
                 st.session_state.stage = "done"
                 st.rerun()
+
+    if st.button("🏠 Back to Home"):
+    st.session_state.photos = []
+    st.session_state.last_camera_image = None
+    st.session_state.stage = "landing"
+    st.rerun()
+
     st.markdown("</div>", unsafe_allow_html=True)
 
 # ---------- UI: Done ----------
@@ -247,7 +254,15 @@ elif st.session_state.stage == "done":
                 st.session_state.last_camera_image = None
                 st.session_state.stage = "capture"
                 st.rerun()
+
+    if st.button("🏠 Back to Home"):
+    st.session_state.photos = []
+    st.session_state.last_camera_image = None
+    st.session_state.stage = "landing"
+    st.rerun()
+    
     except Exception as e:
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
