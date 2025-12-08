@@ -47,6 +47,29 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# ---------- Button Fix CSS ----------
+st.markdown("""
+<style>
+/* Make all buttons fully visible and styled */
+div.stButton > button {
+    display: inline-block !important;
+    opacity: 1 !important;
+    min-width: 160px !important;
+    min-height: 50px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: #fff !important;
+    background-color: #111 !important;
+    border-radius: 8px !important;
+    border: none !important;
+    transition: 0.3s !important;
+}
+div.stButton > button:hover {
+    background-color: #555 !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # ---------- Session state ----------
 if "stage" not in st.session_state:
     st.session_state.stage = "landing"  # landing, capture, done
@@ -266,5 +289,6 @@ elif st.session_state.stage == "done":
     except Exception as e:
         st.error(f"Something went wrong while creating the strip: {e}")
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
