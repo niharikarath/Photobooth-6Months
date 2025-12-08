@@ -128,19 +128,17 @@ def bw_transform(img: Image.Image, contrast=1.1, sharpness=1.1):
     return rgb
 
 # ---------- UI: Landing ----------
+
 if st.session_state.stage == "landing":
     st.markdown("""
     <!-- Import handwriting font -->
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
 
     <style>
-    /* Page background */
     .stApp {
-        background-color: #f5e7dc;
+        background-color: #f3e5d0;
         font-family: 'Helvetica', 'Arial', sans-serif;
     }
-
-    /* Central landing card */
     .photobooth-card {
         background-color: #f3e5d0;
         border: 4px solid #a71d2a;
@@ -152,22 +150,16 @@ if st.session_state.stage == "landing":
         position: relative;
         box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
-
-    /* Header */
     .photobooth-card h1 {
         color: #111;
         font-size: 3rem;
         margin-bottom: 12px;
     }
-
-    /* Subtitle */
     .photobooth-card .muted {
         color: #a71d2a;
         font-size: 1.2rem;
         margin-bottom: 30px;
     }
-
-    /* Big Enter Button */
     div.stButton > button {
         background-color: #a71d2a !important;
         color: #f5e7dc !important;
@@ -180,19 +172,15 @@ if st.session_state.stage == "landing":
     div.stButton > button:hover {
         background-color: #c8323b !important;
     }
-
-    /* Handwriting messages */
     .handwriting-text {
         font-family: 'Dancing Script', cursive;
         color: #a71d2a;
         font-size: 1.6rem;
-        margin: 10px;
+        margin: 10px 0;
     }
-
-    /* Polaroid images */
     .polaroid-img {
-        width: 120px;
-        height: 120px;
+        width: 100px;
+        height: 100px;
         position: absolute;
         box-shadow: 0 4px 8px rgba(0,0,0,0.4);
     }
@@ -205,19 +193,18 @@ if st.session_state.stage == "landing":
         <div class="handwriting-text">Happy 6 months of us, Aditya ❤️</div>
         <div class="handwriting-text">Can't wait to kiss you in a photobooth one day 😘</div>
 
-        <!-- Polaroid images scattered -->
-        <img src="https://path_to_polaroid1.png" class="polaroid-img" style="top:10px; left:20px; transform: rotate(-5deg);"/>
-        <img src="https://path_to_polaroid2.png" class="polaroid-img" style="top:50px; right:30px; transform: rotate(8deg);"/>
-        <img src="https://path_to_polaroid3.png" class="polaroid-img" style="bottom:20px; left:50px; transform: rotate(-10deg);"/>
+        <!-- Polaroid images scattered (replace URLs) -->
+        <img src="https://i.imgur.com/OJkZlYQ.png" class="polaroid-img" style="top:10px; left:20px; transform: rotate(-5deg);"/>
+        <img src="https://i.imgur.com/4aF0FQy.png" class="polaroid-img" style="top:50px; right:30px; transform: rotate(8deg);"/>
+        <img src="https://i.imgur.com/Y8VjL2D.png" class="polaroid-img" style="bottom:20px; left:50px; transform: rotate(-10deg);"/>
     </div>
     """, unsafe_allow_html=True)
 
-    col1, _ = st.columns([1,2])
-    with col1:
-        if st.button("Enter Photobooth", key="enter"):
-            st.session_state.photos = []
-            st.session_state.stage = "capture"
-            st.rerun()
+    # Make sure the button is **outside the st.markdown block**
+    if st.button("Enter Photobooth", key="enter"):
+        st.session_state.photos = []
+        st.session_state.stage = "capture"
+        st.rerun()
 
 # ---------- UI: Done ----------
 elif st.session_state.stage == "done":
@@ -322,4 +309,5 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
