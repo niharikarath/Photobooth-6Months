@@ -144,7 +144,7 @@ if st.session_state.stage == "landing":
         st.markdown("<small class='muted'>Want help with layout or fonts? I can add captions, sound, or an auto-timer.</small>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ---------- UI: Capture ----------
+# ---------- UI: Capture ---------- (updated part only)
 elif st.session_state.stage == "capture":
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
     st.markdown("<h2 class='center'>Photobooth — Take 4 photos</h2>", unsafe_allow_html=True)
@@ -161,15 +161,22 @@ elif st.session_state.stage == "capture":
                 st.image(Image.new("RGB", (500,500), (240,240,240)), width=140, caption=f"#{i+1}")
 
     st.write("")
-    # Camera input: returns a file-like object when a photo is taken.
     cam_file = st.camera_input("Smile 😄 — click the camera button below to take a picture", key="camera_input")
 
     if cam_file is not None:
-        # convert to PIL and store temporarily (but only add when user clicks "Add to strip")
         st.session_state.last_camera_image = pil_from_streamlit_uploaded(cam_file)
 
-    # Buttons to add photo / retake
     col1, col2, col3 = st.columns([1,1,1])
+    
+    # 3-2-1 Countdown overlay function
+    def countdown_overlay():
+        import time
+        placeholder = st.empty()
+        for count in ["3", "2", "1", "📸"]:
+            placeholder.markdown(f"<h1 style='text-align:center; font-size:72px;'>{count}</h1>", unsafe_allow_html=True)
+            time.sleep(0.8)
+        placeholder.empty()
+
     with col1:
         if st.button("Add Photo to Strip", key="add_photo"):
             if st.session_state.last_camera_image is None:
@@ -177,6 +184,8 @@ elif st.session_state.stage == "capture":
             elif len(st.session_state.photos) >= 4:
                 st.info("You already have 4 photos. Click 'Create Polaroid Strip'.")
             else:
+                # Countdown before adding photo
+                countdown_overlay()
                 st.session_state.photos.append(st.session_state.last_camera_image.copy())
                 st.session_state.last_camera_image = None
                 st.rerun()
@@ -193,38 +202,33 @@ elif st.session_state.stage == "capture":
                 st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ---------- UI: Done (compose the strip) ----------
+    # ---------- UI: Done (compose the strip) ---------- (updated for black frame)
 elif st.session_state.stage == "done":
     st.markdown('<div class="photobooth-card center">', unsafe_allow_html=True)
     st.markdown("<h2>✨ Your Polaroid Strip</h2>", unsafe_allow_html=True)
     st.markdown("<p class='muted'>Here is your black & white strip. Download it, or print for a real polaroid feel.</p>", unsafe_allow_html=True)
 
-    # Process photos into polaroids
     try:
         polaroids = []
         for idx, p in enumerate(st.session_state.photos):
             bw = bw_transform(p, contrast=1.15, sharpness=1.05)
-            caption = ""  # you can add captions like "Smile #1" or a date
+            caption = ""
             pol = make_polaroid(bw, photo_size=(640,640), bottom_extra=140, border_px=10, caption_text=caption)
             polaroids.append(pol)
 
-        # Make vertical strip
         strip = make_strip(polaroids, gap=24, background=(250,250,250))
 
-        # Add a subtle shadow / canvas margin
-        margin = 24
-        canvas = Image.new("RGB", (strip.width + margin*2, strip.height + margin*2), (246,246,247))
-        canvas.paste(strip, (margin, margin))
+        # --- Add classic black photobooth frame ---
+        frame_thickness = 40
+        canvas = Image.new("RGB", (strip.width + frame_thickness*2, strip.height + frame_thickness*2), (0,0,0))
+        canvas.paste(strip, (frame_thickness, frame_thickness))
 
-        # Show preview
         st.image(canvas, use_column_width=False, caption="Polaroid strip preview")
 
-        # Save to bytes buffer
         buf = io.BytesIO()
         canvas.save(buf, format="PNG")
         byte_im = buf.getvalue()
 
-        # Download button
         st.download_button(
             label="Download Polaroid Strip (PNG)",
             data=byte_im,
@@ -250,6 +254,3 @@ elif st.session_state.stage == "done":
     except Exception as e:
         st.error(f"Something went wrong while creating the strip: {e}")
     st.markdown("</div>", unsafe_allow_html=True)
-
-
-
