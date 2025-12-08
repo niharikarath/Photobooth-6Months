@@ -3,6 +3,7 @@ import streamlit as st
 from PIL import Image, ImageOps, ImageEnhance, ImageDraw, ImageFont
 import io
 import random
+import time
 import base64
 
 # ---------- Page Config ----------
@@ -205,33 +206,22 @@ elif st.session_state.stage == "done":
             pol = make_polaroid(bw, photo_size=(640,640), bottom_extra=140, border_px=10, caption_text="", frame_color=(0,0,0))
             polaroids.append(pol)
 
-        # Slide animation for each polaroid (printer effect)
-        html_polaroids = ""
-        delay = 0
-        for p in polaroids:
-            buf_ind = io.BytesIO()
-            p.save(buf_ind, format="PNG")
-            img_b64 = base64.b64encode(buf_ind.getvalue()).decode()
-            html_polaroids += f"""
-            <img src="data:image/png;base64,{img_b64}" 
-                 style="
-                    display: block; 
-                    margin: 20px auto; 
-                    width: auto; 
-                    transform: translateY(-{p.height}px); 
-                    animation: slideDown 1s ease-out forwards;
-                    animation-delay: {delay}s;
-                 "/>
-            """
-            delay += 0.5  # half-second delay between each photo
+        # Combine all polaroids into one strip
+        strip = make_strip(polaroids, gap=24, background=(0,0,0))
+
+        # Convert strip to Base64 for slide-down animation
+        buf = io.BytesIO()
+        strip.save(buf, format="PNG")
+        img_b64 = base64.b64encode(buf.getvalue()).decode()
 
         html_code = f"""
-        <div style="position: relative; width: fit-content; margin: auto; overflow: hidden; background-color: #000;">
-            {html_polaroids}
+        <div style="position: relative; width: fit-content; margin: auto; overflow: hidden; background-color: #000; height: {strip.height}px;">
+            <img src="data:image/png;base64,{img_b64}" 
+                 style="display: block; width: auto; transform: translateY(-{strip.height}px); animation: slideDown 1.2s ease-out forwards;" />
         </div>
         <style>
         @keyframes slideDown {{
-            0% {{ transform: translateY(-100%); }}
+            0% {{ transform: translateY(-{strip.height}px); }}
             100% {{ transform: translateY(0); }}
         }}
         </style>
@@ -239,9 +229,6 @@ elif st.session_state.stage == "done":
         st.markdown(html_code, unsafe_allow_html=True)
 
         # Download
-        buf = io.BytesIO()
-        strip = make_strip(polaroids, gap=24, background=(0,0,0))
-        strip.save(buf, format="PNG")
         st.download_button(
             label="Download Polaroid Strip (PNG)",
             data=buf.getvalue(),
@@ -250,7 +237,7 @@ elif st.session_state.stage == "done":
         )
 
         # Buttons
-        col1, col2, col3 = st.columns([1,1,1])
+        col1, col2 = st.columns([1,1])
         with col1:
             if st.button("Retake All"):
                 st.session_state.photos = []
@@ -263,12 +250,13 @@ elif st.session_state.stage == "done":
                 st.session_state.last_camera_image = None
                 st.session_state.stage = "capture"
                 st.rerun()
-        with col3:
-            if st.button("🏠 Back to Home"):
-                st.session_state.photos = []
-                st.session_state.last_camera_image = None
-                st.session_state.stage = "landing"
-                st.rerun()
+
+        # Back to Home button
+        if st.button("🏠 Back to Home"):
+            st.session_state.photos = []
+            st.session_state.last_camera_image = None
+            st.session_state.stage = "landing"
+            st.rerun()
 
     except Exception as e:
         st.error(f"Something went wrong while creating the strip: {e}")
