@@ -197,8 +197,6 @@ elif st.session_state.stage == "capture":
     st.markdown("</div>", unsafe_allow_html=True)
 
 # ---------- UI: Done ----------
-
-# ---------- UI: Done ----------
 elif st.session_state.stage == "done":
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
     st.markdown("<h2>✨ Your Photobooth Strip</h2>", unsafe_allow_html=True)
@@ -233,8 +231,10 @@ elif st.session_state.stage == "done":
                         font = ImageFont.truetype("DejaVuSans.ttf", size=24)
                     except:
                         font = ImageFont.load_default()
-                    w, h = font.getsize(message)
-                    draw.text(((frame_w - w)//2, frame_h - h - 5), message, fill=(245,235,220), font=font)
+                 bbox = draw.textbbox((0,0), message, font=font)
+                 w = bbox[2] - bbox[0]
+                 h = bbox[3] - bbox[1]
+                 draw.text(((frame_w - w)//2, frame_h - h - 5), message, fill=(245,235,220), font=font)
 
                 processed_photos.append(frame)
 
@@ -307,3 +307,4 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
