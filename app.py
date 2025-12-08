@@ -167,14 +167,14 @@ if st.session_state.stage == "landing":
         st.markdown("<small class='muted'>Want help with layout or fonts? I can add captions, sound, or an auto-timer.</small>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ---------- UI: Capture ---------- (fixed version) ----------
+# ---------- UI: Capture (refactored) ----------
 elif st.session_state.stage == "capture":
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
     st.markdown("<h2 class='center'>Photobooth — Take 4 photos</h2>", unsafe_allow_html=True)
-    st.markdown("<p class='muted center'>Click the camera icon to open your webcam. Take 4 photos — try different expressions.</p>", unsafe_allow_html=True)
+    st.markdown("<p class='muted center'>Click the camera icon to open your webcam. Take 4 photos — try different expressions!</p>", unsafe_allow_html=True)
     st.write("")
 
-    # Show count & thumbnails of already taken photos
+    # Show thumbnails of already taken photos
     cols = st.columns(4)
     for i in range(4):
         with cols[i]:
@@ -185,38 +185,42 @@ elif st.session_state.stage == "capture":
 
     st.write("")
 
-    # --- Countdown overlay ---
+    # Countdown placeholder (overlay)
     countdown_placeholder = st.empty()
-    def countdown():
+
+    def start_countdown():
         import time
         overlay_style = """
-        <div style='position: fixed; top:0; left:0; width:100%; height:100%; 
-                    background-color: rgba(0,0,0,0.5); z-index:1000; 
-                    display:flex; justify-content:center; align-items:center;'>
-            <h1 style='color:white; font-size:120px; margin:0;'>{}</h1>
+        <div style='position: fixed; top:0; left:0; width:100%; height:100%;
+                    background-color: rgba(0,0,0,0.6); z-index:9999;
+                    display:flex; justify-content:center; align-items:center;
+                    flex-direction: column;'>
+            <h1 style='color:white; font-size:140px; margin:0;'>{}</h1>
         </div>
         """
         for count in ["3", "2", "1", "📸"]:
             countdown_placeholder.markdown(overlay_style.format(count), unsafe_allow_html=True)
             time.sleep(0.8)
         countdown_placeholder.empty()
-        st.info("Countdown done! Now click the camera button below to take your photo.")
+        st.info("Countdown finished! Click the camera button to take your photo.")
 
-    # Take photo countdown button
-    if st.button("📸 Start Countdown"):
-        countdown()
+    # Start Countdown button
+    st.markdown("<div class='center'>", unsafe_allow_html=True)
+    if st.button("📸 Start Countdown", key="countdown_btn"):
+        start_countdown()
+    st.markdown("</div>", unsafe_allow_html=True)
 
-    # --- Camera input (always present) ---
+    # Always-visible camera input
     cam_file = st.camera_input("Smile! Click the camera button to take a photo.", key="camera_input")
     if cam_file is not None:
         st.session_state.last_camera_image = pil_from_streamlit_uploaded(cam_file)
 
-    # --- Add / Retake / Create Strip buttons ---
+    # Add / Retake / Create Strip buttons
     col1, col2, col3 = st.columns([1,1,1])
     with col1:
         if st.button("Add Photo to Strip", key="add_photo"):
             if st.session_state.last_camera_image is None:
-                st.warning("Take a photo first using the camera control above.")
+                st.warning("Take a photo first using the camera above.")
             elif len(st.session_state.photos) >= 4:
                 st.info("You already have 4 photos. Click 'Create Polaroid Strip'.")
             else:
@@ -226,7 +230,7 @@ elif st.session_state.stage == "capture":
     with col2:
         if st.button("Retake Last Photo", key="retake"):
             st.session_state.last_camera_image = None
-            st.warning("Retake: use the camera control above to take a new photo.")
+            st.warning("Retake: use the camera above to take a new photo.")
     with col3:
         if st.button("Create Polaroid Strip", key="create_strip"):
             if len(st.session_state.photos) < 4:
@@ -289,6 +293,7 @@ elif st.session_state.stage == "done":
     except Exception as e:
         st.error(f"Something went wrong while creating the strip: {e}")
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
