@@ -144,7 +144,7 @@ if st.session_state.stage == "landing":
         st.markdown("<small class='muted'>Want help with layout or fonts? I can add captions, sound, or an auto-timer.</small>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ---------- UI: Capture ---------- (updated) ----------
+# ---------- UI: Capture ---------- (fixed version) ----------
 elif st.session_state.stage == "capture":
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
     st.markdown("<h2 class='center'>Photobooth — Take 4 photos</h2>", unsafe_allow_html=True)
@@ -162,9 +162,8 @@ elif st.session_state.stage == "capture":
 
     st.write("")
 
-    # Countdown overlay
+    # --- Countdown overlay ---
     countdown_placeholder = st.empty()
-
     def countdown():
         import time
         overlay_style = """
@@ -178,20 +177,23 @@ elif st.session_state.stage == "capture":
             countdown_placeholder.markdown(overlay_style.format(count), unsafe_allow_html=True)
             time.sleep(0.8)
         countdown_placeholder.empty()
+        st.info("Countdown done! Now click the camera button below to take your photo.")
 
-    # Take Photo button
-    if st.button("📸 Take Photo", key="take_photo"):
+    # Take photo countdown button
+    if st.button("📸 Start Countdown"):
         countdown()
-        cam_file = st.camera_input("Smile! The photo will appear below", key=f"camera_input_{len(st.session_state.photos)}")
-        if cam_file is not None:
-            st.session_state.last_camera_image = pil_from_streamlit_uploaded(cam_file)
 
-    # Buttons: Add to strip / Retake / Create Strip
+    # --- Camera input (always present) ---
+    cam_file = st.camera_input("Smile! Click the camera button to take a photo.", key="camera_input")
+    if cam_file is not None:
+        st.session_state.last_camera_image = pil_from_streamlit_uploaded(cam_file)
+
+    # --- Add / Retake / Create Strip buttons ---
     col1, col2, col3 = st.columns([1,1,1])
     with col1:
         if st.button("Add Photo to Strip", key="add_photo"):
             if st.session_state.last_camera_image is None:
-                st.warning("Take a photo first using the 'Take Photo' button above.")
+                st.warning("Take a photo first using the camera control above.")
             elif len(st.session_state.photos) >= 4:
                 st.info("You already have 4 photos. Click 'Create Polaroid Strip'.")
             else:
@@ -201,7 +203,7 @@ elif st.session_state.stage == "capture":
     with col2:
         if st.button("Retake Last Photo", key="retake"):
             st.session_state.last_camera_image = None
-            st.warning("Retake: use the 'Take Photo' button above to take a new photo.")
+            st.warning("Retake: use the camera control above to take a new photo.")
     with col3:
         if st.button("Create Polaroid Strip", key="create_strip"):
             if len(st.session_state.photos) < 4:
@@ -264,4 +266,5 @@ elif st.session_state.stage == "done":
     except Exception as e:
         st.error(f"Something went wrong while creating the strip: {e}")
     st.markdown("</div>", unsafe_allow_html=True)
+
 
