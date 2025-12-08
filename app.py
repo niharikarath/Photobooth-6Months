@@ -37,13 +37,13 @@ st.markdown("""
     color: #a71d2a;
     font-size: 1.6rem;
     margin: 8px 0;
-    transform: rotate(-3deg); /* slight tilt */
-    display: block;
+    transform: rotate(-3deg);
+    display: inline-block;
 }
 
 /* Polaroid images */
 .polaroid-img {
-    width: 135px;  /* 35% bigger than 100px */
+    width: 135px;  /* 35% bigger than before */
     height: 135px;
     position: absolute;
     box-shadow: 0 4px 8px rgba(0,0,0,0.4);
@@ -51,7 +51,7 @@ st.markdown("""
 
 /* Enter button container */
 .enter-container {
-    margin-top: 250px;
+    margin-top: 260px;
 }
 
 /* Buttons */
@@ -120,7 +120,7 @@ if st.session_state.stage == "landing":
         st.session_state.stage = "capture"
         st.session_state.photos = []
         st.session_state.last_camera_image = None
-        st.stop()  # replaces experimental_rerun
+        st.experimental_rerun()  # fixed to correct rerun
 
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -151,7 +151,7 @@ elif st.session_state.stage == "capture":
             else:
                 st.session_state.photos.append(st.session_state.last_camera_image.copy())
                 st.session_state.last_camera_image = None
-                st.stop()  # replaces rerun
+                st.experimental_rerun()
     with col2:
         if st.button("Retake Last Photo", key="retake"):
             if st.session_state.photos:
@@ -160,27 +160,27 @@ elif st.session_state.stage == "capture":
             else:
                 st.warning("No photos in the strip yet. Take a new photo using the camera above.")
             st.session_state.last_camera_image = None
-            st.stop()  # replaces experimental_rerun
+            st.experimental_rerun()
     with col3:
         if st.button("Create Polaroid Strip", key="create_strip"):
             if len(st.session_state.photos) < 4:
                 st.warning(f"Take {4 - len(st.session_state.photos)} more photo(s).")
             else:
                 st.session_state.stage = "done"
-                st.stop()
+                st.experimental_rerun()
 
     if st.button("🏠 Back to Home"):
         st.session_state.photos = []
         st.session_state.last_camera_image = None
         st.session_state.stage = "landing"
-        st.stop()
+        st.experimental_rerun()
 
     st.markdown("</div>", unsafe_allow_html=True)
 
 # ---------- Done Page ----------
 elif st.session_state.stage == "done":
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
-    st.markdown("<h2>✨ Your Photobooth Strip</h2>")
+    st.markdown("<h2>✨ Your Photobooth Strip</h2>", unsafe_allow_html=True)
 
     try:
         strip_images = []
@@ -233,18 +233,18 @@ elif st.session_state.stage == "done":
                 st.session_state.photos = []
                 st.session_state.last_camera_image = None
                 st.session_state.stage = "capture"
-                st.stop()
+                st.experimental_rerun()
         with col2:
             if st.button("Add a New Strip (Keep these)"):
                 st.session_state.last_camera_image = None
                 st.session_state.stage = "capture"
-                st.stop()
+                st.experimental_rerun()
 
         if st.button("🏠 Back to Home"):
             st.session_state.photos = []
             st.session_state.last_camera_image = None
             st.session_state.stage = "landing"
-            st.stop()
+            st.experimental_rerun()
 
     except Exception as e:
         st.error(f"Something went wrong while creating the strip: {e}")
