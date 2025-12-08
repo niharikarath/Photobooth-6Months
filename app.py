@@ -298,9 +298,3 @@ with col3:
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
-
-
-
-
-
-
