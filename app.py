@@ -220,27 +220,39 @@ elif st.session_state.stage == "capture":
 elif st.session_state.stage == "done":
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
     st.markdown("<h2>✨ Your Polaroid Strip</h2>", unsafe_allow_html=True)
-    st.markdown("<p class='muted'>Here is your black & white strip. Download it, or print for a real polaroid feel.</p>", unsafe_allow_html=True)
+    st.markdown("<p class='muted'>Here is your black & white strip, just printed! Download it, or keep taking more photos.</p>", unsafe_allow_html=True)
+    
     try:
         polaroids = []
         for p in st.session_state.photos:
             bw = bw_transform(p, contrast=1.15, sharpness=1.05)
-            pol = make_polaroid(bw, photo_size=(640,640), bottom_extra=140, border_px=10, caption_text="")
+            pol = make_polaroid(bw, photo_size=(640,640), bottom_extra=140, border_px=10, caption_text="", frame_color=(0,0,0))  # Black frame
             polaroids.append(pol)
 
-        strip = make_strip(polaroids, gap=24, background=(17,17,17))
+        strip = make_strip(polaroids, gap=24, background=(0,0,0))  # black background
 
-        # ---------- Add subtle wooden background ----------
+        # ---------- Printer Animation ----------
+        placeholder = st.empty()
+        canvas_height = strip.height + 80
+        canvas_width = strip.width + 80
+        full_canvas = Image.new("RGB", (canvas_width, canvas_height), (0,0,0))
         frame_thickness = 40
-        wood_color = (222, 184, 135)  # light wood
-        canvas = Image.new("RGB", (strip.width + frame_thickness*2, strip.height + frame_thickness*2), wood_color)
-        canvas.paste(strip, (frame_thickness, frame_thickness))
 
-        st.image(canvas, use_column_width=False, caption="Polaroid strip preview")
+        # Animate strip sliding down like a printer
+        for i in range(0, strip.height + 1, 20):
+            frame = full_canvas.copy()
+            frame.paste(strip.crop((0, 0, strip.width, i)), (frame_thickness, frame_thickness))
+            placeholder.image(frame, use_column_width=False)
+            time.sleep(0.05)
+
+        # Ensure final frame is fully displayed
+        full_frame = full_canvas.copy()
+        full_frame.paste(strip, (frame_thickness, frame_thickness))
+        placeholder.image(full_frame, use_column_width=False, caption="Polaroid strip preview")
 
         # ---------- Download ----------
         buf = io.BytesIO()
-        canvas.save(buf, format="PNG")
+        full_frame.save(buf, format="PNG")
         byte_im = buf.getvalue()
         st.download_button(
             label="Download Polaroid Strip (PNG)",
@@ -249,6 +261,7 @@ elif st.session_state.stage == "done":
             mime="image/png"
         )
 
+        # ---------- Buttons ----------
         col1, col2 = st.columns([1,1])
         with col1:
             if st.button("Retake All"):
