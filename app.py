@@ -197,60 +197,55 @@ elif st.session_state.stage == "capture":
     st.markdown("</div>", unsafe_allow_html=True)
 
 # ---------- UI: Done ----------
+
+# ---------- UI: Done ----------
 elif st.session_state.stage == "done":
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
-    st.markdown("<h2>✨ Your Photobooth Strip</h2>", unsafe_allow_html=True)
+    st.markdown("<h2>✨ Your Polaroid Strip</h2>", unsafe_allow_html=True)
     st.markdown("<p class='muted'>Here is your black & white strip, just printed! Download it, or keep taking more photos.</p>", unsafe_allow_html=True)
 
     try:
-        # ---------- Generate Photobooth Strip ----------
-        def make_photobooth_strip(photos, photo_size=(400,400), gap=10, border_px=4):
-            messages = [
-                "Happy 6 months ❤️",
-                "Niharika loves Aditya 💕",
-                "Adi baby & Nihoo baby 🥰",
-                "Forever us ❤️"
-            ]
-            message = random.choice(messages)
-            processed_photos = []
+        polaroids = []
+        for p in st.session_state.photos:
+            bw = bw_transform(p, contrast=1.15, sharpness=1.05)
+            pol = make_polaroid(
+                bw, 
+                photo_size=(640, 640), 
+                bottom_extra=140, 
+                border_px=10, 
+                caption_text="", 
+                frame_color=(0, 0, 0)
+            )
+            polaroids.append(pol)
 
-            for i, photo in enumerate(photos):
-                bw = ImageOps.grayscale(photo).convert("RGB")
-                bw = ImageEnhance.Contrast(bw).enhance(1.15)
-                bw = ImageEnhance.Sharpness(bw).enhance(1.05)
+        # Add random message to the last polaroid
+        messages = [
+            "Happy 6 months!", 
+            "Niharika loves Aditya", 
+            "Adi baby ❤️ Nihoo baby"
+        ]
+        message = random.choice(messages)
 
-                photo = ImageOps.fit(bw, photo_size, Image.LANCZOS)
-                frame_w = photo_size[0] + border_px*2
-                frame_h = photo_size[1] + border_px*2
-                frame = Image.new("RGB", (frame_w, frame_h), (0,0,0))  # black border
-                frame.paste(photo, (border_px, border_px))
+        last_polaroid = polaroids[-1]
+        draw = ImageDraw.Draw(last_polaroid)
+        try:
+            font = ImageFont.truetype("DejaVuSans.ttf", 36)
+        except:
+            font = ImageFont.load_default()
+        
+        bbox = draw.textbbox((0, 0), message, font=font)
+        w = bbox[2] - bbox[0]
+        h = bbox[3] - bbox[1]
+        draw.text(
+            ((last_polaroid.width - w)//2, last_polaroid.height - h - 10),
+            message,
+            fill=(245, 235, 220),
+            font=font
+        )
 
-                if i == len(photos)-1:
-                    draw = ImageDraw.Draw(frame)
-                    try:
-                        font = ImageFont.truetype("DejaVuSans.ttf", size=24)
-                    except:
-                        font = ImageFont.load_default()
-                 bbox = draw.textbbox((0,0), message, font=font)
-                 w = bbox[2] - bbox[0]
-                 h = bbox[3] - bbox[1]
-                 draw.text(((frame_w - w)//2, frame_h - h - 5), message, fill=(245,235,220), font=font)
+        strip = make_strip(polaroids, gap=24, background=(0, 0, 0))
 
-                processed_photos.append(frame)
-
-            total_h = sum(im.height for im in processed_photos) + gap*(len(processed_photos)-1)
-            strip = Image.new("RGB", (photo_size[0]+border_px*2, total_h), (0,0,0))
-
-            y = 0
-            for im in processed_photos:
-                strip.paste(im, (0, y))
-                y += im.height + gap
-
-            return strip
-
-        strip = make_photobooth_strip(st.session_state.photos)
-
-        # ---------- Slide-down Animation ----------
+        # Show strip with slide-down animation
         buf = io.BytesIO()
         strip.save(buf, format="PNG")
         base64_img = base64.b64encode(buf.getvalue()).decode()
@@ -274,15 +269,15 @@ elif st.session_state.stage == "done":
         """
         st.markdown(html_code, unsafe_allow_html=True)
 
-        # ---------- Download Button ----------
+        # Download button
         st.download_button(
-            label="Download Photobooth Strip (PNG)",
+            label="Download Polaroid Strip (PNG)",
             data=buf.getvalue(),
-            file_name="photobooth_strip.png",
+            file_name="polaroid_strip.png",
             mime="image/png"
         )
 
-        # ---------- Bottom Buttons ----------
+        # Action buttons
         col1, col2, col3 = st.columns([1,1,1])
         with col1:
             if st.button("Retake All"):
@@ -307,4 +302,3 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
-
