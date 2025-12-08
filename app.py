@@ -216,6 +216,8 @@ elif st.session_state.stage == "capture":
                 st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
+python
+
 import base64
 
 # ---------- UI: Done ----------
@@ -286,3 +288,4 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
