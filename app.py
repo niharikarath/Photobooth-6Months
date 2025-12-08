@@ -13,59 +13,82 @@ st.markdown("""
 <style>
 /* Page background & central card */
 .stApp {
-    background-color: #f3e5d0;  /* cream background */
-    color: #111;                 
+    background-color: #111;  /* black background */
+    color: #f5e7dc;          /* cream/off-white text */
     font-family: 'Helvetica', 'Arial', sans-serif;
 }
 
 /* Central photobooth card */
 .photobooth-card {
-    background-color: #f3e5d0; /* cream */
-    border: 4px solid #a71d2a; /* deep red frame */
+    background-color: #111; /* classic black photobooth */
+    border: 4px solid #a71d2a; /* deep red frame accent */
     border-radius: 16px;
-    padding: 40px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    padding: 36px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.6);
     max-width: 780px;
     margin: 60px auto;
     text-align: center;
-    position: relative;
 }
 
-/* Romantic text */
-.love-script {
-    font-family: 'Pinyon Script', cursive;
-    color: #a71d2a;
-    font-size: 1.6rem;
-    margin: 8px 0;
+/* Header text */
+.photobooth-card h1, .photobooth-card h2 {
+    color: #f5e7dc; /* cream/off-white */
+    margin-bottom: 12px;
 }
 
-/* Polaroid images */
-.polaroid-img {
-    width: 100px;
-    height: 100px;
-    position: absolute;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-}
-
-/* Enter button container */
-.enter-container {
-    margin-top: 200px;
+/* Subtitle text */
+.photobooth-card .muted {
+    color: #e0c7b0; /* softer cream */
+    font-size: 1rem;
+    line-height: 1.5;
 }
 
 /* Buttons */
 div.stButton > button, div.stDownloadButton > button {
-    background-color: #a71d2a !important;
-    color: #f5e7dc !important;
-    border-radius: 14px !important;
-    font-weight: 700 !important;
-    padding: 25px 60px !important;
-    font-size: 24px !important;
+    background-color: #a71d2a !important; /* deep red */
+    color: #f5e7dc !important; /* cream text */
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    padding: 12px 28px !important;
+    font-size: 16px !important;
+    transition: 0.3s !important;
 }
-div.stButton > button:hover {
-    background-color: #c8323b !important;
+div.stButton > button:hover, div.stDownloadButton > button:hover {
+    background-color: #c8323b !important; /* lighter red on hover */
+}
+
+/* Landing page messages & images */
+.landing-container {
+    position: relative;
+    width: 100%;
+    height: 80vh;
+    background-color: #111;
+    overflow: hidden;
+}
+.love-script {
+    position: absolute;
+    color: #f5e7dc;
+    font-family: 'Pinyon Script', cursive;
+    font-size: 2rem;
+    white-space: nowrap;
+}
+.polaroid-img {
+    position: absolute;
+    width: 120px; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    border: 2px solid #fff;
+    border-radius: 8px;
+}
+.enter-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10rem;
+    height: 10rem; /* reserved empty space around button */
+    z-index: 10;
 }
 </style>
-<link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&display=swap" rel="stylesheet">
 """, unsafe_allow_html=True)
 
 # ---------- Session State ----------
@@ -82,11 +105,6 @@ def pil_from_streamlit_uploaded(uploaded_file):
         return None
     return Image.open(uploaded_file).convert("RGB")
 
-def img_to_datauri(path):
-    with open(path, "rb") as f:
-        b64 = base64.b64encode(f.read()).decode()
-    return f"data:image/png;base64,{b64}"
-
 def bw_transform(img: Image.Image, contrast=1.1, sharpness=1.1):
     gray = ImageOps.grayscale(img)
     rgb = gray.convert("RGB")
@@ -94,35 +112,36 @@ def bw_transform(img: Image.Image, contrast=1.1, sharpness=1.1):
     rgb = ImageEnhance.Sharpness(rgb).enhance(sharpness)
     return rgb
 
-# ---------- Landing Page ----------
+# ---------- UI: Landing ----------
 if st.session_state.stage == "landing":
-    st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
-    st.markdown('<div class="love-script">I can’t wait to kiss you in a photobooth one day</div>', unsafe_allow_html=True)
-    st.markdown('<div class="love-script">I love you so much, Aditya</div>', unsafe_allow_html=True)
-    st.markdown('<div class="love-script">Best boyfriend</div>', unsafe_allow_html=True)
-    st.markdown('<div class="love-script">Happy 6 months, my love</div>', unsafe_allow_html=True)
-
-    # Scattered PNGs
     st.markdown(f"""
-    <img src="{img_to_datauri('1.png')}" class="polaroid-img" style="top:20px; left:20px; transform:rotate(-6deg);" />
-    <img src="{img_to_datauri('2.png')}" class="polaroid-img" style="top:40px; right:20px; transform:rotate(6deg);" />
-    <img src="{img_to_datauri('3.png')}" class="polaroid-img" style="bottom:40px; left:30px; transform:rotate(-10deg);" />
-    <img src="{img_to_datauri('4.png')}" class="polaroid-img" style="bottom:50px; right:40px; transform:rotate(8deg);" />
-    <img src="{img_to_datauri('5.png')}" class="polaroid-img" style="top:150px; left:-15px; transform:rotate(4deg);" />
-    <img src="{img_to_datauri('6.png')}" class="polaroid-img" style="top:170px; right:-10px; transform:rotate(-4deg);" />
+    <div class="landing-container">
+        <!-- Romantic messages -->
+        <div class="love-script" style="top:30px; left:50px; transform: rotate(-5deg);">I can’t wait to kiss you in a photobooth one day</div>
+        <div class="love-script" style="top:150px; right:60px; transform: rotate(4deg);">I love you so much, Aditya</div>
+        <div class="love-script" style="bottom:200px; left:80px; transform: rotate(-3deg);">Best boyfriend</div>
+        <div class="love-script" style="bottom:100px; right:120px; transform: rotate(6deg);">Happy 6 months, my love</div>
+
+        <!-- Scattered Images -->
+        <img src="1.png" class="polaroid-img" style="top:20px; left:20px; transform: rotate(-6deg);" />
+        <img src="2.png" class="polaroid-img" style="top:50px; right:50px; transform: rotate(6deg);" />
+        <img src="3.png" class="polaroid-img" style="bottom:60px; left:40px; transform: rotate(-10deg);" />
+        <img src="4.png" class="polaroid-img" style="bottom:80px; right:60px; transform: rotate(8deg);" />
+        <img src="5.png" class="polaroid-img" style="top:200px; left:30px; transform: rotate(4deg);" />
+        <img src="6.png" class="polaroid-img" style="top:220px; right:40px; transform: rotate(-4deg);" />
+
+        <!-- Space for the central button -->
+        <div class="enter-container">{st.button("📸 Enter Photobooth", key="enter_landing")}</div>
+    </div>
     """, unsafe_allow_html=True)
 
-    st.markdown('<div class="enter-container"></div>', unsafe_allow_html=True)
-
-    if st.button("📸 Enter Photobooth"):
+    if st.session_state.get("enter_landing"):
         st.session_state.stage = "capture"
         st.session_state.photos = []
         st.session_state.last_camera_image = None
         st.rerun()
 
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# ---------- Capture Page ----------
+# ---------- UI: Capture ----------
 elif st.session_state.stage == "capture":
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
     st.markdown("<h2>Photobooth — Take 4 photos</h2>", unsafe_allow_html=True)
@@ -134,7 +153,7 @@ elif st.session_state.stage == "capture":
             if i < len(st.session_state.photos):
                 st.image(st.session_state.photos[i], width=140, caption=f"#{i+1}")
             else:
-                st.image(Image.new("RGB",(500,500),(200,200,200)), width=140, caption=f"#{i+1}")
+                st.image(Image.new("RGB",(500,500),(0,0,0)), width=140, caption=f"#{i+1}")
 
     cam_file = st.camera_input("Smile! Click the camera button to take a photo.", key="camera_input")
     if cam_file is not None:
@@ -159,7 +178,9 @@ elif st.session_state.stage == "capture":
             else:
                 st.warning("No photos in the strip yet. Take a new photo using the camera above.")
             st.session_state.last_camera_image = None
-            st.experimental_rerun()
+            # Use stage change trick instead of deprecated experimental_rerun
+            st.session_state.stage = "capture"
+            st.rerun()
     with col3:
         if st.button("Create Polaroid Strip", key="create_strip"):
             if len(st.session_state.photos) < 4:
@@ -176,7 +197,7 @@ elif st.session_state.stage == "capture":
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ---------- Done Page ----------
+# ---------- UI: Done ----------
 elif st.session_state.stage == "done":
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
     st.markdown("<h2>✨ Your Photobooth Strip</h2>", unsafe_allow_html=True)
@@ -186,12 +207,14 @@ elif st.session_state.stage == "done":
         strip_images = []
         for i, p in enumerate(st.session_state.photos):
             bw = bw_transform(p, contrast=1.15, sharpness=1.05)
-            extra_bottom = 80 if i == len(st.session_state.photos) - 1 else 0
+            # For the last photo, add extra space at bottom for message
+            extra_bottom = 80 if i == len(st.session_state.photos)-1 else 0
             img_w, img_h = bw.size
             new_img = Image.new("RGB", (img_w, img_h + extra_bottom), (0,0,0))
             new_img.paste(bw, (0,0))
             strip_images.append(new_img)
 
+        # Add a random message on the extra bottom of the last photo
         messages = ["Happy 6 months!", "Niharika loves Aditya", "Adi baby ❤️ Nihoo baby"]
         last_message = random.choice(messages)
         last_img = strip_images[-1]
@@ -207,6 +230,7 @@ elif st.session_state.stage == "done":
             draw.text(((last_img.width - w)//2, last_img.height - extra_bottom + (extra_bottom - h)//2),
                       last_message, fill=(245,235,220), font=font)
 
+        # Combine all images vertically into a strip
         total_h = sum(im.height for im in strip_images)
         strip_w = max(im.width for im in strip_images)
         final_strip = Image.new("RGB", (strip_w, total_h), (0,0,0))
@@ -215,11 +239,31 @@ elif st.session_state.stage == "done":
             final_strip.paste(im, (0, y))
             y += im.height
 
+        # Convert to Base64 for slide-down animation
         buf = io.BytesIO()
         final_strip.save(buf, format="PNG")
+        base64_img = base64.b64encode(buf.getvalue()).decode()
 
-        st.image(final_strip, caption="Your Photobooth Strip", use_column_width=True)
+        html_code = f"""
+        <div style="position: relative; width: fit-content; margin: auto; overflow: hidden; height: {final_strip.height}px; background-color: #000;">
+            <img src="data:image/png;base64,{base64_img}" 
+                 style="
+                    display: block; 
+                    width: auto; 
+                    animation: slideDown 1.2s ease-out forwards;
+                    transform: translateY(-{final_strip.height}px);
+                 "/>
+        </div>
+        <style>
+        @keyframes slideDown {{
+            0% {{ transform: translateY(-{final_strip.height}px); }}
+            100% {{ transform: translateY(0); }}
+        }}
+        </style>
+        """
+        st.markdown(html_code, unsafe_allow_html=True)
 
+        # Download button
         st.download_button(
             label="Download Photobooth Strip (PNG)",
             data=buf.getvalue(),
@@ -227,6 +271,7 @@ elif st.session_state.stage == "done":
             mime="image/png"
         )
 
+        # Buttons
         col1, col2 = st.columns([1,1])
         with col1:
             if st.button("Retake All"):
@@ -236,10 +281,12 @@ elif st.session_state.stage == "done":
                 st.rerun()
         with col2:
             if st.button("Add a New Strip (Keep these)"):
+                st.session_state.photos = []
                 st.session_state.last_camera_image = None
                 st.session_state.stage = "capture"
                 st.rerun()
 
+        # Back to Home
         if st.button("🏠 Back to Home"):
             st.session_state.photos = []
             st.session_state.last_camera_image = None
