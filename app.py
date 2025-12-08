@@ -72,6 +72,8 @@ if "photos" not in st.session_state:
     st.session_state.photos = []
 if "last_camera_image" not in st.session_state:
     st.session_state.last_camera_image = None
+if "camera_counter" not in st.session_state:
+    st.session_state.camera_counter = 0
 
 # ---------- Helper Functions ----------
 def pil_from_streamlit_uploaded(uploaded_file):
@@ -128,7 +130,6 @@ def bw_transform(img: Image.Image, contrast=1.1, sharpness=1.1):
 def start_countdown():
     countdown_placeholder = st.empty()
     
-    # Base overlay style with opacity placeholder {}
     overlay_style = """
     <div style='position: fixed; top:0; left:0; width:100%; height:100%;
                 background-color: rgba(0,0,0,0.6); z-index: 900;
@@ -137,7 +138,6 @@ def start_countdown():
         <h1 style='color:white; font-size:140px; margin:0; opacity:{}'>{}</h1>
     </div>
     """
-    
     flash_style = """
     <div style='position: fixed; top:0; left:0; width:100%; height:100%;
                 background-color: rgba(255,255,255,0.9); z-index: 999;
@@ -146,15 +146,10 @@ def start_countdown():
     """
     
     for count in ["3", "2", "1", "📸"]:
-        # simulate fade-in in 5 steps
-        for opacity in [0.2, 0.4, 0.6, 0.8, 1.0]:
+        for opacity in [0.2,0.4,0.6,0.8,1.0]:
             countdown_placeholder.markdown(overlay_style.format(opacity, count), unsafe_allow_html=True)
             time.sleep(0.08)
-        
-        # Hold the number briefly
         time.sleep(0.3)
-        
-        # On 📸 show flash effect
         if count == "📸":
             countdown_placeholder.markdown(flash_style, unsafe_allow_html=True)
             time.sleep(0.15)
@@ -163,7 +158,6 @@ def start_countdown():
     
     countdown_placeholder.empty()
     st.info("Countdown finished! Click the camera button to take a photo.")
-
 
 # ---------- UI: Landing ----------
 if st.session_state.stage == "landing":
@@ -199,8 +193,11 @@ elif st.session_state.stage == "capture":
     if st.button("📸 Start Countdown", key="countdown_btn"):
         start_countdown()
 
-    # Camera input
-    cam_file = st.camera_input("Smile! Click the camera button to take a photo.", key="camera_input")
+    # Camera input with counter to reset
+    cam_file = st.camera_input(
+        "Smile! Click the camera button to take a photo.",
+        key=f"camera_input_{st.session_state.camera_counter}"
+    )
     if cam_file is not None:
         st.session_state.last_camera_image = pil_from_streamlit_uploaded(cam_file)
 
@@ -219,7 +216,9 @@ elif st.session_state.stage == "capture":
     with col2:
         if st.button("Retake Last Photo", key="retake"):
             st.session_state.last_camera_image = None
-            st.warning("Retake: use the camera above to take a new photo.")
+            st.session_state.camera_counter += 1  # reset camera widget
+            st.warning("Retake: use the camera control below to take a new photo.")
+            st.rerun()
     with col3:
         if st.button("Create Polaroid Strip", key="create_strip"):
             if len(st.session_state.photos) < 4:
@@ -277,8 +276,6 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
-
-
 
 
 
