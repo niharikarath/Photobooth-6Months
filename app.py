@@ -87,15 +87,22 @@ def make_polaroid(photo: Image.Image,
     frame.paste(photo, (border_px, border_px))
     draw = ImageDraw.Draw(frame)
     draw.rectangle([0,0,frame_w-1, frame_h-1], outline=(200,200,200), width=1)
+
     if caption_text:
         try:
             font = ImageFont.truetype("DejaVuSans.ttf", size=28)
         except Exception:
             font = ImageFont.load_default()
-        w, h = draw.textsize(caption_text, font=font)
+
+        # Pillow ≥10 compatible
+        bbox = draw.textbbox((0,0), caption_text, font=font)
+        w = bbox[2] - bbox[0]
+        h = bbox[3] - bbox[1]
+
         text_x = (frame_w - w) // 2
         text_y = photo_size[1] + border_px + (bottom_extra - h) // 2
         draw.text((text_x, text_y), caption_text, fill=(80,80,80), font=font)
+
     return frame
 
 def make_strip(polaroids, gap=18, background=(0,0,0)):
@@ -141,7 +148,6 @@ elif st.session_state.stage == "capture":
     st.markdown("<h2>Photobooth — Take 4 photos</h2>", unsafe_allow_html=True)
     st.markdown("<p class='muted'>Click the camera icon to open your webcam. Take 4 photos — try different expressions!</p>", unsafe_allow_html=True)
 
-    # Show thumbnails
     cols = st.columns(4)
     for i in range(4):
         with cols[i]:
@@ -150,12 +156,10 @@ elif st.session_state.stage == "capture":
             else:
                 st.image(Image.new("RGB",(500,500),(0,0,0)), width=140, caption=f"#{i+1}")
 
-    # Camera input
     cam_file = st.camera_input("Smile! Click the camera button to take a photo.", key="camera_input")
     if cam_file is not None:
         st.session_state.last_camera_image = pil_from_streamlit_uploaded(cam_file)
 
-    # Add / Retake / Create buttons
     col1, col2, col3 = st.columns([1,1,1])
     with col1:
         if st.button("Add Photo to Strip", key="add_photo"):
@@ -184,7 +188,6 @@ elif st.session_state.stage == "capture":
                 st.session_state.stage = "done"
                 st.rerun()
 
-    # Back to Home button
     if st.button("🏠 Back to Home"):
         st.session_state.photos = []
         st.session_state.last_camera_image = None
@@ -194,43 +197,32 @@ elif st.session_state.stage == "capture":
     st.markdown("</div>", unsafe_allow_html=True)
 
 # ---------- UI: Done ----------
-
 elif st.session_state.stage == "done":
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
     st.markdown("<h2>✨ Your Polaroid Strip</h2>", unsafe_allow_html=True)
     st.markdown("<p class='muted'>Here is your black & white strip, just printed! Download it, or keep taking more photos.</p>", unsafe_allow_html=True)
 
     try:
-        messages = [
-            "Happy 6 Months ❤️",
-            "Niharika loves Aditya 🥰",
-            "Adi Baby 💕",
-            "Nihoo Baby 😘",
-            "Forever Us 💖",
-            "Polaroid Memories 📸",
-        ]
-
         polaroids = []
         for i, p in enumerate(st.session_state.photos):
             bw = bw_transform(p, contrast=1.15, sharpness=1.05)
-            
-            # Only add a random message to the last photo
-            caption = random.choice(messages) if i == len(st.session_state.photos)-1 else ""
-            
-            pol = make_polaroid(
-                bw,
-                photo_size=(640,640),
-                bottom_extra=140,
-                border_px=10,
-                caption_text=caption,
-                frame_color=(0,0,0)
-            )
+
+            caption = ""
+            # Only last polaroid gets a random message
+            if i == len(st.session_state.photos) - 1:
+                messages = [
+                    "Happy 6 months!",
+                    "Niharika loves Aditya ❤️",
+                    "Adi baby, Nihoo baby 😘",
+                    "Forever & always 💕"
+                ]
+                caption = random.choice(messages)
+
+            pol = make_polaroid(bw, photo_size=(640,640), bottom_extra=140, border_px=10, caption_text=caption, frame_color=(0,0,0))
             polaroids.append(pol)
 
-        # Create the final strip
         strip = make_strip(polaroids, gap=24, background=(0,0,0))
 
-        # Convert to Base64 for slide-down animation
         buf = io.BytesIO()
         strip.save(buf, format="PNG")
         base64_img = base64.b64encode(buf.getvalue()).decode()
@@ -238,12 +230,8 @@ elif st.session_state.stage == "done":
         html_code = f"""
         <div style="position: relative; width: fit-content; margin: auto; overflow: hidden; height: {strip.height + 20}px; background-color: #000;">
             <img src="data:image/png;base64,{base64_img}" 
-                 style="
-                    display: block; 
-                    width: auto; 
-                    animation: slideDown 1.2s ease-out forwards;
-                    transform: translateY(-{strip.height}px);
-                 "/>
+                 style="display: block; width: auto; animation: slideDown 1.2s ease-out forwards;
+                        transform: translateY(-{strip.height}px);"/>
         </div>
         <style>
         @keyframes slideDown {{
@@ -254,7 +242,6 @@ elif st.session_state.stage == "done":
         """
         st.markdown(html_code, unsafe_allow_html=True)
 
-        # Download button
         st.download_button(
             label="Download Polaroid Strip (PNG)",
             data=buf.getvalue(),
@@ -262,7 +249,6 @@ elif st.session_state.stage == "done":
             mime="image/png"
         )
 
-        # Retake / New Strip buttons
         col1, col2 = st.columns([1,1])
         with col1:
             if st.button("Retake All"):
@@ -277,7 +263,6 @@ elif st.session_state.stage == "done":
                 st.session_state.stage = "capture"
                 st.rerun()
 
-        # Back to Home button
         if st.button("🏠 Back to Home"):
             st.session_state.photos = []
             st.session_state.last_camera_image = None
