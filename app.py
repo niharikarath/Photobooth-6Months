@@ -197,32 +197,60 @@ elif st.session_state.stage == "capture":
     st.markdown("</div>", unsafe_allow_html=True)
 
 # ---------- UI: Done ----------
+
+# ---------- UI: Done ----------
 elif st.session_state.stage == "done":
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
-    st.markdown("<h2>✨ Your Polaroid Strip</h2>", unsafe_allow_html=True)
+    st.markdown("<h2>✨ Your Photobooth Strip</h2>", unsafe_allow_html=True)
     st.markdown("<p class='muted'>Here is your black & white strip, just printed! Download it, or keep taking more photos.</p>", unsafe_allow_html=True)
 
     try:
-        polaroids = []
-        for i, p in enumerate(st.session_state.photos):
-            bw = bw_transform(p, contrast=1.15, sharpness=1.05)
+        # ---------- Generate Photobooth Strip ----------
+        def make_photobooth_strip(photos, photo_size=(400,400), gap=10, border_px=4):
+            messages = [
+                "Happy 6 months ❤️",
+                "Niharika loves Aditya 💕",
+                "Adi baby & Nihoo baby 🥰",
+                "Forever us ❤️"
+            ]
+            message = random.choice(messages)
+            processed_photos = []
 
-            caption = ""
-            # Only last polaroid gets a random message
-            if i == len(st.session_state.photos) - 1:
-                messages = [
-                    "Happy 6 months!",
-                    "Niharika loves Aditya ❤️",
-                    "Adi baby, Nihoo baby 😘",
-                    "Forever & always 💕"
-                ]
-                caption = random.choice(messages)
+            for i, photo in enumerate(photos):
+                bw = ImageOps.grayscale(photo).convert("RGB")
+                bw = ImageEnhance.Contrast(bw).enhance(1.15)
+                bw = ImageEnhance.Sharpness(bw).enhance(1.05)
 
-            pol = make_polaroid(bw, photo_size=(640,640), bottom_extra=140, border_px=10, caption_text=caption, frame_color=(0,0,0))
-            polaroids.append(pol)
+                photo = ImageOps.fit(bw, photo_size, Image.LANCZOS)
+                frame_w = photo_size[0] + border_px*2
+                frame_h = photo_size[1] + border_px*2
+                frame = Image.new("RGB", (frame_w, frame_h), (0,0,0))  # black border
+                frame.paste(photo, (border_px, border_px))
 
-        strip = make_strip(polaroids, gap=24, background=(0,0,0))
+                if i == len(photos)-1:
+                    draw = ImageDraw.Draw(frame)
+                    try:
+                        font = ImageFont.truetype("DejaVuSans.ttf", size=24)
+                    except:
+                        font = ImageFont.load_default()
+                    w, h = font.getsize(message)
+                    draw.text(((frame_w - w)//2, frame_h - h - 5), message, fill=(245,235,220), font=font)
 
+                processed_photos.append(frame)
+
+            total_h = sum(im.height for im in processed_photos) + gap*(len(processed_photos)-1)
+            strip = Image.new("RGB", (photo_size[0]+border_px*2, total_h), (0,0,0))
+
+            y = 0
+            for im in processed_photos:
+                strip.paste(im, (0, y))
+                y += im.height + gap
+
+            return strip
+
+        strip = make_photobooth_strip(st.session_state.photos)
+
+        # ---------- Slide-down Animation ----------
         buf = io.BytesIO()
         strip.save(buf, format="PNG")
         base64_img = base64.b64encode(buf.getvalue()).decode()
@@ -230,8 +258,12 @@ elif st.session_state.stage == "done":
         html_code = f"""
         <div style="position: relative; width: fit-content; margin: auto; overflow: hidden; height: {strip.height + 20}px; background-color: #000;">
             <img src="data:image/png;base64,{base64_img}" 
-                 style="display: block; width: auto; animation: slideDown 1.2s ease-out forwards;
-                        transform: translateY(-{strip.height}px);"/>
+                 style="
+                    display: block; 
+                    width: auto; 
+                    animation: slideDown 1.2s ease-out forwards;
+                    transform: translateY(-{strip.height}px);
+                 "/>
         </div>
         <style>
         @keyframes slideDown {{
@@ -242,14 +274,16 @@ elif st.session_state.stage == "done":
         """
         st.markdown(html_code, unsafe_allow_html=True)
 
+        # ---------- Download Button ----------
         st.download_button(
-            label="Download Polaroid Strip (PNG)",
+            label="Download Photobooth Strip (PNG)",
             data=buf.getvalue(),
-            file_name="polaroid_strip.png",
+            file_name="photobooth_strip.png",
             mime="image/png"
         )
 
-        col1, col2 = st.columns([1,1])
+        # ---------- Bottom Buttons ----------
+        col1, col2, col3 = st.columns([1,1,1])
         with col1:
             if st.button("Retake All"):
                 st.session_state.photos = []
@@ -262,12 +296,12 @@ elif st.session_state.stage == "done":
                 st.session_state.last_camera_image = None
                 st.session_state.stage = "capture"
                 st.rerun()
-
-        if st.button("🏠 Back to Home"):
-            st.session_state.photos = []
-            st.session_state.last_camera_image = None
-            st.session_state.stage = "landing"
-            st.rerun()
+        with col3:
+            if st.button("🏠 Back to Home"):
+                st.session_state.photos = []
+                st.session_state.last_camera_image = None
+                st.session_state.stage = "landing"
+                st.rerun()
 
     except Exception as e:
         st.error(f"Something went wrong while creating the strip: {e}")
