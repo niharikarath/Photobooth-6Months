@@ -227,18 +227,23 @@ elif st.session_state.stage == "done":
             )
             polaroids.append(pol)
 
-        # Combine all polaroids into one strip
+        # Create the final strip
         strip = make_strip(polaroids, gap=24, background=(0,0,0))
 
-        # Convert strip to Base64 for slide-down animation
+        # Convert to Base64 for slide-down animation
         buf = io.BytesIO()
         strip.save(buf, format="PNG")
-        img_b64 = base64.b64encode(buf.getvalue()).decode()
+        base64_img = base64.b64encode(buf.getvalue()).decode()
 
         html_code = f"""
-        <div style="position: relative; width: fit-content; margin: auto; overflow: hidden; background-color: #000; height: {strip.height}px;">
-            <img src="data:image/png;base64,{img_b64}" 
-                 style="display: block; width: auto; transform: translateY(-{strip.height}px); animation: slideDown 1.2s ease-out forwards;" />
+        <div style="position: relative; width: fit-content; margin: auto; overflow: hidden; height: {strip.height + 20}px; background-color: #000;">
+            <img src="data:image/png;base64,{base64_img}" 
+                 style="
+                    display: block; 
+                    width: auto; 
+                    animation: slideDown 1.2s ease-out forwards;
+                    transform: translateY(-{strip.height}px);
+                 "/>
         </div>
         <style>
         @keyframes slideDown {{
@@ -249,7 +254,7 @@ elif st.session_state.stage == "done":
         """
         st.markdown(html_code, unsafe_allow_html=True)
 
-        # Download
+        # Download button
         st.download_button(
             label="Download Polaroid Strip (PNG)",
             data=buf.getvalue(),
@@ -257,7 +262,7 @@ elif st.session_state.stage == "done":
             mime="image/png"
         )
 
-        # Buttons
+        # Retake / New Strip buttons
         col1, col2 = st.columns([1,1])
         with col1:
             if st.button("Retake All"):
@@ -283,5 +288,3 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
-
-
