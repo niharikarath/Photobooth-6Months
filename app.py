@@ -1,5 +1,9 @@
 # app.py
 import streamlit as st
+
+st.title("Photobooth Test 🖤")
+st.write("If you see this, your app runs perfectly!")
+
 from PIL import Image, ImageOps, ImageEnhance, ImageFilter, ImageDraw, ImageFont
 import io
 import random
@@ -246,3 +250,4 @@ elif st.session_state.stage == "done":
     except Exception as e:
         st.error(f"Something went wrong while creating the strip: {e}")
     st.markdown("</div>", unsafe_allow_html=True)
+
