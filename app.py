@@ -12,17 +12,17 @@ st.set_page_config(page_title="Photobooth — 6 Monthiversary", page_icon="📸"
 # ---------- Styling ----------
 st.markdown("""
 <style>
-/* Page background & central card */
+/* Page background: cream with subtle red gradient */
 .stApp {
-    background-color: #111;  /* black background */
-    color: #f5e7dc;          /* cream/off-white text */
+    background: linear-gradient(180deg, #f5e7dc 0%, #f2d5d0 100%);
+    color: #111;
     font-family: 'Helvetica', 'Arial', sans-serif;
 }
 
 /* Central photobooth card */
 .photobooth-card {
-    background-color: #111; /* classic black photobooth */
-    border: 4px solid #a71d2a; /* deep red frame accent */
+    background-color: #111;
+    border: 4px solid #a71d2a;
     border-radius: 16px;
     padding: 36px;
     box-shadow: 0 8px 25px rgba(0,0,0,0.6);
@@ -33,21 +33,21 @@ st.markdown("""
 
 /* Header text */
 .photobooth-card h1, .photobooth-card h2 {
-    color: #f5e7dc; /* cream/off-white */
+    color: #f5e7dc;
     margin-bottom: 12px;
 }
 
 /* Subtitle text */
 .photobooth-card .muted {
-    color: #e0c7b0; /* softer cream */
+    color: #e0c7b0;
     font-size: 1rem;
     line-height: 1.5;
 }
 
 /* Buttons */
 div.stButton > button, div.stDownloadButton > button {
-    background-color: #a71d2a !important; /* deep red */
-    color: #f5e7dc !important; /* cream text */
+    background-color: #a71d2a !important;
+    color: #f5e7dc !important;
     border-radius: 10px !important;
     font-weight: 600 !important;
     padding: 12px 28px !important;
@@ -55,14 +55,14 @@ div.stButton > button, div.stDownloadButton > button {
     transition: 0.3s !important;
 }
 div.stButton > button:hover, div.stDownloadButton > button:hover {
-    background-color: #c8323b !important; /* lighter red on hover */
+    background-color: #c8323b !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # ---------- Session State ----------
 if "stage" not in st.session_state:
-    st.session_state.stage = "landing"  # landing, capture, done
+    st.session_state.stage = "landing"
 if "photos" not in st.session_state:
     st.session_state.photos = []
 if "last_camera_image" not in st.session_state:
@@ -185,11 +185,26 @@ elif st.session_state.stage == "capture":
                 st.rerun()
 
     # Back to Home button
-    if st.button("🏠 Back to Home"):
-        st.session_state.photos = []
-        st.session_state.last_camera_image = None
-        st.session_state.stage = "landing"
-        st.rerun()
+    st.markdown(
+        """
+        <div style="text-align:center; margin-top:20px;">
+            <button onclick="window.location.reload();" 
+                    style="
+                        background-color:#a71d2a;
+                        color:#f5e7dc;
+                        border:none;
+                        border-radius:10px;
+                        font-weight:600;
+                        padding:12px 28px;
+                        font-size:16px;
+                        cursor:pointer;
+                        transition:0.3s;">
+                🏠 Back to Home
+            </button>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     st.markdown("</div>", unsafe_allow_html=True)
 
@@ -257,11 +272,26 @@ elif st.session_state.stage == "done":
                 st.rerun()
 
         # Back to Home button
-        if st.button("🏠 Back to Home"):
-            st.session_state.photos = []
-            st.session_state.last_camera_image = None
-            st.session_state.stage = "landing"
-            st.rerun()
+        st.markdown(
+            """
+            <div style="text-align:center; margin-top:20px;">
+                <button onclick="window.location.reload();" 
+                        style="
+                            background-color:#a71d2a;
+                            color:#f5e7dc;
+                            border:none;
+                            border-radius:10px;
+                            font-weight:600;
+                            padding:12px 28px;
+                            font-size:16px;
+                            cursor:pointer;
+                            transition:0.3s;">
+                    🏠 Back to Home
+                </button>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
     except Exception as e:
         st.error(f"Something went wrong while creating the strip: {e}")
