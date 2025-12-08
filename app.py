@@ -227,16 +227,21 @@ elif st.session_state.stage == "done":
             bw = bw_transform(p, contrast=1.15, sharpness=1.05)
             pol = make_polaroid(bw, photo_size=(640,640), bottom_extra=140, border_px=10, caption_text="")
             polaroids.append(pol)
+
         strip = make_strip(polaroids, gap=24, background=(17,17,17))
+
+        # ---------- Add subtle wooden background ----------
         frame_thickness = 40
-        canvas = Image.new("RGB", (strip.width + frame_thickness*2, strip.height + frame_thickness*2), (0,0,0))
+        wood_color = (222, 184, 135)  # light wood
+        canvas = Image.new("RGB", (strip.width + frame_thickness*2, strip.height + frame_thickness*2), wood_color)
         canvas.paste(strip, (frame_thickness, frame_thickness))
+
         st.image(canvas, use_column_width=False, caption="Polaroid strip preview")
 
+        # ---------- Download ----------
         buf = io.BytesIO()
         canvas.save(buf, format="PNG")
         byte_im = buf.getvalue()
-
         st.download_button(
             label="Download Polaroid Strip (PNG)",
             data=byte_im,
@@ -257,6 +262,8 @@ elif st.session_state.stage == "done":
                 st.session_state.last_camera_image = None
                 st.session_state.stage = "capture"
                 st.rerun()
+
     except Exception as e:
         st.error(f"Something went wrong while creating the strip: {e}")
+
     st.markdown("</div>", unsafe_allow_html=True)
