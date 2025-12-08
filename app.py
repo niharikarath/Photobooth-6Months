@@ -199,12 +199,31 @@ elif st.session_state.stage == "done":
     st.markdown("<h2>✨ Your Polaroid Strip</h2>", unsafe_allow_html=True)
     st.markdown("<p class='muted'>Here is your black & white strip, just printed! Download it, or keep taking more photos.</p>", unsafe_allow_html=True)
 
-    try:
-        polaroids = []
-        for p in st.session_state.photos:
-            bw = bw_transform(p, contrast=1.15, sharpness=1.05)
-            pol = make_polaroid(bw, photo_size=(640,640), bottom_extra=140, border_px=10, caption_text="", frame_color=(0,0,0))
-            polaroids.append(pol)
+  messages = [
+    "Happy 6 Months ❤️",
+    "Niharika loves Aditya 🥰",
+    "Adi Baby 💕",
+    "Nihoo Baby 😘",
+    "Forever Us 💖",
+    "Polaroid Memories 📸",
+]
+
+polaroids = []
+for i, p in enumerate(st.session_state.photos):
+    bw = bw_transform(p, contrast=1.15, sharpness=1.05)
+    
+    # Only add a random message to the last photo
+    caption = random.choice(messages) if i == len(st.session_state.photos)-1 else ""
+    
+    pol = make_polaroid(
+        bw,
+        photo_size=(640,640),
+        bottom_extra=140,
+        border_px=10,
+        caption_text=caption,
+        frame_color=(0,0,0)
+    )
+    polaroids.append(pol)
 
         # Combine all polaroids into one strip
         strip = make_strip(polaroids, gap=24, background=(0,0,0))
@@ -262,3 +281,4 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
