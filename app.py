@@ -259,23 +259,46 @@ elif st.session_state.stage == "done":
             mime="image/png"
         )
 
-        col1, col2 = st.columns([1,1])
-        with col1:
-            if st.button("Retake All"):
-                st.session_state.photos = []
-                st.session_state.last_camera_image = None
-                st.session_state.stage = "capture"
-                st.rerun()
-        with col2:
-            if st.button("Add a New Strip (Keep these)"):
-                st.session_state.photos = []
-                st.session_state.last_camera_image = None
-                st.session_state.stage = "capture"
-                st.rerun()
+    # ---------- Add / Retake / Create buttons ----------
+col1, col2, col3 = st.columns([1,1,1])
+
+with col1:
+    if st.button("Add Photo to Strip", key="add_photo"):
+        if st.session_state.last_camera_image is None:
+            st.warning("Take a photo first using the camera above.")
+        elif len(st.session_state.photos) >= 4:
+            st.info("You already have 4 photos. Click 'Create Polaroid Strip'.")
+        else:
+            st.session_state.photos.append(st.session_state.last_camera_image.copy())
+            st.session_state.last_camera_image = None
+            st.rerun()
+
+with col2:
+    if st.button("Retake Last Photo", key="retake"):
+        # Remove last photo from the strip if any
+        if st.session_state.photos:
+            st.session_state.photos.pop()
+            st.warning("Removed last photo from the strip. Take a new one using the camera below.")
+        else:
+            st.warning("No photos in the strip yet. Take a new photo using the camera below.")
+        # Reset camera input so user can retake
+        st.session_state.last_camera_image = None
+        st.session_state.camera_counter += 1
+        st.rerun()
+
+with col3:
+    if st.button("Create Polaroid Strip", key="create_strip"):
+        if len(st.session_state.photos) < 4:
+            st.warning(f"Take {4 - len(st.session_state.photos)} more photo(s).")
+        else:
+            st.session_state.stage = "done"
+            st.rerun()
+
     except Exception as e:
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
