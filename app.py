@@ -217,24 +217,23 @@ elif st.session_state.stage == "capture":
 
     st.write("")
 
-    # Countdown placeholder (overlay)
-    countdown_placeholder = st.empty()
-
-    def start_countdown():
-        import time
-        overlay_style = """
-        <div style='position: fixed; top:0; left:0; width:100%; height:100%;
-                    background-color: rgba(0,0,0,0.6); z-index:9999;
-                    display:flex; justify-content:center; align-items:center;
-                    flex-direction: column;'>
-            <h1 style='color:white; font-size:140px; margin:0;'>{}</h1>
-        </div>
-        """
-        for count in ["3", "2", "1", "📸"]:
-            countdown_placeholder.markdown(overlay_style.format(count), unsafe_allow_html=True)
-            time.sleep(0.8)
-        countdown_placeholder.empty()
-        st.info("Countdown finished! Click the camera button to take your photo.")
+# --- Countdown overlay ---
+countdown_placeholder = st.empty()
+def start_countdown():
+    import time
+    overlay_style = """
+    <div style='position: fixed; top:0; left:0; width:100%; height:100%;
+                background-color: rgba(0,0,0,0.6); z-index: 900;  /* lower than buttons */
+                display:flex; justify-content:center; align-items:center;
+                flex-direction: column;'>
+        <h1 style='color:white; font-size:140px; margin:0;'>{}</h1>
+    </div>
+    """
+    for count in ["3", "2", "1", "📸"]:
+        countdown_placeholder.markdown(overlay_style.format(count), unsafe_allow_html=True)
+        time.sleep(0.8)
+    countdown_placeholder.empty()  # remove overlay completely
+    st.info("Countdown finished! Click the camera button to take a photo.")
 
     # Start Countdown button
     st.markdown("<div class='center'>", unsafe_allow_html=True)
@@ -325,6 +324,7 @@ elif st.session_state.stage == "done":
     except Exception as e:
         st.error(f"Something went wrong while creating the strip: {e}")
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
