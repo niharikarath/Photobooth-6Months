@@ -144,7 +144,7 @@ if st.session_state.stage == "landing":
         st.markdown("<small class='muted'>Want help with layout or fonts? I can add captions, sound, or an auto-timer.</small>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ---------- UI: Capture ---------- (updated part only)
+# ---------- UI: Capture ---------- (updated) ----------
 elif st.session_state.stage == "capture":
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
     st.markdown("<h2 class='center'>Photobooth — Take 4 photos</h2>", unsafe_allow_html=True)
@@ -161,38 +161,47 @@ elif st.session_state.stage == "capture":
                 st.image(Image.new("RGB", (500,500), (240,240,240)), width=140, caption=f"#{i+1}")
 
     st.write("")
-    cam_file = st.camera_input("Smile 😄 — click the camera button below to take a picture", key="camera_input")
 
-    if cam_file is not None:
-        st.session_state.last_camera_image = pil_from_streamlit_uploaded(cam_file)
+    # Countdown overlay
+    countdown_placeholder = st.empty()
 
-    col1, col2, col3 = st.columns([1,1,1])
-    
-    # 3-2-1 Countdown overlay function
-    def countdown_overlay():
+    def countdown():
         import time
-        placeholder = st.empty()
+        overlay_style = """
+        <div style='position: fixed; top:0; left:0; width:100%; height:100%; 
+                    background-color: rgba(0,0,0,0.5); z-index:1000; 
+                    display:flex; justify-content:center; align-items:center;'>
+            <h1 style='color:white; font-size:120px; margin:0;'>{}</h1>
+        </div>
+        """
         for count in ["3", "2", "1", "📸"]:
-            placeholder.markdown(f"<h1 style='text-align:center; font-size:72px;'>{count}</h1>", unsafe_allow_html=True)
+            countdown_placeholder.markdown(overlay_style.format(count), unsafe_allow_html=True)
             time.sleep(0.8)
-        placeholder.empty()
+        countdown_placeholder.empty()
 
+    # Take Photo button
+    if st.button("📸 Take Photo", key="take_photo"):
+        countdown()
+        cam_file = st.camera_input("Smile! The photo will appear below", key=f"camera_input_{len(st.session_state.photos)}")
+        if cam_file is not None:
+            st.session_state.last_camera_image = pil_from_streamlit_uploaded(cam_file)
+
+    # Buttons: Add to strip / Retake / Create Strip
+    col1, col2, col3 = st.columns([1,1,1])
     with col1:
         if st.button("Add Photo to Strip", key="add_photo"):
             if st.session_state.last_camera_image is None:
-                st.warning("Take a picture first using the camera control above.")
+                st.warning("Take a photo first using the 'Take Photo' button above.")
             elif len(st.session_state.photos) >= 4:
                 st.info("You already have 4 photos. Click 'Create Polaroid Strip'.")
             else:
-                # Countdown before adding photo
-                countdown_overlay()
                 st.session_state.photos.append(st.session_state.last_camera_image.copy())
                 st.session_state.last_camera_image = None
                 st.rerun()
     with col2:
         if st.button("Retake Last Photo", key="retake"):
             st.session_state.last_camera_image = None
-            st.warning("Retake: use the camera control above to take a new photo.")
+            st.warning("Retake: use the 'Take Photo' button above to take a new photo.")
     with col3:
         if st.button("Create Polaroid Strip", key="create_strip"):
             if len(st.session_state.photos) < 4:
@@ -200,6 +209,7 @@ elif st.session_state.stage == "capture":
             else:
                 st.session_state.stage = "done"
                 st.rerun()
+
     st.markdown("</div>", unsafe_allow_html=True)
 
     # ---------- UI: Done (compose the strip) ---------- (updated for black frame)
@@ -254,3 +264,4 @@ elif st.session_state.stage == "done":
     except Exception as e:
         st.error(f"Something went wrong while creating the strip: {e}")
     st.markdown("</div>", unsafe_allow_html=True)
+
