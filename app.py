@@ -10,6 +10,38 @@ import random
 
 st.set_page_config(page_title="Photobooth — 6 Monthiversary", page_icon="📸", layout="centered")
 
+# ---------- Global button fix ----------
+st.markdown("""
+<style>
+/* Make all buttons fully visible, styled, and higher z-index */
+div.stButton > button, 
+div.stDownloadButton > button {
+    display: inline-block !important;
+    opacity: 1 !important;
+    min-width: 160px !important;
+    min-height: 50px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: #fff !important;
+    background-color: #111 !important;
+    border-radius: 8px !important;
+    border: none !important;
+    transition: 0.3s !important;
+    z-index: 9999 !important;  /* ensure clickable above overlays */
+}
+div.stButton > button:hover,
+div.stDownloadButton > button:hover {
+    background-color: #555 !important;
+}
+
+/* Center the download button if needed */
+div.stDownloadButton {
+    text-align: center;
+    margin-top: 10px;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # ---------- Styling ----------
 st.markdown(
     """
@@ -293,6 +325,7 @@ elif st.session_state.stage == "done":
     except Exception as e:
         st.error(f"Something went wrong while creating the strip: {e}")
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
