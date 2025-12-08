@@ -137,7 +137,7 @@ if st.session_state.stage == "landing":
         if st.button("Enter Photobooth", key="enter", help="Click to start the photobooth"):
             st.session_state.photos = []
             st.session_state.stage = "capture"
-            st.experimental_rerun()
+            st.rerun()
     with col2:
         st.write("")
         st.write("")
@@ -250,4 +250,5 @@ elif st.session_state.stage == "done":
     except Exception as e:
         st.error(f"Something went wrong while creating the strip: {e}")
     st.markdown("</div>", unsafe_allow_html=True)
+
 
