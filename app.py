@@ -195,8 +195,7 @@ elif st.session_state.stage == "capture":
         st.rerun()
 
     st.markdown("</div>", unsafe_allow_html=True)
-
-
+    
 # ---------- UI: Done ----------
 
 elif st.session_state.stage == "done":
@@ -205,63 +204,57 @@ elif st.session_state.stage == "done":
     st.markdown("<p class='muted'>Here is your black & white strip, just printed! Download it, or keep taking more photos.</p>", unsafe_allow_html=True)
 
     try:
-        # Resize all photos to the same width for the strip
-        strip_width = 360
+        # Convert all photos to BW and add polaroid-style frame
         resized_photos = []
         for p in st.session_state.photos:
             bw = bw_transform(p, contrast=1.15, sharpness=1.05)
-            w_percent = (strip_width / float(bw.width))
-            h_size = int((float(bw.height) * float(w_percent)))
-            resized_photos.append(bw.resize((strip_width, h_size)))
+            pol = make_polaroid(bw, photo_size=(640,640), bottom_extra=60, border_px=10, caption_text="", frame_color=(0,0,0))
+            resized_photos.append(pol)
 
-        # Add a random message to the last photo
+        # Add a random message to the last photo with extra bottom space
         messages = ["Happy 6 months!", "Niharika loves Aditya", "Adi baby ❤️ Nihoo baby"]
         last_message = random.choice(messages)
-        last_photo = resized_photos[-1].copy()
-        draw = ImageDraw.Draw(last_photo)
+        last_photo = resized_photos[-1]
+        extra_border = 60  # extra space at bottom for the message
+        new_h = last_photo.height + extra_border
+        photo_with_border = Image.new("RGB", (last_photo.width, new_h), (0,0,0))  # black background
+        photo_with_border.paste(last_photo, (0,0))
+
+        draw = ImageDraw.Draw(photo_with_border)
         try:
             font = ImageFont.truetype("DejaVuSans.ttf", 28)
         except:
             font = ImageFont.load_default()
+
         bbox = draw.textbbox((0,0), last_message, font=font)
         w = bbox[2] - bbox[0]
         h = bbox[3] - bbox[1]
-        draw.text(((strip_width - w)//2, last_photo.height - h - 5),
+        draw.text(((last_photo.width - w)//2, last_photo.height + (extra_border - h)//2),
                   last_message, fill=(245,235,220), font=font)
-        resized_photos[-1] = last_photo
+
+        resized_photos[-1] = photo_with_border
 
         # Create the vertical strip
-        gap = 5
-        total_height = sum(p.height for p in resized_photos) + gap * (len(resized_photos) - 1)
-        strip = Image.new("RGB", (strip_width, total_height), (0,0,0))
-        y = 0
-        for p in resized_photos:
-            strip.paste(p, (0, y))
-            y += p.height + gap
+        strip = make_strip(resized_photos, gap=18, background=(0,0,0))
 
-        # Convert to Base64 for animation
+        # Convert strip to Base64 for animation
         buf = io.BytesIO()
         strip.save(buf, format="PNG")
         base64_img = base64.b64encode(buf.getvalue()).decode()
 
-        # HTML/CSS printer slot animation
         html_code = f"""
-        <div style="position: relative; width: {strip_width}px; margin: auto; height: {total_height + 40}px;">
-            <!-- printer slot -->
-            <div style="position:absolute; top:0; left:0; width:100%; height:20px; background-color:#111; box-shadow: 0 2px 5px rgba(0,0,0,0.7); z-index:10;"></div>
-            <img src="data:image/png;base64,{base64_img}"
+        <div style="position: relative; width: fit-content; margin: auto; overflow: hidden; height: {strip.height + 20}px; background-color: #000;">
+            <img src="data:image/png;base64,{base64_img}" 
                  style="
-                     display: block;
-                     width: 100%;
-                     position: relative;
-                     transform: translateY(-{total_height}px);
-                     animation: printSlide 1.5s ease-out forwards;
-                     animation-delay: 0.5s;
+                    display: block; 
+                    width: auto; 
+                    animation: slideDown 1.2s ease-out forwards;
+                    transform: translateY(-{strip.height}px);
                  "/>
         </div>
         <style>
-        @keyframes printSlide {{
-            0% {{ transform: translateY(-{total_height}px); }}
+        @keyframes slideDown {{
+            0% {{ transform: translateY(-{strip.height}px); }}
             100% {{ transform: translateY(0); }}
         }}
         </style>
@@ -276,7 +269,7 @@ elif st.session_state.stage == "done":
             mime="image/png"
         )
 
-        # Buttons
+        # Retake/Add New Strip buttons
         col1, col2 = st.columns([1,1])
         with col1:
             if st.button("Retake All"):
@@ -291,6 +284,7 @@ elif st.session_state.stage == "done":
                 st.session_state.stage = "capture"
                 st.rerun()
 
+        # Back to Home button
         if st.button("🏠 Back to Home"):
             st.session_state.photos = []
             st.session_state.last_camera_image = None
