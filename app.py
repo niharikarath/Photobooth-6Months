@@ -72,8 +72,6 @@ if "photos" not in st.session_state:
     st.session_state.photos = []
 if "last_camera_image" not in st.session_state:
     st.session_state.last_camera_image = None
-if "camera_counter" not in st.session_state:
-    st.session_state.camera_counter = 0
 
 # ---------- Helper Functions ----------
 def pil_from_streamlit_uploaded(uploaded_file):
@@ -129,7 +127,6 @@ def bw_transform(img: Image.Image, contrast=1.1, sharpness=1.1):
 
 def start_countdown():
     countdown_placeholder = st.empty()
-    
     overlay_style = """
     <div style='position: fixed; top:0; left:0; width:100%; height:100%;
                 background-color: rgba(0,0,0,0.6); z-index: 900;
@@ -144,18 +141,16 @@ def start_countdown():
                 display:flex; justify-content:center; align-items:center;'>
     </div>
     """
-    
-    for count in ["3", "2", "1", "📸"]:
+    for count in ["3","2","1","📸"]:
         for opacity in [0.2,0.4,0.6,0.8,1.0]:
             countdown_placeholder.markdown(overlay_style.format(opacity, count), unsafe_allow_html=True)
             time.sleep(0.08)
         time.sleep(0.3)
-        if count == "📸":
+        if count=="📸":
             countdown_placeholder.markdown(flash_style, unsafe_allow_html=True)
             time.sleep(0.15)
-            countdown_placeholder.markdown(overlay_style.format(1, count), unsafe_allow_html=True)
+            countdown_placeholder.markdown(overlay_style.format(1,count), unsafe_allow_html=True)
             time.sleep(0.2)
-    
     countdown_placeholder.empty()
     st.info("Countdown finished! Click the camera button to take a photo.")
 
@@ -187,22 +182,20 @@ elif st.session_state.stage == "capture":
             if i < len(st.session_state.photos):
                 st.image(st.session_state.photos[i], width=140, caption=f"#{i+1}")
             else:
-                st.image(Image.new("RGB", (500,500), (240,240,240)), width=140, caption=f"#{i+1}")
+                st.image(Image.new("RGB",(500,500),(240,240,240)), width=140, caption=f"#{i+1}")
 
     # Countdown button
     if st.button("📸 Start Countdown", key="countdown_btn"):
         start_countdown()
 
-    # Camera input with counter to reset
-    cam_file = st.camera_input(
-        "Smile! Click the camera button to take a photo.",
-        key=f"camera_input_{st.session_state.camera_counter}"
-    )
+    # Camera input
+    cam_file = st.camera_input("Smile! Click the camera button to take a photo.", key="camera_input")
     if cam_file is not None:
         st.session_state.last_camera_image = pil_from_streamlit_uploaded(cam_file)
 
     # Add / Retake / Create buttons
     col1, col2, col3 = st.columns([1,1,1])
+
     with col1:
         if st.button("Add Photo to Strip", key="add_photo"):
             if st.session_state.last_camera_image is None:
@@ -213,12 +206,17 @@ elif st.session_state.stage == "capture":
                 st.session_state.photos.append(st.session_state.last_camera_image.copy())
                 st.session_state.last_camera_image = None
                 st.rerun()
+
     with col2:
         if st.button("Retake Last Photo", key="retake"):
+            if st.session_state.photos:
+                st.session_state.photos.pop()
+                st.warning("Removed last photo from the strip. Take a new one using the camera above.")
+            else:
+                st.warning("No photos in the strip yet. Take a new photo using the camera above.")
             st.session_state.last_camera_image = None
-            st.session_state.camera_counter += 1  # reset camera widget
-            st.warning("Retake: use the camera control below to take a new photo.")
             st.rerun()
+
     with col3:
         if st.button("Create Polaroid Strip", key="create_strip"):
             if len(st.session_state.photos) < 4:
@@ -259,36 +257,21 @@ elif st.session_state.stage == "done":
             mime="image/png"
         )
 
-  # ---------- Add / Retake / Create buttons ----------
-col1, col2, col3 = st.columns([1,1,1])
+        col1, col2 = st.columns([1,1])
+        with col1:
+            if st.button("Retake All"):
+                st.session_state.photos = []
+                st.session_state.last_camera_image = None
+                st.session_state.stage = "capture"
+                st.rerun()
+        with col2:
+            if st.button("Add a New Strip (Keep these)"):
+                st.session_state.photos = []
+                st.session_state.last_camera_image = None
+                st.session_state.stage = "capture"
+                st.rerun()
+    except Exception as e:
+        st.error(f"Something went wrong while creating the strip: {e}")
 
-with col1:
-    if st.button("Add Photo to Strip", key="add_photo"):
-        if st.session_state.last_camera_image is None:
-            st.warning("Take a photo first using the camera above.")
-        elif len(st.session_state.photos) >= 4:
-            st.info("You already have 4 photos. Click 'Create Polaroid Strip'.")
-        else:
-            st.session_state.photos.append(st.session_state.last_camera_image.copy())
-            st.session_state.last_camera_image = None
-            st.rerun()
+    st.markdown("</div>", unsafe_allow_html=True)
 
-with col2:
-    if st.button("Retake Last Photo", key="retake"):
-        # Remove last photo from the strip if any
-        if st.session_state.photos:
-            st.session_state.photos.pop()
-            st.warning("Removed last photo from the strip. Take a new one using the camera above.")
-        else:
-            st.warning("No photos in the strip yet. Take a new photo using the camera above.")
-        # Reset camera input so user can retake
-        st.session_state.last_camera_image = None
-        st.rerun()
-
-with col3:
-    if st.button("Create Polaroid Strip", key="create_strip"):
-        if len(st.session_state.photos) < 4:
-            st.warning(f"Take {4 - len(st.session_state.photos)} more photo(s).")
-        else:
-            st.session_state.stage = "done"
-            st.rerun()
