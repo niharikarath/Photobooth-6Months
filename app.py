@@ -47,7 +47,7 @@ div.stButton > button, div.stDownloadButton > button {
     border-radius: 140px !important;
     font-weight: 700 !important;
     padding: 25px 60px !important;
-    font-size: 220px !important;
+    font-size: 700px !important;
 }
 div.stButton > button:hover {
     background-color: #c8323b !important;
@@ -283,6 +283,7 @@ elif st.session_state.stage == "done":
         st.error(f"Error creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
