@@ -64,11 +64,11 @@ if st.session_state.stage == "landing":
     st.markdown("""
     <style>
     .love-script { font-family: 'Pinyon Script', cursive; color: #a71d2a; font-size: 4rem; display: inline-block; position: absolute; white-space: nowrap; }
-    .love1 { top: 200px; right: 200px; transform: rotate(0deg); }
-    .love2 { top: 100px; right: 300px; transform: rotate(0deg); }
-    .love3 { top: 200px; right: 400px; transform: rotate(0deg); }
-    .love4 { top: 100px; right: 500px; transform: rotate(0deg); }
-    .polaroid-img { width: 125px; height: 175px; position: relative; box-shadow: 0 5px 10px rgba(0,0,0,0.5); }
+    .love1 { top: 100px; right: 100px; transform: rotate(0deg); }
+    .love2 { top: 100px; right: 100px; transform: rotate(0deg); }
+    .love3 { top: 100px; right: 100px; transform: rotate(0deg); }
+    .love4 { top: 100px; right: 100px; transform: rotate(0deg); }
+    .polaroid-img { width: 175px; height: 125px; position: relative; box-shadow: 0 5px 10px rgba(0,0,0,0.5); }
     </style>
     """, unsafe_allow_html=True)
 
@@ -77,7 +77,7 @@ if st.session_state.stage == "landing":
     <div class="love-script love2">I love you so much, Aditya</div>
     """, unsafe_allow_html=True)
 
-    # Images (FIXED INDENT)
+
     st.markdown(f"""
     <img src="{img_to_datauri('1.png')}" style="width:150px; top:40px; left:-140px; transform:rotate(2deg);" />
     <img src="{img_to_datauri('2.png')}" style="width:150px; top:20px; right:140px; transform:rotate(-2deg);" />
@@ -129,7 +129,7 @@ elif st.session_state.stage == "capture":
         countdown_placeholder.empty()
         st.info("Countdown finished! Click the camera button to take a photo.")
 
-    if st.button("📸 Start Countdown", key="countdown_btn"):
+    if st.button("📸 Smile and Camera Check", key="countdown_btn"):
         start_countdown()
 
     cam_file = st.camera_input("Smile Baby! Click the camera button to take a photo.", key="camera_input")
@@ -160,7 +160,7 @@ elif st.session_state.stage == "capture":
             st.rerun()
 
     with col3:
-        if st.button("Create Your Strip", key="create_strip"):
+        if st.button("✨ Generate your Photobooth Strip ✨", key="create_strip"):
             if len(st.session_state.photos) < 4:
                 st.warning(f"Take {4 - len(st.session_state.photos)} more photo(s).")
             else:
@@ -179,8 +179,8 @@ elif st.session_state.stage == "capture":
 # ---------- Done Page ----------
 elif st.session_state.stage == "done":
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
-    st.markdown("<h2>✨ Your Photobooth Strip</h2>", unsafe_allow_html=True)
-    st.markdown("<p class='muted'>Your strip was just printed! Download it, or keep taking more photos.</p>", unsafe_allow_html=True)
+    st.markdown("<h2>✨ Your Photobooth Strip is Ready</h2>", unsafe_allow_html=True)
+    st.markdown("<p class='muted'>Your strip was just printed baby! Love the big smile! Download it, or keep taking more photos (Don't forget to send these to Niharika).</p>", unsafe_allow_html=True)
 
     try:
         strip_images = []
@@ -250,20 +250,11 @@ elif st.session_state.stage == "done":
 
         st.markdown(html_code, unsafe_allow_html=True)
 
-        # First download button (top)
-        st.download_button(
-            label="Download Photobooth Strip (PNG)",
-            data=buf.getvalue(),
-            file_name="photobooth_strip.png",
-            mime="image/png"
-        )
+        col1, col2, col3 = st.columns([1,1,1])
 
-        col1, col2, col3 = st.columns(3)
-
-        # FIXED INDENT HERE
         with col1:
             st.download_button(
-                label="Download Photobooth Strip (PNG)",
+                label="Download This Photobooth Strip (PNG)",
                 data=buf.getvalue(),
                 file_name="photobooth_strip.png",
                 mime="image/png"
@@ -287,3 +278,4 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
