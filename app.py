@@ -31,14 +31,13 @@ st.markdown("""
     position: relative;
 }
 
-/* Romantic text */
-.love-script {
-    font-family: 'Pinyon Script', cursive;
-    color: #a71d2a;
-    font-size: 2.0rem;
-    margin: 8px 0;
-    transform: rotate(0deg);
-    display: inline-block;
+/* Container for spreading the romantic text nicely */
+.love-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 10px 0;
 }
 
 /* Polaroid images */
@@ -105,13 +104,13 @@ if st.session_state.stage == "landing":
     /* Red card in center */
     .photobooth-card {
         background-color: #a71d2a;
-        border-radius: 50px;
+        border-radius: 150px;
         padding: 60px 40px;
         box-shadow: 0 8px 25px rgba(0,0,0,0.3);
         max-width: 800px;
         margin: 120px auto;
         text-align: center;
-        position: relative;
+        position: center;
         overflow: visible;
     }
 
@@ -120,9 +119,9 @@ if st.session_state.stage == "landing":
     .love-script {
         font-family: 'Pinyon Script', cursive;
         color: #a71d2a;
-        font-size: 6rem;
+        font-size: 3rem;
         display: inline-block;
-        position: absolute;
+        position: relative;
         white-space: nowrap;
     }
 
@@ -147,12 +146,14 @@ if st.session_state.stage == "landing":
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
 
     # Romantic Text
-    st.markdown(f"""
-    <div class="love-script love1">I can’t wait to kiss you in a photobooth one day</div>
-    <div class="love-script love2">I love you so much, Aditya</div>
-    <div class="love-script love3">Best boyfriend</div>
-    <div class="love-script love4">Happy 6 months, my love</div>
-    """, unsafe_allow_html=True)
+    st.markdown("""
+<div class="love-container">
+    <div class="love-script">I can’t wait to kiss you in a photobooth one day</div>
+    <div class="love-script">I love you so much, Aditya</div>
+    <div class="love-script">Best boyfriend</div>
+    <div class="love-script">Happy 6 months, my love</div>
+</div>
+""", unsafe_allow_html=True)
 
     # Scattered Images
     st.markdown(f"""
@@ -320,6 +321,7 @@ elif st.session_state.stage == "done":
         st.error(f"Error creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
