@@ -103,20 +103,7 @@ elif st.session_state.stage == "capture":
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
     st.markdown("<h2>Photobooth — Take 4 photos</h2>", unsafe_allow_html=True)
 
-    # ---------- WORKING CAMERA SHRINK ----------
-    st.markdown("""
-    <style>
-    .camera-zoom {
-        zoom: 0.25;                 /* <— CHANGE THIS VALUE */
-        -moz-transform: scale(0.25);
-        -moz-transform-origin: top left;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
-    st.markdown('<div class="camera-zoom">', unsafe_allow_html=True)
-
-    # ---------- Small preview boxes ----------
+    # ---------- Photo Strip Preview ----------
     cols = st.columns(4)
     for i in range(4):
         with cols[i]:
@@ -127,6 +114,7 @@ elif st.session_state.stage == "capture":
 
     countdown_placeholder = st.empty()
 
+    # ---------- Countdown ----------
     def start_countdown():
         overlay_style = """
         <div style='position: fixed; top:0; left:0; width:100%; height:100%;
@@ -144,19 +132,17 @@ elif st.session_state.stage == "capture":
     if st.button("📸 Camera and Smile Check", key="countdown_btn"):
         start_countdown()
 
-    # ---------- Camera input (inside zoom wrapper) ----------
+    # ---------- Smaller Camera Input ----------
     cam_file = st.camera_input(
         "Smile Baby! Click the camera button to take a photo.",
-        key="camera_input"
+        key="camera_input",
+        width=250  # adjust this value to make the preview smaller or larger
     )
 
-    st.markdown("</div>", unsafe_allow_html=True)  # close .camera-zoom wrapper
-
-    # ---------- Save last photo ----------
     if cam_file:
         st.session_state.last_camera_image = pil_from_streamlit_uploaded(cam_file)
 
-    # ---------- Controls ----------
+    # ---------- Action Buttons ----------
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
@@ -304,6 +290,7 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
