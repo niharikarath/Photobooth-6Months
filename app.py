@@ -107,7 +107,7 @@ elif st.session_state.stage == "capture":
     st.markdown("""
     <style>
     .small-camera .stCamera > div {
-        transform: scale(0.70);
+        transform: scale(0.55);
         transform-origin: top left;
     }
     </style>
@@ -119,7 +119,7 @@ elif st.session_state.stage == "capture":
     /* Shrink the entire camera component */
     div[data-testid="stCamera"] video,
     div[data-testid="stCamera"] canvas {
-        transform: scale(0.55) !important;   /* adjust size here */
+        transform: scale(0.35) !important;   /* adjust size here */
         transform-origin: top left !important;
     }
 
@@ -314,5 +314,6 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
