@@ -79,7 +79,7 @@ if st.session_state.stage == "landing":
 
 
     st.markdown(f"""
-    <img src="{img_to_datauri('1.png')}" style="width:150px; top:40px; left:-140px; transform:rotate(2deg);" />
+    <img src="{img_to_datauri('1.png')}" style="width:200px; top:40px; left:-140px; transform:rotate(2deg);" />
     <img src="{img_to_datauri('2.png')}" style="width:150px; top:20px; right:140px; transform:rotate(-2deg);" />
     <img src="{img_to_datauri('3.png')}" style="width:150px; top:180px; left:-160px; transform:rotate(2deg);" />
     <img src="{img_to_datauri('4.png')}" style="width:150px; top:180px; right:160px; transform:rotate(-2deg);" />
@@ -278,6 +278,7 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
