@@ -127,9 +127,9 @@ if st.session_state.stage == "landing":
 
     /* Positions for each love line */
     .love1 { top: 20px; left: 30px; transform: rotate(-3deg); }
-    .love2 { top: 60px; right: 40px; transform: rotate(2deg); }
+    .love2 { top: 60px; right: 40px; transform: rotate(3deg); }
     .love3 { top: 110px; left: 50px; transform: rotate(-5deg); }
-    .love4 { top: 150px; right: 60px; transform: rotate(4deg); }
+    .love4 { top: 150px; right: 60px; transform: rotate(5deg); }
 
     /* Polaroid images scattered */
     .polaroid-img {
@@ -176,17 +176,17 @@ if st.session_state.stage == "landing":
 
     # Polaroid images scattered
     st.markdown(f"""
-    <img src="{img_to_datauri('1.png')}" class="polaroid-img" style="top:10px; left:-10px; transform:rotate(-6deg);" />
-    <img src="{img_to_datauri('2.png')}" class="polaroid-img" style="top:50px; right:-20px; transform:rotate(6deg);" />
-    <img src="{img_to_datauri('3.png')}" class="polaroid-img" style="bottom:40px; left:20px; transform:rotate(-10deg);" />
-    <img src="{img_to_datauri('4.png')}" class="polaroid-img" style="bottom:50px; right:30px; transform:rotate(8deg);" />
-    <img src="{img_to_datauri('5.png')}" class="polaroid-img" style="top:180px; left:0px; transform:rotate(4deg);" />
-    <img src="{img_to_datauri('6.png')}" class="polaroid-img" style="top:200px; right:10px; transform:rotate(-4deg);" />
+    <img src="{img_to_datauri('1.png')}" style="top:10px; left:-10px; transform:rotate(-6deg);" />
+    <img src="{img_to_datauri('2.png')}" style="top:50px; right:-20px; transform:rotate(6deg);" />
+    <img src="{img_to_datauri('3.png')}" style="bottom:40px; left:20px; transform:rotate(-10deg);" />
+    <img src="{img_to_datauri('4.png')}" style="bottom:50px; right:30px; transform:rotate(8deg);" />
+    <img src="{img_to_datauri('5.png')}" style="top:180px; left:0px; transform:rotate(4deg);" />
+    <img src="{img_to_datauri('6.png')}" style="top:200px; right:10px; transform:rotate(-4deg);" />
     """, unsafe_allow_html=True)
 
     # Centered Enter button
     st.markdown('<div class="enter-container"></div>', unsafe_allow_html=True)
-    if st.button("📸 Enter the Photobooth"):
+    if st.button("📸 Click to Enter the Photobooth"):
         st.session_state.stage = "capture"
         st.session_state.photos = []
         st.session_state.last_camera_image = None
@@ -233,14 +233,14 @@ elif st.session_state.stage == "capture":
             st.session_state.last_camera_image = None
             st.rerun()
     with col3:
-        if st.button("Create Polaroid Strip", key="create_strip"):
+        if st.button("Create Your Strip", key="create_strip"):
             if len(st.session_state.photos) < 4:
                 st.warning(f"Take {4 - len(st.session_state.photos)} more photo(s).")
             else:
                 st.session_state.stage = "done"
                 st.rerun()
 
-    if st.button("🏠 Back to Home"):
+    if st.button("🏠 Return to Home"):
         st.session_state.photos = []
         st.session_state.last_camera_image = None
         st.session_state.stage = "landing"
@@ -251,7 +251,7 @@ elif st.session_state.stage == "capture":
 # ---------- Done Page ----------
 elif st.session_state.stage == "done":
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
-    st.markdown("<h2>✨ Your Photobooth Strip</h2>", unsafe_allow_html=True)
+    st.markdown("<h2>✨ Your Photobooth Strip is Ready</h2>", unsafe_allow_html=True)
 
     try:
         strip_images = []
@@ -269,7 +269,7 @@ elif st.session_state.stage == "done":
         if extra_bottom > 0:
             draw = ImageDraw.Draw(last_img)
             try:
-               font = ImageFont.truetype("PinyonScript-Regular.ttf", 40)  # bigger + script font
+               font = ImageFont.truetype("PinyonScript-Regular.ttf", 100)  # bigger + script font
             except:
                 font = ImageFont.load_default()
             bbox = draw.textbbox((0,0), last_message, font=font)
@@ -289,7 +289,7 @@ elif st.session_state.stage == "done":
         buf = io.BytesIO()
         final_strip.save(buf, format="PNG")
 
-        st.image(final_strip, caption="Your Photobooth Strip", use_column_width=True)
+        st.image(final_strip, caption="Your Photobooth Strip is ready", use_column_width=True)
 
         st.download_button(
             label="Download Photobooth Strip (PNG)",
@@ -300,13 +300,13 @@ elif st.session_state.stage == "done":
 
         col1, col2 = st.columns([1,1])
         with col1:
-            if st.button("Retake All"):
+            if st.button("Make Another?"):
                 st.session_state.photos = []
                 st.session_state.last_camera_image = None
                 st.session_state.stage = "capture"
                 st.rerun()
         with col2:
-            if st.button("Add a New Strip (Keep these)"):
+            if st.button("Add a New Strip"):
                 st.session_state.last_camera_image = None
                 st.session_state.stage = "capture"
                 st.rerun()
@@ -321,4 +321,5 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
