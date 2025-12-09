@@ -156,13 +156,13 @@ if st.session_state.stage == "landing":
 """, unsafe_allow_html=True)
 
     # Scattered Images
-   st.markdown(f"""
+st.markdown(f"""
 <img src="{img_to_datauri('1.png')}" style="width:100px; top:80px; left:-120px; transform:rotate(0deg);" />
-<img src="{img_to_datauri('2.png')}" style="width:70px; top:30px; right:-60px; transform:rotate(0deg);" />
-<img src="{img_to_datauri('3.png')}" style="width:120px; bottom:80px; left:40px; transform:rotate(0deg);" />
+<img src="{img_to_datauri('2.png')}" style="width:60px; top:30px; right:-60px; transform:rotate(0deg);" />
+<img src="{img_to_datauri('3.png')}" style="width:60px; bottom:80px; left:40px; transform:rotate(0deg);" />
 <img src="{img_to_datauri('4.png')}" style="width:80px; bottom:90px; right:60px; transform:rotate(0deg);" />
-<img src="{img_to_datauri('5.png')}" style="width:110px; top:220px; left:20px; transform:rotate(0deg);" />
-<img src="{img_to_datauri('6.png')}" style="width:90px; top:240px; right:40px; transform:rotate(0deg);" />
+<img src="{img_to_datauri('5.png')}" style="width:160px; top:220px; left:20px; transform:rotate(0deg);" />
+<img src="{img_to_datauri('6.png')}" style="width:80px; top:240px; right:40px; transform:rotate(0deg);" />
 """, unsafe_allow_html=True)
 
     # ---- Centered Enter Button ----
@@ -321,6 +321,7 @@ elif st.session_state.stage == "done":
         st.error(f"Error creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
