@@ -126,10 +126,10 @@ if st.session_state.stage == "landing":
     }
 
     /* Positions for each love line */
-    .love1 { top: 20px; left: 30px; transform: rotate(-3deg); }
-    .love2 { top: 60px; right: 40px; transform: rotate(3deg); }
-    .love3 { top: 110px; left: 50px; transform: rotate(-5deg); }
-    .love4 { top: 150px; right: 60px; transform: rotate(5deg); }
+    .love1 { top: 60px; left: 40px; transform: rotate(-3deg); }
+    .love2 { top: 100px; right: 70px; transform: rotate(3deg); }
+    .love3 { top: 140px; left: 100px; transform: rotate(-5deg); }
+    .love4 { top: 180px; right: 130px; transform: rotate(5deg); }
 
     /* Polaroid images scattered */
     .polaroid-img {
@@ -174,23 +174,37 @@ if st.session_state.stage == "landing":
     <div class="love-script love4">Happy 6 months, my love</div>
     """, unsafe_allow_html=True)
 
-    # Polaroid images scattered
+    # Landing Page images scattered
     st.markdown(f"""
-    <img src="{img_to_datauri('1.png')}" style="top:10px; left:-10px; transform:rotate(-6deg);" />
-    <img src="{img_to_datauri('2.png')}" style="top:50px; right:-20px; transform:rotate(6deg);" />
-    <img src="{img_to_datauri('3.png')}" style="bottom:40px; left:20px; transform:rotate(-10deg);" />
-    <img src="{img_to_datauri('4.png')}" style="bottom:50px; right:30px; transform:rotate(8deg);" />
-    <img src="{img_to_datauri('5.png')}" style="top:180px; left:0px; transform:rotate(4deg);" />
-    <img src="{img_to_datauri('6.png')}" style="top:200px; right:10px; transform:rotate(-4deg);" />
-    """, unsafe_allow_html=True)
+    <img src="{img_to_datauri('1.png')}" style="width:180px; top:10px; left:-10px; transform:rotate(-6deg);" />
+    <img src="{img_to_datauri('2.png')}" style="width:180px; top:50px; right:-20px; transform:rotate(6deg);" />
+    <img src="{img_to_datauri('3.png')}" style="width:180px; bottom:40px; left:20px; transform:rotate(-10deg);" />
+    <img src="{img_to_datauri('4.png')}" style="width:180px; bottom:50px; right:30px; transform:rotate(8deg);" />
+    <img src="{img_to_datauri('5.png')}" style="width:180px; top:180px; left:0px; transform:rotate(4deg);" />
+    <img src="{img_to_datauri('6.png')}" style="width:180px; top:200px; right:10px; transform:rotate(-4deg);" />
+""", unsafe_allow_html=True)
 
-    # Centered Enter button
-    st.markdown('<div class="enter-container"></div>', unsafe_allow_html=True)
-    if st.button("📸 Click to Enter the Photobooth"):
-        st.session_state.stage = "capture"
-        st.session_state.photos = []
-        st.session_state.last_camera_image = None
-        st.rerun()
+# Button
+
+st.markdown("""
+<style>
+.enter-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown('<div class="enter-container">', unsafe_allow_html=True)
+
+if st.button("📸 Click to Enter the Photobooth"):
+    st.session_state.stage = "capture"
+    st.session_state.photos = []
+    st.session_state.last_camera_image = None
+    st.rerun()
+
+st.markdown('</div>', unsafe_allow_html=True)
 
     # End photobooth card
     st.markdown('</div>', unsafe_allow_html=True)
@@ -321,5 +335,6 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
