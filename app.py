@@ -101,89 +101,96 @@ if st.session_state.stage == "landing":
 
     st.markdown("""
     <style>
-    /* Central photobooth card */
+    /* FULL RED CARD */
     .photobooth-card {
-        background-color: #f3e5d0;
-        border: 4px solid #a71d2a;
-        border-radius: 16px;
-        padding: 60px 40px;
+        background-color: #a71d2a;   /* deep red */
+        border-radius: 20px;
+        padding: 80px 40px;
         box-shadow: 0 8px 25px rgba(0,0,0,0.3);
         max-width: 900px;
-        margin: 60px auto;
+        margin: 80px auto;   /* center it */
         text-align: center;
         position: relative;
         overflow: visible;
     }
 
-    /* Romantic text scattered */
+    /* Love text */
     .love-script {
         font-family: 'Pinyon Script', cursive;
-        color: #a71d2a;
+        color: #f5e7dc;
         font-size: 2rem;
         display: inline-block;
         position: absolute;
         white-space: nowrap;
     }
+    .love1 { top: 30px; left: 50px; transform: rotate(-3deg); }
+    .love2 { top: 80px; right: 50px; transform: rotate(3deg); }
+    .love3 { top: 130px; left: 120px; transform: rotate(-5deg); }
+    .love4 { top: 180px; right: 120px; transform: rotate(5deg); }
 
-    /* Positions for each love line */
-    .love1 { top: 60px; left: 40px; transform: rotate(-3deg); }
-    .love2 { top: 100px; right: 70px; transform: rotate(3deg); }
-    .love3 { top: 140px; left: 100px; transform: rotate(-5deg); }
-    .love4 { top: 180px; right: 130px; transform: rotate(5deg); }
-
-    /* Scattered landing images */
+    /* Polaroid images */
     .polaroid-img {
-        width: 135px;
-        height: 135px;
+        width: 180px;
+        height: auto;
         position: absolute;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.5);
     }
 
+    /* Center the button */
+    .enter-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 260px;   /* pushes it below the text/images */
+    }
+
+    /* Button styling */
+    div.stButton > button {
+        background-color: #f5e7dc !important;
+        color: #a71d2a !important;
+        border-radius: 14px !important;
+        font-weight: 700 !important;
+        padding: 25px 60px !important;
+        font-size: 28px !important;
+    }
+    div.stButton > button:hover {
+        background-color: #fff0e8 !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
-    # Photobooth Card Begin
+    # OPEN RED CARD
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
 
-    # Romantic Text
-    st.markdown(f"""
+    # Love texts
+    st.markdown("""
     <div class="love-script love1">I can’t wait to kiss you in a photobooth one day</div>
     <div class="love-script love2">I love you so much, Aditya</div>
     <div class="love-script love3">Best boyfriend</div>
     <div class="love-script love4">Happy 6 months, my love</div>
     """, unsafe_allow_html=True)
 
-    # Scattered Images
+    # Images positioned inside the red card
     st.markdown(f"""
-    <img src="{img_to_datauri('1.png')}" style="width:180px; top:100px; left:-100px; transform:rotate(-6deg);" />
-    <img src="{img_to_datauri('2.png')}" style="width:180px; top:50px; right:-20px; transform:rotate(6deg);" />
-    <img src="{img_to_datauri('3.png')}" style="width:180px; bottom:40px; left:20px; transform:rotate(-5deg);" />
-    <img src="{img_to_datauri('4.png')}" style="width:180px; bottom:50px; right:30px; transform:rotate(5deg);" />
-    <img src="{img_to_datauri('5.png')}" style="width:180px; top:180px; left:0px; transform:rotate(4deg);" />
-    <img src="{img_to_datauri('6.png')}" style="width:180px; top:200px; right:10px; transform:rotate(-4deg);" />
+    <img class="polaroid-img" src="{img_to_datauri('1.png')}" style="top:20px; left:-20px; transform:rotate(-6deg);" />
+    <img class="polaroid-img" src="{img_to_datauri('2.png')}" style="top:60px; right:-40px; transform:rotate(6deg);" />
+    <img class="polaroid-img" src="{img_to_datauri('3.png')}" style="bottom:50px; left:10px; transform:rotate(-10deg);" />
+    <img class="polaroid-img" src="{img_to_datauri('4.png')}" style="bottom:60px; right:20px; transform:rotate(8deg);" />
     """, unsafe_allow_html=True)
 
-    # ---- Centered Enter Button ----
-    st.markdown("""
-    <style>
-    .enter-container {
-        display: flex;
-        justify-content: center;
-        margin-top: 40px;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
+    # CENTERED BUTTON
     st.markdown('<div class="enter-container">', unsafe_allow_html=True)
+
     if st.button("📸 Click to Enter the Photobooth"):
         st.session_state.stage = "capture"
         st.session_state.photos = []
         st.session_state.last_camera_image = None
         st.rerun()
+
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # Photobooth Card End
+    # CLOSE RED CARD
     st.markdown('</div>', unsafe_allow_html=True)
+
 
 # ---------- Capture Page ----------
 elif st.session_state.stage == "capture":
@@ -319,7 +326,6 @@ elif st.session_state.stage == "done":
         st.error(f"Error creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
-
 
 
 
