@@ -143,6 +143,30 @@ elif st.session_state.stage == "capture":
             else:
                 st.image(Image.new("RGB",(500,500),(200,200,200)), width=140, caption=f"#{i+1}")
 
+    # --- Countdown overlay ---
+countdown_placeholder = st.empty()
+def start_countdown():
+    import time
+    overlay_style = """
+    <div style='position: fixed; top:0; left:0; width:100%; height:100%;
+                background-color: rgba(0,0,0,0.6); z-index: 900;  /* lower than buttons */
+                display:flex; justify-content:center; align-items:center;
+                flex-direction: column;'>
+        <h1 style='color:white; font-size:140px; margin:0;'>{}</h1>
+    </div>
+    """
+    for count in ["3", "2", "1", "📸"]:
+        countdown_placeholder.markdown(overlay_style.format(count), unsafe_allow_html=True)
+        time.sleep(0.8)
+    countdown_placeholder.empty()  # remove overlay completely
+    st.info("Countdown finished! Click the camera button to take a photo.")
+
+    # Start Countdown button
+    st.markdown("<div class='center'>", unsafe_allow_html=True)
+    if st.button("📸 Start Countdown", key="countdown_btn"):
+        start_countdown()
+    st.markdown("</div>", unsafe_allow_html=True)
+
     cam_file = st.camera_input("Smile Baby! Click the camera button to take a photo.", key="camera_input")
     if cam_file is not None:
         st.session_state.last_camera_image = pil_from_streamlit_uploaded(cam_file)
@@ -204,13 +228,13 @@ elif st.session_state.stage == "done":
             strip_images.append(new_img)
 
         # Add message to last photo
-        messages = ["Happy 6 months, my love!", "Niharika loves Aditya", "Adi baby ❤️ Nihoo baby", "Bandar baby ❤️ Sundar baby", "Big Kissies Big Huggies"]
+        messages = ["Happy 6 months, My Love!", "Niharika loves Aditya", "Adi baby ❤️ Nihoo baby", "Bandar baby ❤️ Sundar baby", "Big Kissies Big Huggies"]
         last_message = random.choice(messages)
         last_img = strip_images[-1]
         if extra_bottom > 0:
             draw = ImageDraw.Draw(last_img)
             try:
-                font = ImageFont.truetype("Pinyon Script.ttf", 30)
+                font = ImageFont.truetype("DejaVuSans.ttf", 30)
             except:
                 font = ImageFont.load_default()
             bbox = draw.textbbox((0,0), last_message, font=font)
@@ -255,20 +279,15 @@ elif st.session_state.stage == "done":
             mime="image/png"
         )
 
-        col1, col2, col3 = st.columns([1,1,1])
+        col1, col2 = st.columns([1,1,])
         with col1:
-            if st.button("Retake All"):
+            if st.button("Make Another?"):
                 st.session_state.photos = []
                 st.session_state.last_camera_image = None
                 st.session_state.stage = "capture"
                 st.rerun()
+       
         with col2:
-            if st.button("Add a New Strip (Keep these)"):
-                st.session_state.photos = []
-                st.session_state.last_camera_image = None
-                st.session_state.stage = "capture"
-                st.rerun()
-        with col3:
             if st.button("🏠 Back to Home"):
                 st.session_state.photos = []
                 st.session_state.last_camera_image = None
@@ -279,3 +298,4 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
