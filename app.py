@@ -146,7 +146,7 @@ elif st.session_state.stage == "capture":
     cam_file = st.camera_input(
         "Smile Baby! Click the camera button to take a photo.",
         key="camera_input",
-        width=250  # adjust preview size
+        width=750  # adjust preview size
     )
 
     st.markdown("</div>", unsafe_allow_html=True)  # close centering div
@@ -302,6 +302,7 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
