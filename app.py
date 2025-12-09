@@ -97,59 +97,49 @@ def bw_transform(img: Image.Image, contrast=1.1, sharpness=1.1):
     return rgb
 
 # ---------- Landing Page ----------
-
-if st.session_state.stage == "landing":
+    
+    if st.session_state.stage == "landing":
 
     st.markdown("""
     <style>
-    /* FULL RED CARD */
+    /* Red card in center */
     .photobooth-card {
-        background-color: #a71d2a;   /* deep red */
+        background-color: #a71d2a;
         border-radius: 20px;
-        padding: 40px;
+        padding: 60px 40px;
         box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-        max-width: 900px;
-        min-height: 700px;  /* ensures it’s tall enough */
-        margin: 80px auto;   /* center it vertically */
+        max-width: 400px;
+        margin: 120px auto;   /* center horizontally + some top margin */
         text-align: center;
         position: relative;
-        overflow: visible;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;  /* pushes button to bottom */
     }
 
-    /* Love text */
+    /* Love text scattered around */
     .love-script {
         font-family: 'Pinyon Script', cursive;
-        color: #f5e7dc;
+        color: #a71d2a;
         font-size: 2rem;
         display: inline-block;
         position: absolute;
         white-space: nowrap;
     }
-    .love1 { top: 20px; left: 50px; transform: rotate(-3deg); }
-    .love2 { top: 80px; right: 50px; transform: rotate(3deg); }
-    .love3 { top: 140px; left: 120px; transform: rotate(-5deg); }
-    .love4 { top: 200px; right: 120px; transform: rotate(5deg); }
+    .love1 { top: 50px; left: 50px; transform: rotate(-3deg); }
+    .love2 { top: 120px; right: 60px; transform: rotate(3deg); }
+    .love3 { bottom: 120px; left: 60px; transform: rotate(-5deg); }
+    .love4 { bottom: 50px; right: 80px; transform: rotate(5deg); }
 
-    /* Polaroid images */
-    .polaroid-img {
-        width: 180px;
+    /* Images scattered around the card */
+    .decor-img {
+        width: 150px;
         height: auto;
         position: absolute;
-        box-shadow: 0 6px 12px rgba(0,0,0,0.5);
     }
+    .img1 { top: 20px; left: -20px; transform: rotate(-6deg); }
+    .img2 { top: 60px; right: -40px; transform: rotate(6deg); }
+    .img3 { bottom: 50px; left: 10px; transform: rotate(-10deg); }
+    .img4 { bottom: 60px; right: 20px; transform: rotate(8deg); }
 
-    /* Center the button at bottom of card */
-    .enter-container {
-        display: flex;
-        justify-content: center;
-        margin-top: 20px;
-        position: relative;
-    }
-
-    /* Button styling */
+    /* Button inside card */
     div.stButton > button {
         background-color: #f5e7dc !important;
         color: #a71d2a !important;
@@ -164,10 +154,7 @@ if st.session_state.stage == "landing":
     </style>
     """, unsafe_allow_html=True)
 
-    # OPEN RED CARD
-    st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
-
-    # Love texts
+    # Love texts (outside red card)
     st.markdown("""
     <div class="love-script love1">I can’t wait to kiss you in a photobooth one day</div>
     <div class="love-script love2">I love you so much, Aditya</div>
@@ -175,16 +162,16 @@ if st.session_state.stage == "landing":
     <div class="love-script love4">Happy 6 months, my love</div>
     """, unsafe_allow_html=True)
 
-    # Images positioned inside the red card
+    # Images (outside red card)
     st.markdown(f"""
-    <img class="polaroid-img" src="{img_to_datauri('1.png')}" style="top:20px; left:-20px; transform:rotate(-6deg);" />
-    <img class="polaroid-img" src="{img_to_datauri('2.png')}" style="top:60px; right:-40px; transform:rotate(6deg);" />
-    <img class="polaroid-img" src="{img_to_datauri('3.png')}" style="bottom:50px; left:10px; transform:rotate(-10deg);" />
-    <img class="polaroid-img" src="{img_to_datauri('4.png')}" style="bottom:60px; right:20px; transform:rotate(8deg);" />
+    <img class="decor-img img1" src="{img_to_datauri('1.png')}" />
+    <img class="decor-img img2" src="{img_to_datauri('2.png')}" />
+    <img class="decor-img img3" src="{img_to_datauri('3.png')}" />
+    <img class="decor-img img4" src="{img_to_datauri('4.png')}" />
     """, unsafe_allow_html=True)
 
-    # CENTERED BUTTON
-    st.markdown('<div class="enter-container">', unsafe_allow_html=True)
+    # Red card with button inside
+    st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
 
     if st.button("📸 Click to Enter the Photobooth"):
         st.session_state.stage = "capture"
@@ -192,9 +179,6 @@ if st.session_state.stage == "landing":
         st.session_state.last_camera_image = None
         st.rerun()
 
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    # CLOSE RED CARD
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------- Capture Page ----------
@@ -331,6 +315,7 @@ elif st.session_state.stage == "done":
         st.error(f"Error creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
