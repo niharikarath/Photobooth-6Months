@@ -108,7 +108,7 @@ elif st.session_state.stage == "capture":
     for i in range(4):
         with cols[i]:
             if i < len(st.session_state.photos):
-                st.image(st.session_state.photos[i], width=110, caption=f"#{i+1}")
+                st.image(st.session_state.photos[i], width=50, caption=f"#{i+1}")
             else:
                 st.image(Image.new("RGB", (500,500), (200,200,200)), width=110, caption=f"#{i+1}")
 
@@ -132,15 +132,14 @@ elif st.session_state.stage == "capture":
     if st.button("📸 Camera and Smile Check", key="countdown_btn"):
         start_countdown()
 
-    # ---------- Smaller Camera Input ----------
-    cam_file = st.camera_input(
-        "Smile Baby! Click the camera button to take a photo.",
-        key="camera_input",
-        width=750  # adjust this value to make the preview smaller or larger
-    )
-
-    if cam_file:
-        st.session_state.last_camera_image = pil_from_streamlit_uploaded(cam_file)
+    # ---------- Smaller Camera Input (Centered) ----------
+st.markdown('<div style="text-align: center;">', unsafe_allow_html=True)
+cam_file = st.camera_input(
+    "Smile Baby! Click the camera button to take a photo.",
+    key="camera_input",
+    width=250  # adjust size here
+)
+st.markdown('</div>', unsafe_allow_html=True)  # close the centering div
 
     # ---------- Action Buttons ----------
     col1, col2, col3, col4 = st.columns(4)
@@ -290,6 +289,7 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
