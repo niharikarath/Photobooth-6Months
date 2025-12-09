@@ -63,7 +63,7 @@ def bw_transform(img: Image.Image, contrast=1.1, sharpness=1.1):
 if st.session_state.stage == "landing":
     st.markdown("""
     <style>
-    .love-script { font-family: 'Pinyon Script', cursive; color: #a71d2a; font-size: 4rem; display: inline-block; position: absolute; white-space: nowrap; }
+    .love-script { font-family: 'Pinyon Script', cursive; color: #a71d2a; font-size: 3.5rem; display: inline-block; position: absolute; white-space: nowrap; }
     .love1 { top: 200px; right: 75px; transform: rotate(0deg); }
     .love2 { top: 100px; right: 100px; transform: rotate(0deg); }
     .love3 { top: 200px; right: 100px; transform: rotate(0deg); }
@@ -79,12 +79,12 @@ if st.session_state.stage == "landing":
 
 
     st.markdown(f"""
-    <img src="{img_to_datauri('1.png')}" style="width:175px; top:40px; left:-140px; transform:rotate(2deg);" />
-    <img src="{img_to_datauri('2.png')}" style="width:175px; top:20px; right:140px; transform:rotate(-2deg);" />
-    <img src="{img_to_datauri('3.png')}" style="width:175px; top:180px; left:-160px; transform:rotate(2deg);" />
-    <img src="{img_to_datauri('4.png')}" style="width:175px; top:180px; right:160px; transform:rotate(-2deg);" />
-    <img src="{img_to_datauri('5.png')}" style="width:175px; bottom:60px; left:-120px; transform:rotate(2deg);" />
-    <img src="{img_to_datauri('6.png')}" style="width:175px; bottom:60px; right:120px; transform:rotate(-2deg);" />
+    <img src="{img_to_datauri('1.png')}" style="width:175px; top:40px; left:-140px; transform:rotate(3deg);" />
+    <img src="{img_to_datauri('2.png')}" style="width:175px; top:20px; right:140px; transform:rotate(-3deg);" />
+    <img src="{img_to_datauri('3.png')}" style="width:175px; top:180px; left:-160px; transform:rotate(5deg);" />
+    <img src="{img_to_datauri('4.png')}" style="width:175px; top:180px; right:160px; transform:rotate(-4deg);" />
+    <img src="{img_to_datauri('5.png')}" style="width:175px; bottom:60px; left:-120px; transform:rotate(6deg);" />
+    <img src="{img_to_datauri('6.png')}" style="width:175px; bottom:60px; right:120px; transform:rotate(-4deg);" />
     """, unsafe_allow_html=True)
 
     st.markdown("""
@@ -93,7 +93,7 @@ if st.session_state.stage == "landing":
     """, unsafe_allow_html=True)
 
     st.markdown('<div class="enter-container">', unsafe_allow_html=True)
-    if st.button("📸Enter the Photobooth (with Niharika)"):
+    if st.button("📸Enter the Photobooth"):
         st.session_state.stage = "capture"
         st.session_state.photos = []
         st.session_state.last_camera_image = None
@@ -129,7 +129,7 @@ elif st.session_state.stage == "capture":
         countdown_placeholder.empty()
         st.info("Countdown finished! Click the camera button to take a photo.")
 
-    if st.button("📸 Smile and Camera Check", key="countdown_btn"):
+    if st.button("📸 Camera and Smile Check", key="countdown_btn"):
         start_countdown()
 
     cam_file = st.camera_input("Smile Baby! Click the camera button to take a photo.", key="camera_input")
@@ -278,6 +278,7 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
