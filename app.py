@@ -43,7 +43,7 @@ st.markdown("""
 
 /* Polaroid images */
 .polaroid-img {
-    width: 150px;  /* 35% bigger than before */
+    width: 150px;
     height: 135px;
     position: absolute;
     box-shadow: 0 4px 8px rgba(0,0,0,0.8);
@@ -103,8 +103,8 @@ if st.session_state.stage == "landing":
     <style>
     /* Central photobooth card */
     .photobooth-card {
-        background-color: #f3e5d0; /* cream */
-        border: 4px solid #a71d2a; /* deep red frame */
+        background-color: #f3e5d0;
+        border: 4px solid #a71d2a;
         border-radius: 16px;
         padding: 60px 40px;
         box-shadow: 0 8px 25px rgba(0,0,0,0.3);
@@ -131,42 +131,21 @@ if st.session_state.stage == "landing":
     .love3 { top: 140px; left: 100px; transform: rotate(-5deg); }
     .love4 { top: 180px; right: 130px; transform: rotate(5deg); }
 
-    /* Polaroid images scattered */
+    /* Scattered landing images */
     .polaroid-img {
-        width: 135px;  /* 35% bigger */
+        width: 135px;
         height: 135px;
         position: absolute;
         box-shadow: 0 4px 8px rgba(0,0,0,0.4);
     }
 
-    /* Center Enter button container */
-    .enter-container {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    }
-
-    /* Button styling */
-    div.stButton > button {
-        background-color: #a71d2a !important;
-        color: #f5e7dc !important;
-        border-radius: 14px !important;
-        font-weight: 700 !important;
-        padding: 25px 60px !important;
-        font-size: 24px !important;
-    }
-    div.stButton > button:hover {
-        background-color: #c8323b !important;
-    }
-
     </style>
     """, unsafe_allow_html=True)
 
-    # Start photobooth card
+    # Photobooth Card Begin
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
 
-    # Romantic text lines
+    # Romantic Text
     st.markdown(f"""
     <div class="love-script love1">I can’t wait to kiss you in a photobooth one day</div>
     <div class="love-script love2">I love you so much, Aditya</div>
@@ -174,7 +153,7 @@ if st.session_state.stage == "landing":
     <div class="love-script love4">Happy 6 months, my love</div>
     """, unsafe_allow_html=True)
 
-    # Landing Page images scattered
+    # Scattered Images
     st.markdown(f"""
     <img src="{img_to_datauri('1.png')}" style="width:180px; top:10px; left:-10px; transform:rotate(-6deg);" />
     <img src="{img_to_datauri('2.png')}" style="width:180px; top:50px; right:-20px; transform:rotate(6deg);" />
@@ -182,31 +161,28 @@ if st.session_state.stage == "landing":
     <img src="{img_to_datauri('4.png')}" style="width:180px; bottom:50px; right:30px; transform:rotate(8deg);" />
     <img src="{img_to_datauri('5.png')}" style="width:180px; top:180px; left:0px; transform:rotate(4deg);" />
     <img src="{img_to_datauri('6.png')}" style="width:180px; top:200px; right:10px; transform:rotate(-4deg);" />
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-# Button
+    # ---- Centered Enter Button ----
+    st.markdown("""
+    <style>
+    .enter-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 40px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
-st.markdown("""
-<style>
-.enter-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 40px;
-}
-</style>
-""", unsafe_allow_html=True)
+    st.markdown('<div class="enter-container">', unsafe_allow_html=True)
+    if st.button("📸 Click to Enter the Photobooth"):
+        st.session_state.stage = "capture"
+        st.session_state.photos = []
+        st.session_state.last_camera_image = None
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown('<div class="enter-container">', unsafe_allow_html=True)
-
-if st.button("📸 Click to Enter the Photobooth"):
-    st.session_state.stage = "capture"
-    st.session_state.photos = []
-    st.session_state.last_camera_image = None
-    st.rerun()
-
-st.markdown('</div>', unsafe_allow_html=True)
-
-    # End photobooth card
+    # Photobooth Card End
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------- Capture Page ----------
@@ -232,20 +208,22 @@ elif st.session_state.stage == "capture":
             if st.session_state.last_camera_image is None:
                 st.warning("Take a photo first using the camera above.")
             elif len(st.session_state.photos) >= 4:
-                st.info("You already have 4 photos. Click 'Create Polaroid Strip'.")
+                st.info("You already have 4 photos. Click 'Create Your Strip'.")
             else:
                 st.session_state.photos.append(st.session_state.last_camera_image.copy())
                 st.session_state.last_camera_image = None
                 st.rerun()
+
     with col2:
         if st.button("Retake Last Photo", key="retake"):
             if st.session_state.photos:
                 st.session_state.photos.pop()
-                st.warning("Removed last photo from the strip. Take a new one using the camera above.")
+                st.warning("Removed last photo.")
             else:
-                st.warning("No photos in the strip yet. Take a new photo using the camera above.")
+                st.warning("No photos yet.")
             st.session_state.last_camera_image = None
             st.rerun()
+
     with col3:
         if st.button("Create Your Strip", key="create_strip"):
             if len(st.session_state.photos) < 4:
@@ -279,18 +257,24 @@ elif st.session_state.stage == "done":
 
         messages = ["Happy 6 months My Love!", "Niharika loves Aditya", "Adi baby <3 Nihoo baby", "Aditya loves Niharika", "Happy 6 Crazy Months Together", "Bandar Baby 🐒 ❤️ Sundar Baby 🐰"]
         last_message = random.choice(messages)
+
         last_img = strip_images[-1]
         if extra_bottom > 0:
             draw = ImageDraw.Draw(last_img)
             try:
-               font = ImageFont.truetype("PinyonScript-Regular.ttf", 100)  # bigger + script font
+               font = ImageFont.truetype("PinyonScript-Regular.ttf", 100)
             except:
                 font = ImageFont.load_default()
+
             bbox = draw.textbbox((0,0), last_message, font=font)
             w = bbox[2] - bbox[0]
             h = bbox[3] - bbox[1]
-            draw.text(((last_img.width - w)//2, last_img.height - extra_bottom + (extra_bottom - h)//2),
-                      last_message, fill=(245,235,220), font=font)
+            draw.text(
+                ((last_img.width - w)//2, last_img.height - extra_bottom + (extra_bottom - h)//2),
+                last_message,
+                fill=(245,235,220),
+                font=font
+            )
 
         total_h = sum(im.height for im in strip_images)
         strip_w = max(im.width for im in strip_images)
@@ -332,9 +316,6 @@ elif st.session_state.stage == "done":
             st.rerun()
 
     except Exception as e:
-        st.error(f"Something went wrong while creating the strip: {e}")
+        st.error(f"Error creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
-
-
-
