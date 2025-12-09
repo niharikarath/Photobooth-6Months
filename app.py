@@ -158,7 +158,7 @@ if st.session_state.stage == "landing":
     # Scattered Images
 
     st.markdown(f"""
-<img src="{img_to_datauri('1.png')}" style="width:160px; top:80px; left:-120px; transform:rotate(0deg);" />
+<img src="{img_to_datauri('1.png')}" style="width:160px; top:80px; left:120px; transform:rotate(0deg);" />
 <img src="{img_to_datauri('2.png')}" style="width:180px; top:30px; right:-60px; transform:rotate(0deg);" />
 <img src="{img_to_datauri('3.png')}" style="width:160px; bottom:80px; left:40px; transform:rotate(0deg);" />
 <img src="{img_to_datauri('4.png')}" style="width:180px; bottom:90px; right:60px; transform:rotate(0deg);" />
@@ -323,6 +323,7 @@ elif st.session_state.stage == "done":
         st.error(f"Error creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
