@@ -126,9 +126,9 @@ if st.session_state.stage == "landing":
     }
 
     /* Positions for each love line */
-    .love1 { top: 60px; left: 40px; transform: rotate(-3deg); }
+    .love1 { top: 200px; left: 40px; transform: rotate(-3deg); }
     .love2 { top: 100px; right: 70px; transform: rotate(3deg); }
-    .love3 { top: 140px; left: 100px; transform: rotate(-5deg); }
+    .love3 { top: 250px; left: 100px; transform: rotate(-5deg); }
     .love4 { top: 180px; right: 130px; transform: rotate(5deg); }
 
     /* Scattered landing images */
@@ -323,6 +323,7 @@ elif st.session_state.stage == "done":
         st.error(f"Error creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
