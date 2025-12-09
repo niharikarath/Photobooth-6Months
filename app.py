@@ -97,15 +97,16 @@ def bw_transform(img: Image.Image, contrast=1.1, sharpness=1.1):
     return rgb
 
 # ---------- Landing Page ----------
-st.markdown("""
-<div class="love-container">
-    <div class="love-script">I can’t wait to kiss you in a photobooth one day</div>
-    <div class="love-script">I love you so much, Aditya</div>
-    <div class="love-script">Best boyfriend</div>
-    <div class="love-script">Happy 6 months, my love</div>
-</div>
-""", unsafe_allow_html=True)
+if st.session_state.stage == "landing":
 
+    st.markdown("""
+    <div class="love-container">
+        <div class="love-script">I can’t wait to kiss you in a photobooth one day</div>
+        <div class="love-script">I love you so much, Aditya</div>
+        <div class="love-script">Best boyfriend</div>
+        <div class="love-script">Happy 6 months, my love</div>
+    </div>
+    """, unsafe_allow_html=True)
 
     # Scattered PNGs
     st.markdown(f"""
@@ -253,3 +254,4 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
