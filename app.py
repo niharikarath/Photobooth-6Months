@@ -107,8 +107,8 @@ elif st.session_state.stage == "capture":
     st.markdown("""
     <style>
     .camera-zoom {
-        zoom: 0.45;                 /* <— CHANGE THIS VALUE */
-        -moz-transform: scale(0.45);
+        zoom: 0.25;                 /* <— CHANGE THIS VALUE */
+        -moz-transform: scale(0.25);
         -moz-transform-origin: top left;
     }
     </style>
@@ -304,6 +304,7 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
