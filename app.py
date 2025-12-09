@@ -86,7 +86,6 @@ def bw_transform(img: Image.Image, contrast=1.1, sharpness=1.1):
 if st.session_state.stage == "landing":
     st.markdown("""
     <style>
-    /* Romantic text scattered */
     .love-script {
         font-family: 'Pinyon Script', cursive;
         color: #a71d2a;
@@ -188,7 +187,7 @@ elif st.session_state.stage == "capture":
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ---------- UI: Done ----------
+# ---------- Done Page ----------
 elif st.session_state.stage == "done":
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
     st.markdown("<h2>✨ Your Photobooth Strip</h2>", unsafe_allow_html=True)
@@ -198,15 +197,13 @@ elif st.session_state.stage == "done":
         strip_images = []
         for i, p in enumerate(st.session_state.photos):
             bw = bw_transform(p, contrast=1.15, sharpness=1.05)
-            if i == len(st.session_state.photos) - 1:
-                extra_bottom = 80
-            else:
-                extra_bottom = 0
+            extra_bottom = 80 if i == len(st.session_state.photos) - 1 else 0
             img_w, img_h = bw.size
             new_img = Image.new("RGB", (img_w, img_h + extra_bottom), (0,0,0))
             new_img.paste(bw, (0,0))
             strip_images.append(new_img)
 
+        # Add message to last photo
         messages = ["Happy 6 months, my love!", "Niharika loves Aditya", "Adi baby ❤️ Nihoo baby", "Bandar baby ❤️ Sundar baby", "Big Kissies Big Huggies"]
         last_message = random.choice(messages)
         last_img = strip_images[-1]
@@ -258,7 +255,7 @@ elif st.session_state.stage == "done":
             mime="image/png"
         )
 
-         col1, col2, col3 = st.columns([1,1,1])
+        col1, col2, col3 = st.columns([1,1,1])
         with col1:
             if st.button("Retake All"):
                 st.session_state.photos = []
