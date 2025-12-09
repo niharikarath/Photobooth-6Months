@@ -98,7 +98,7 @@ def bw_transform(img: Image.Image, contrast=1.1, sharpness=1.1):
 
 # ---------- Landing Page ----------
     
-   if st.session_state.stage == "landing":
+if st.session_state.stage == "landing":
 
     st.markdown("""
     <style>
@@ -260,6 +260,7 @@ elif st.session_state.stage == "done":
         st.error(f"Error creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
