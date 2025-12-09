@@ -77,6 +77,10 @@ if st.session_state.stage == "landing":
     <div class="love-script love2">I love you so much, Aditya</div>
     """, unsafe_allow_html=True)
 
+    st.markdown("""
+    <div class="love-script love3">Happy 6 months, my love</div>
+    <div class="love-script love4">Best Boyfriend in the world</div>
+    """, unsafe_allow_html=True)
 
     st.markdown(f"""
     <img src="{img_to_datauri('1.png')}" style="width:200px; top:40px; left:-140px; transform:rotate(3deg);" />
@@ -85,11 +89,6 @@ if st.session_state.stage == "landing":
     <img src="{img_to_datauri('4.png')}" style="width:175px; top:180px; right:160px; transform:rotate(-4deg);" />
     <img src="{img_to_datauri('5.png')}" style="width:200px; bottom:60px; left:-120px; transform:rotate(6deg);" />
     <img src="{img_to_datauri('6.png')}" style="width:175px; bottom:60px; right:120px; transform:rotate(-4deg);" />
-    """, unsafe_allow_html=True)
-
-    st.markdown("""
-    <div class="love-script love3">Happy 6 months, my love</div>
-    <div class="love-script love4">Best Boyfriend in the world</div>
     """, unsafe_allow_html=True)
 
     st.markdown('<div class="enter-container">', unsafe_allow_html=True)
@@ -278,6 +277,7 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
