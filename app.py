@@ -4,6 +4,7 @@ from PIL import Image, ImageOps, ImageEnhance, ImageDraw, ImageFont
 import io
 import random
 import base64
+import time
 
 # ---------- Page Config ----------
 st.set_page_config(page_title="Photobooth", page_icon="💕", layout="wide")
@@ -11,36 +12,14 @@ st.set_page_config(page_title="Photobooth", page_icon="💕", layout="wide")
 # ---------- Styling ----------
 st.markdown("""
 <style>
-/* Page background & central card */
 .stApp {
     background-color: #f3e5d0;
     color: #111;
     font-family: 'Times New Roman', 'Times', serif;
 }
-
-/* Container for spreading the romantic text nicely */
-.love-container {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 20px;
-    padding: 10px 0;
-}
-
-/* Polaroid images */
-.polaroid-img {
-    width: 150px;
-    height: 135px;
-    position: absolute;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.8);
-}
-
-/* Enter button container */
-.enter-container {
-    margin-top: 200px;
-}
-
-/* Buttons */
+.love-container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px; padding: 10px 0; }
+.polaroid-img { width: 150px; height: 135px; position: absolute; box-shadow: 0 4px 8px rgba(0,0,0,0.8); }
+.enter-container { margin-top: 200px; }
 div.stButton > button, div.stDownloadButton > button {
     background-color: #a71d2a !important;
     color: #f5e7dc !important;
@@ -49,9 +28,7 @@ div.stButton > button, div.stDownloadButton > button {
     padding: 25px 60px !important;
     font-size: 220px !important;
 }
-div.stButton > button:hover {
-    background-color: #c8323b !important;
-}
+div.stButton > button:hover { background-color: #c8323b !important; }
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&display=swap" rel="stylesheet">
 """, unsafe_allow_html=True)
@@ -86,14 +63,7 @@ def bw_transform(img: Image.Image, contrast=1.1, sharpness=1.1):
 if st.session_state.stage == "landing":
     st.markdown("""
     <style>
-    .love-script {
-        font-family: 'Pinyon Script', cursive;
-        color: #a71d2a;
-        font-size: 2rem;
-        display: inline-block;
-        position: absolute;
-        white-space: nowrap;
-    }
+    .love-script { font-family: 'Pinyon Script', cursive; color: #a71d2a; font-size: 2rem; display: inline-block; position: absolute; white-space: nowrap; }
     .love1 { top: 200px; left: 700px; transform: rotate(0deg); }
     .love2 { top: 100px; right: 100px; transform: rotate(0deg); }
     .love3 { top: 200px; left: 700px; transform: rotate(0deg); }
@@ -107,14 +77,9 @@ if st.session_state.stage == "landing":
     <div class="love-script love2">I love you so much, Aditya</div>
     """, unsafe_allow_html=True)
 
-    st.markdown(f"""
-    <img src="{img_to_datauri('1.png')}" style="width:150px; top:40px; left:-140px; transform:rotate(-5deg);" />
-    <img src="{img_to_datauri('2.png')}" style="width:150px; top:20px; right:140px; transform:rotate(5deg);" />
-    <img src="{img_to_datauri('3.png')}" style="width:150px; top:180px; left:-160px; transform:rotate(-3deg);" />
-    <img src="{img_to_datauri('4.png')}" style="width:150px; top:180px; right:160px; transform:rotate(3deg);" />
-    <img src="{img_to_datauri('5.png')}" style="width:150px; bottom:60px; left:-120px; transform:rotate(4deg);" />
-    <img src="{img_to_datauri('6.png')}" style="width:150px; bottom:60px; right:120px; transform:rotate(-4deg);" />
-    """, unsafe_allow_html=True)
+    # Display images
+    for i in range(1,7):
+        st.markdown(f'<img src="{img_to_datauri(f"{i}.png")}" style="width:150px;" />', unsafe_allow_html=True)
 
     st.markdown("""
     <div class="love-script love3">Happy 6 months, my love</div>
@@ -127,7 +92,6 @@ if st.session_state.stage == "landing":
         st.session_state.photos = []
         st.session_state.last_camera_image = None
         st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------- Capture Page ----------
@@ -143,36 +107,30 @@ elif st.session_state.stage == "capture":
             else:
                 st.image(Image.new("RGB",(500,500),(200,200,200)), width=140, caption=f"#{i+1}")
 
-    # --- Countdown overlay ---
-countdown_placeholder = st.empty()
-def start_countdown():
-    import time
-    overlay_style = """
-    <div style='position: fixed; top:0; left:0; width:100%; height:100%;
-                background-color: rgba(0,0,0,0.6); z-index: 900;  /* lower than buttons */
-                display:flex; justify-content:center; align-items:center;
-                flex-direction: column;'>
-        <h1 style='color:white; font-size:140px; margin:0;'>{}</h1>
-    </div>
-    """
-    for count in ["3", "2", "1", "📸"]:
-        countdown_placeholder.markdown(overlay_style.format(count), unsafe_allow_html=True)
-        time.sleep(0.8)
-    countdown_placeholder.empty()  # remove overlay completely
-    st.info("Countdown finished! Click the camera button to take a photo.")
+    # Countdown overlay
+    countdown_placeholder = st.empty()
+    def start_countdown():
+        overlay_style = """
+        <div style='position: fixed; top:0; left:0; width:100%; height:100%;
+                    background-color: rgba(0,0,0,0.6); z-index: 900;
+                    display:flex; justify-content:center; align-items:center; flex-direction: column;'>
+            <h1 style='color:white; font-size:140px; margin:0;'>{}</h1>
+        </div>
+        """
+        for count in ["3","2","1","📸"]:
+            countdown_placeholder.markdown(overlay_style.format(count), unsafe_allow_html=True)
+            time.sleep(0.8)
+        countdown_placeholder.empty()
+        st.info("Countdown finished! Click the camera button to take a photo.")
 
-    # Start Countdown button
-    st.markdown("<div class='center'>", unsafe_allow_html=True)
     if st.button("📸 Start Countdown", key="countdown_btn"):
         start_countdown()
-    st.markdown("</div>", unsafe_allow_html=True)
 
     cam_file = st.camera_input("Smile Baby! Click the camera button to take a photo.", key="camera_input")
-    if cam_file is not None:
+    if cam_file:
         st.session_state.last_camera_image = pil_from_streamlit_uploaded(cam_file)
 
-    col1, col2, col3, col4 = st.columns([1,1,1,1])
-
+    col1, col2, col3, col4 = st.columns(4)
     with col1:
         if st.button("Add Photo to Strip", key="add_photo"):
             if st.session_state.last_camera_image is None:
@@ -183,7 +141,6 @@ def start_countdown():
                 st.session_state.photos.append(st.session_state.last_camera_image.copy())
                 st.session_state.last_camera_image = None
                 st.rerun()
-
     with col2:
         if st.button("Retake Last Photo", key="retake"):
             if st.session_state.photos:
@@ -193,7 +150,6 @@ def start_countdown():
                 st.warning("No photos yet.")
             st.session_state.last_camera_image = None
             st.rerun()
-
     with col3:
         if st.button("Create Your Strip", key="create_strip"):
             if len(st.session_state.photos) < 4:
@@ -201,14 +157,12 @@ def start_countdown():
             else:
                 st.session_state.stage = "done"
                 st.rerun()
-
     with col4:
         if st.button("🏠 Return to Home Page"):
             st.session_state.photos = []
             st.session_state.last_camera_image = None
             st.session_state.stage = "landing"
             st.rerun()
-
     st.markdown("</div>", unsafe_allow_html=True)
 
 # ---------- Done Page ----------
@@ -227,9 +181,7 @@ elif st.session_state.stage == "done":
             new_img.paste(bw, (0,0))
             strip_images.append(new_img)
 
-        # Add message to last photo
-        messages = ["Happy 6 months, My Love!", "Niharika loves Aditya", "Adi baby ❤️ Nihoo baby", "Bandar baby ❤️ Sundar baby", "Big Kissies Big Huggies"]
-        last_message = random.choice(messages)
+        # Add message
         last_img = strip_images[-1]
         if extra_bottom > 0:
             draw = ImageDraw.Draw(last_img)
@@ -237,14 +189,13 @@ elif st.session_state.stage == "done":
                 font = ImageFont.truetype("DejaVuSans.ttf", 30)
             except:
                 font = ImageFont.load_default()
-            bbox = draw.textbbox((0,0), last_message, font=font)
+            msg = random.choice(["Happy 6 months, My Love!", "Niharika loves Aditya", "Adi baby ❤️ Nihoo baby", "Bandar baby ❤️ Sundar baby", "Big Kissies Big Huggies"])
+            bbox = draw.textbbox((0,0), msg, font=font)
             w = bbox[2] - bbox[0]
             h = bbox[3] - bbox[1]
-            draw.text(
-                ((last_img.width - w)//2, last_img.height - extra_bottom + (extra_bottom - h)//2),
-                last_message, fill=(245,235,220), font=font
-            )
+            draw.text(((last_img.width - w)//2, last_img.height - extra_bottom + (extra_bottom - h)//2), msg, fill=(245,235,220), font=font)
 
+        # Combine final strip
         total_h = sum(im.height for im in strip_images)
         strip_w = max(im.width for im in strip_images)
         final_strip = Image.new("RGB", (strip_w, total_h), (0,0,0))
@@ -279,14 +230,13 @@ elif st.session_state.stage == "done":
             mime="image/png"
         )
 
-        col1, col2 = st.columns([1,1,])
+        col1, col2 = st.columns(2)
         with col1:
             if st.button("Make Another?"):
                 st.session_state.photos = []
                 st.session_state.last_camera_image = None
                 st.session_state.stage = "capture"
                 st.rerun()
-       
         with col2:
             if st.button("🏠 Back to Home"):
                 st.session_state.photos = []
@@ -298,4 +248,3 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
-
