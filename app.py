@@ -205,42 +205,43 @@ elif st.session_state.stage == "capture":
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ---------- Done Page ----------
+# ---------- UI: Done ----------
 elif st.session_state.stage == "done":
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
-    st.markdown("<h2>✨ Your Photobooth Strip is Ready</h2>", unsafe_allow_html=True)
+    st.markdown("<h2>✨ Your Photobooth Strip</h2>", unsafe_allow_html=True)
+    st.markdown("<p class='muted'>Here is your strip, just printed! Download it, or keep taking more photos.</p>", unsafe_allow_html=True)
 
     try:
         strip_images = []
         for i, p in enumerate(st.session_state.photos):
             bw = bw_transform(p, contrast=1.15, sharpness=1.05)
-            extra_bottom = 80 if i == len(st.session_state.photos) - 1 else 0
+            # For the last photo, add extra space at bottom for message
+            if i == len(st.session_state.photos) - 1:
+                extra_bottom = 80
+            else:
+                extra_bottom = 0
             img_w, img_h = bw.size
             new_img = Image.new("RGB", (img_w, img_h + extra_bottom), (0,0,0))
             new_img.paste(bw, (0,0))
             strip_images.append(new_img)
 
-        messages = ["Happy 6 months My Love!", "Niharika loves Aditya", "Adi baby <3 Nihoo baby", "Aditya loves Niharika", "Happy 6 Crazy Months Together", "Bandar Baby 🐒 ❤️ Sundar Baby 🐰"]
+        # Add a random message on the extra bottom of the last photo
+        messages = ["Happy 6 months, my love!", "Niharika loves Aditya", "Adi baby ❤️ Nihoo baby", "Bandar baby ❤️ Sundar baby", "Big Kissies Big Huggies"]
         last_message = random.choice(messages)
-
         last_img = strip_images[-1]
         if extra_bottom > 0:
             draw = ImageDraw.Draw(last_img)
             try:
-               font = ImageFont.truetype("PinyonScript-Regular.ttf", 100)
+                font = ImageFont.truetype("DejaVuSans.ttf", 28)
             except:
                 font = ImageFont.load_default()
-
             bbox = draw.textbbox((0,0), last_message, font=font)
             w = bbox[2] - bbox[0]
             h = bbox[3] - bbox[1]
-            draw.text(
-                ((last_img.width - w)//2, last_img.height - extra_bottom + (extra_bottom - h)//2),
-                last_message,
-                fill=(245,235,220),
-                font=font
-            )
+            draw.text(((last_img.width - w)//2, last_img.height - extra_bottom + (extra_bottom - h)//2),
+                      last_message, fill=(245,235,220), font=font)
 
+        # Combine all images vertically into a strip
         total_h = sum(im.height for im in strip_images)
         strip_w = max(im.width for im in strip_images)
         final_strip = Image.new("RGB", (strip_w, total_h), (0,0,0))
@@ -249,11 +250,31 @@ elif st.session_state.stage == "done":
             final_strip.paste(im, (0, y))
             y += im.height
 
+        # Convert to Base64 for slide-down animation
         buf = io.BytesIO()
         final_strip.save(buf, format="PNG")
+        base64_img = base64.b64encode(buf.getvalue()).decode()
 
-        st.image(final_strip, caption="Your Photobooth Strip is ready", use_column_width=True)
+        html_code = f"""
+        <div style="position: relative; width: fit-content; margin: auto; overflow: hidden; height: {final_strip.height}px; background-color: #000;">
+            <img src="data:image/png;base64,{base64_img}" 
+                 style="
+                    display: block; 
+                    width: auto; 
+                    animation: slideDown 1.2s ease-out forwards;
+                    transform: translateY(-{final_strip.height}px);
+                 "/>
+        </div>
+        <style>
+        @keyframes slideDown {{
+            0% {{ transform: translateY(-{final_strip.height}px); }}
+            100% {{ transform: translateY(0); }}
+        }}
+        </style>
+        """
+        st.markdown(html_code, unsafe_allow_html=True)
 
+        # Download button
         st.download_button(
             label="Download Photobooth Strip (PNG)",
             data=buf.getvalue(),
@@ -261,19 +282,23 @@ elif st.session_state.stage == "done":
             mime="image/png"
         )
 
-        col1, col2 = st.columns([1,1])
+        # Buttons
+        col1, col2, col3 = st.columns([1,1,1])
         with col1:
-            if st.button("Make Another?"):
+            if st.button("Retake All"):
                 st.session_state.photos = []
                 st.session_state.last_camera_image = None
                 st.session_state.stage = "capture"
                 st.rerun()
         with col2:
-            if st.button("Add a New Strip"):
+            if st.button("Add a New Strip (Keep these)"):
+                st.session_state.photos = []
                 st.session_state.last_camera_image = None
                 st.session_state.stage = "capture"
                 st.rerun()
 
+        # Back to Home
+         with col3:
         if st.button("🏠 Back to Home"):
             st.session_state.photos = []
             st.session_state.last_camera_image = None
@@ -281,26 +306,6 @@ elif st.session_state.stage == "done":
             st.rerun()
 
     except Exception as e:
-        st.error(f"Error creating the strip: {e}")
+        st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
