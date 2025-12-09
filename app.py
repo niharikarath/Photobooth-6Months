@@ -136,7 +136,7 @@ elif st.session_state.stage == "capture":
     cam_file = st.camera_input(
         "Smile Baby! Click the camera button to take a photo.",
         key="camera_input",
-        width=4000  # adjust this value to make the preview smaller or larger
+        width=750  # adjust this value to make the preview smaller or larger
     )
 
     if cam_file:
@@ -290,6 +290,7 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
