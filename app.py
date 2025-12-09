@@ -96,7 +96,6 @@ def bw_transform(img: Image.Image, contrast=1.1, sharpness=1.1):
     return rgb
 
 # ---------- Landing Page ----------
-
 if st.session_state.stage == "landing":
 
     st.markdown("""
@@ -110,10 +109,9 @@ if st.session_state.stage == "landing":
         max-width: 800px;
         margin: 120px auto;
         text-align: center;
-        position: center;
+        position: relative;
         overflow: visible;
     }
-
 
     /* Romantic text scattered */
     .love-script {
@@ -121,7 +119,7 @@ if st.session_state.stage == "landing":
         color: #a71d2a;
         font-size: 3rem;
         display: inline-block;
-        position: relative;
+        position: absolute;
         white-space: nowrap;
     }
 
@@ -142,18 +140,13 @@ if st.session_state.stage == "landing":
     </style>
     """, unsafe_allow_html=True)
 
-    # Photobooth Card Begin
-    st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
-
-  if st.session_state.stage == "landing":
-
-    # First two love lines
+    # First two love lines (above images)
     st.markdown("""
     <div class="love-script love1">I can’t wait to kiss you in a photobooth one day</div>
     <div class="love-script love2">I love you so much, Aditya</div>
     """, unsafe_allow_html=True)
 
-    # Images
+    # Images surrounding the card
     st.markdown(f"""
     <img src="{img_to_datauri('1.png')}" style="width:160px; top:40px; left:-140px; transform:rotate(-5deg);" />
     <img src="{img_to_datauri('2.png')}" style="width:160px; top:20px; right:-140px; transform:rotate(5deg);" />
@@ -163,13 +156,15 @@ if st.session_state.stage == "landing":
     <img src="{img_to_datauri('6.png')}" style="width:160px; bottom:60px; right:-120px; transform:rotate(-4deg);" />
     """, unsafe_allow_html=True)
 
-    # Last two love lines (appear after images)
+    # Last two love lines (below images)
     st.markdown("""
     <div class="love-script love3">Best boyfriend</div>
     <div class="love-script love4">Happy 6 months, my love</div>
     """, unsafe_allow_html=True)
 
-    # ---- Centered Enter Button ----
+    # Red card with button inside
+    st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
+
     st.markdown("""
     <style>
     .enter-container {
@@ -188,8 +183,9 @@ if st.session_state.stage == "landing":
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # Photobooth Card End
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)  
+    
+    # End photobooth card
 
 # ---------- Capture Page ----------
 elif st.session_state.stage == "capture":
@@ -325,6 +321,7 @@ elif st.session_state.stage == "done":
         st.error(f"Error creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
