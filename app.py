@@ -144,6 +144,24 @@ elif st.session_state.stage == "capture":
     cam_file = st.camera_input("Smile Baby! Click the camera button to take a photo.", key="camera_input")
     st.markdown('</div>', unsafe_allow_html=True)  # close camera scaling wrapper
 
+    # --- TRUE camera scaling (works on all Streamlit versions) ---
+st.markdown("""
+<style>
+/* Shrink the entire camera component */
+div[data-testid="stCamera"] video,
+div[data-testid="stCamera"] canvas {
+    transform: scale(0.55) !important;   /* change to 0.45 or 0.35 if needed */
+    transform-origin: top left !important;
+}
+
+/* Reduce the wrapper height so no extra blank space appears */
+div[data-testid="stCamera"] {
+    height: 240px !important;   /* lower this if you want even smaller preview */
+    overflow: hidden !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
     if cam_file:
         st.session_state.last_camera_image = pil_from_streamlit_uploaded(cam_file)
 
@@ -294,3 +312,4 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
