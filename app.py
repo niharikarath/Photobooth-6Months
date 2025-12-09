@@ -97,7 +97,7 @@ def bw_transform(img: Image.Image, contrast=1.1, sharpness=1.1):
     return rgb
 
 # ---------- Landing Page ----------
-    
+
 if st.session_state.stage == "landing":
 
     st.markdown("""
@@ -108,78 +108,138 @@ if st.session_state.stage == "landing":
         border-radius: 20px;
         padding: 60px 40px;
         box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-        max-width: 400px;
+        max-width: 800px;
         margin: 120px auto;
         text-align: center;
         position: relative;
+        overflow: visible;
     }
 
-    /* Love text scattered around */
+
+    /* Romantic text scattered */
     .love-script {
         font-family: 'Pinyon Script', cursive;
-        color: #a71d2a;
-        font-size: 2rem;
+        color: #f3e5d0;
+        font-size: 6rem;
         display: inline-block;
         position: absolute;
         white-space: nowrap;
     }
-    .love1 { top: 50px; left: 50px; transform: rotate(-3deg); }
-    .love2 { top: 120px; right: 60px; transform: rotate(3deg); }
-    .love3 { bottom: 120px; left: 60px; transform: rotate(-5deg); }
-    .love4 { bottom: 50px; right: 80px; transform: rotate(5deg); }
 
-    /* Images scattered around the card */
-    .decor-img {
-        width: 150px;
-        height: auto;
+    /* Positions for each love line */
+    .love1 { top: 60px; left: 40px; transform: rotate(-3deg); }
+    .love2 { top: 100px; right: 70px; transform: rotate(3deg); }
+    .love3 { top: 140px; left: 100px; transform: rotate(-5deg); }
+    .love4 { top: 180px; right: 130px; transform: rotate(5deg); }
+
+    /* Scattered landing images */
+    .polaroid-img {
+        width: 135px;
+        height: 135px;
         position: absolute;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.4);
     }
-    .img1 { top: 20px; left: -20px; transform: rotate(-6deg); }
-    .img2 { top: 60px; right: -40px; transform: rotate(6deg); }
-    .img3 { bottom: 50px; left: 10px; transform: rotate(-10deg); }
-    .img4 { bottom: 60px; right: 20px; transform: rotate(8deg); }
 
-    /* Button inside card */
-    div.stButton > button {
-        background-color: #f5e7dc !important;
-        color: #a71d2a !important;
-        border-radius: 14px !important;
-        font-weight: 700 !important;
-        padding: 25px 60px !important;
-        font-size: 28px !important;
-    }
-    div.stButton > button:hover {
-        background-color: #fff0e8 !important;
-    }
     </style>
     """, unsafe_allow_html=True)
 
-    # Love texts
-    st.markdown("""
+    # Photobooth Card Begin
+    st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
+
+    # Romantic Text
+    st.markdown(f"""
     <div class="love-script love1">I can’t wait to kiss you in a photobooth one day</div>
     <div class="love-script love2">I love you so much, Aditya</div>
     <div class="love-script love3">Best boyfriend</div>
     <div class="love-script love4">Happy 6 months, my love</div>
     """, unsafe_allow_html=True)
 
-    # Images
+    # Scattered Images
     st.markdown(f"""
-    <img class="decor-img img1" src="{img_to_datauri('1.png')}" />
-    <img class="decor-img img2" src="{img_to_datauri('2.png')}" />
-    <img class="decor-img img3" src="{img_to_datauri('3.png')}" />
-    <img class="decor-img img4" src="{img_to_datauri('4.png')}" />
+    <img src="{img_to_datauri('1.png')}" style="width:160px; top:100px; left:-100px; transform:rotate(-6deg);" />
+    <img src="{img_to_datauri('2.png')}" style="width:180px; top:50px; right:-20px; transform:rotate(6deg);" />
+    <img src="{img_to_datauri('3.png')}" style="width:160px; bottom:40px; left:20px; transform:rotate(-5deg);" />
+    <img src="{img_to_datauri('4.png')}" style="width:180px; bottom:50px; right:30px; transform:rotate(5deg);" />
+    <img src="{img_to_datauri('5.png')}" style="width:160px; top:180px; left:0px; transform:rotate(4deg);" />
+    <img src="{img_to_datauri('6.png')}" style="width:180px; top:200px; right:10px; transform:rotate(-4deg);" />
     """, unsafe_allow_html=True)
 
-    # Red card with button inside
-    st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
+    # ---- Centered Enter Button ----
+    st.markdown("""
+    <style>
+    .enter-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 40px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
+    st.markdown('<div class="enter-container">', unsafe_allow_html=True)
     if st.button("📸 Click to Enter the Photobooth"):
         st.session_state.stage = "capture"
         st.session_state.photos = []
         st.session_state.last_camera_image = None
         st.rerun()
-
     st.markdown('</div>', unsafe_allow_html=True)
+
+    # Photobooth Card End
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# ---------- Capture Page ----------
+elif st.session_state.stage == "capture":
+    st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
+    st.markdown("<h2>Photobooth — Take 4 photos</h2>", unsafe_allow_html=True)
+
+    cols = st.columns(4)
+    for i in range(4):
+        with cols[i]:
+            if i < len(st.session_state.photos):
+                st.image(st.session_state.photos[i], width=140, caption=f"#{i+1}")
+            else:
+                st.image(Image.new("RGB",(500,500),(200,200,200)), width=140, caption=f"#{i+1}")
+
+    cam_file = st.camera_input("Smile! Click the camera button to take a photo.", key="camera_input")
+    if cam_file is not None:
+        st.session_state.last_camera_image = pil_from_streamlit_uploaded(cam_file)
+
+    col1, col2, col3 = st.columns([1,1,1])
+    with col1:
+        if st.button("Add Photo to Strip", key="add_photo"):
+            if st.session_state.last_camera_image is None:
+                st.warning("Take a photo first using the camera above.")
+            elif len(st.session_state.photos) >= 4:
+                st.info("You already have 4 photos. Click 'Create Your Strip'.")
+            else:
+                st.session_state.photos.append(st.session_state.last_camera_image.copy())
+                st.session_state.last_camera_image = None
+                st.rerun()
+
+    with col2:
+        if st.button("Retake Last Photo", key="retake"):
+            if st.session_state.photos:
+                st.session_state.photos.pop()
+                st.warning("Removed last photo.")
+            else:
+                st.warning("No photos yet.")
+            st.session_state.last_camera_image = None
+            st.rerun()
+
+    with col3:
+        if st.button("Create Your Strip", key="create_strip"):
+            if len(st.session_state.photos) < 4:
+                st.warning(f"Take {4 - len(st.session_state.photos)} more photo(s).")
+            else:
+                st.session_state.stage = "done"
+                st.rerun()
+
+    if st.button("🏠 Return to Home"):
+        st.session_state.photos = []
+        st.session_state.last_camera_image = None
+        st.session_state.stage = "landing"
+        st.rerun()
+
+    st.markdown("</div>", unsafe_allow_html=True)
 
 # ---------- Done Page ----------
 elif st.session_state.stage == "done":
@@ -260,10 +320,3 @@ elif st.session_state.stage == "done":
         st.error(f"Error creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
-
-
-
-
-
-
-
