@@ -47,7 +47,7 @@ div.stButton > button, div.stDownloadButton > button {
     border-radius: 140px !important;
     font-weight: 700 !important;
     padding: 25px 60px !important;
-    font-size: 700px !important;
+    font-size: 220px !important;
 }
 div.stButton > button:hover {
     background-color: #c8323b !important;
@@ -92,7 +92,7 @@ if st.session_state.stage == "landing":
     .love-script {
         font-family: 'Pinyon Script', cursive;
         color: #a71d2a;
-        font-size: 4rem;
+        font-size: 2rem;
         display: inline-block;
         position: absolute;
         white-space: nowrap;
@@ -117,7 +117,7 @@ if st.session_state.stage == "landing":
 
     # First two love lines (above images)
     st.markdown("""
-    <div class="love-script love1">I can’t wait to kiss you in a photobooth one day</div>
+    <div class="love-script love1">I can’t wait to kiss you in a photobooth</div>
     <div class="love-script love2">I love you so much, Aditya</div>
     """, unsafe_allow_html=True)
 
@@ -133,12 +133,12 @@ if st.session_state.stage == "landing":
 
     # Last two love lines (below images)
     st.markdown("""
-    <div class="love-script love3">Best boyfriend</div>
-    <div class="love-script love4">Happy 6 months, my love</div>
+    <div class="love-script love3">Happy 6 months, my love</div>
+    <div class="love-script love4">Best Boyfriend in the world</div>
     """, unsafe_allow_html=True)
 
     st.markdown('<div class="enter-container">', unsafe_allow_html=True)
-    if st.button("📸 Click to Enter the Photobooth"):
+    if st.button("📸Enter the Photobooth"):
         st.session_state.stage = "capture"
         st.session_state.photos = []
         st.session_state.last_camera_image = None
@@ -166,7 +166,7 @@ elif st.session_state.stage == "capture":
     if cam_file is not None:
         st.session_state.last_camera_image = pil_from_streamlit_uploaded(cam_file)
 
-    col1, col2, col3 = st.columns([1,1,1])
+    col1, col2, col3, col4 = st.columns([1,1,1,1])
     with col1:
         if st.button("Add Photo to Strip", key="add_photo"):
             if st.session_state.last_camera_image is None:
@@ -196,7 +196,8 @@ elif st.session_state.stage == "capture":
                 st.session_state.stage = "done"
                 st.rerun()
 
-    if st.button("🏠 Return to Home"):
+    with col4:
+        if st.button("🏠 Return to Home"):
         st.session_state.photos = []
         st.session_state.last_camera_image = None
         st.session_state.stage = "landing"
@@ -283,6 +284,7 @@ elif st.session_state.stage == "done":
         st.error(f"Error creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
