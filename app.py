@@ -25,7 +25,7 @@ st.markdown("""
     border-radius: 4px;
     padding: 40px;
     box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-    max-width: 78px;
+    max-width: 780px;
     margin: 60px auto;
     text-align: center;
     position: relative;
@@ -51,17 +51,17 @@ st.markdown("""
 
 /* Enter button container */
 .enter-container {
-    margin-top: 50px;
+    margin-top: 200px;
 }
 
 /* Buttons */
 div.stButton > button, div.stDownloadButton > button {
     background-color: #a71d2a !important;
     color: #f5e7dc !important;
-    border-radius: 14px !important;
+    border-radius: 140px !important;
     font-weight: 700 !important;
     padding: 25px 60px !important;
-    font-size: 85px !important;
+    font-size: 220px !important;
 }
 div.stButton > button:hover {
     background-color: #c8323b !important;
@@ -320,6 +320,7 @@ elif st.session_state.stage == "done":
         st.error(f"Error creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
