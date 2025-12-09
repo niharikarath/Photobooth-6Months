@@ -97,6 +97,7 @@ def bw_transform(img: Image.Image, contrast=1.1, sharpness=1.1):
     return rgb
 
 # ---------- Landing Page ----------
+
 if st.session_state.stage == "landing":
 
     st.markdown("""
@@ -105,13 +106,17 @@ if st.session_state.stage == "landing":
     .photobooth-card {
         background-color: #a71d2a;   /* deep red */
         border-radius: 20px;
-        padding: 80px 40px;
+        padding: 40px;
         box-shadow: 0 8px 25px rgba(0,0,0,0.3);
         max-width: 900px;
-        margin: 80px auto;   /* center it */
+        min-height: 700px;  /* ensures it’s tall enough */
+        margin: 80px auto;   /* center it vertically */
         text-align: center;
         position: relative;
         overflow: visible;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;  /* pushes button to bottom */
     }
 
     /* Love text */
@@ -123,10 +128,10 @@ if st.session_state.stage == "landing":
         position: absolute;
         white-space: nowrap;
     }
-    .love1 { top: 30px; left: 50px; transform: rotate(-3deg); }
+    .love1 { top: 20px; left: 50px; transform: rotate(-3deg); }
     .love2 { top: 80px; right: 50px; transform: rotate(3deg); }
-    .love3 { top: 130px; left: 120px; transform: rotate(-5deg); }
-    .love4 { top: 180px; right: 120px; transform: rotate(5deg); }
+    .love3 { top: 140px; left: 120px; transform: rotate(-5deg); }
+    .love4 { top: 200px; right: 120px; transform: rotate(5deg); }
 
     /* Polaroid images */
     .polaroid-img {
@@ -136,11 +141,12 @@ if st.session_state.stage == "landing":
         box-shadow: 0 6px 12px rgba(0,0,0,0.5);
     }
 
-    /* Center the button */
+    /* Center the button at bottom of card */
     .enter-container {
         display: flex;
         justify-content: center;
-        margin-top: 260px;   /* pushes it below the text/images */
+        margin-top: 20px;
+        position: relative;
     }
 
     /* Button styling */
@@ -190,7 +196,6 @@ if st.session_state.stage == "landing":
 
     # CLOSE RED CARD
     st.markdown('</div>', unsafe_allow_html=True)
-
 
 # ---------- Capture Page ----------
 elif st.session_state.stage == "capture":
@@ -326,6 +331,7 @@ elif st.session_state.stage == "done":
         st.error(f"Error creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
