@@ -22,7 +22,7 @@ st.markdown("""
 .photobooth-card {
     background-color: #f3e5d0; /* cream */
     border: 4px solid #a71d2a; /* deep red frame */
-    border-radius: 40px;
+    border-radius: 100px;
     padding: 40px;
     box-shadow: 0 8px 25px rgba(0,0,0,0.3);
     max-width: 780px;
@@ -320,6 +320,7 @@ elif st.session_state.stage == "done":
         st.error(f"Error creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
