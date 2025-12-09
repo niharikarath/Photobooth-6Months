@@ -104,11 +104,11 @@ elif st.session_state.stage == "capture":
     st.markdown("<h2>Photobooth — Take 4 photos</h2>", unsafe_allow_html=True)
 
     # ---------- Photo Strip Preview ----------
-    cols = st.columns(4, gap="large")  # use a larger gap so images aren't cramped
+    cols = st.columns(6, gap="large")  # use a larger gap so images aren't cramped
     for i in range(4):
         with cols[i]:
             if i < len(st.session_state.photos):
-                st.image(st.session_state.photos[i], width=180, caption=f"#{i+1}")  # bigger preview
+                st.image(st.session_state.photos[i], width=250, caption=f"#{i+1}")  # bigger preview
             else:
                 st.image(Image.new("RGB", (500,500), (200,200,200)), width=180, caption=f"#{i+1}")
 
@@ -292,6 +292,7 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
