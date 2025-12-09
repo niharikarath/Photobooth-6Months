@@ -64,7 +64,7 @@ if st.session_state.stage == "landing":
     st.markdown("""
     <style>
     .love-script { font-family: 'Pinyon Script', cursive; color: #a71d2a; font-size: 4rem; display: inline-block; position: absolute; white-space: nowrap; }
-    .love1 { top: 100px; right: -10px; transform: rotate(0deg); }
+    .love1 { top: 100px; right: -25px; transform: rotate(0deg); }
     .love2 { top: 250px; right: 100px; transform: rotate(0deg); }
     .love3 { top: 400px; right: 100px; transform: rotate(0deg); }
     .love4 { top: 550px; right: 100px; transform: rotate(0deg); }
@@ -79,7 +79,7 @@ if st.session_state.stage == "landing":
 
     st.markdown("""
     <div class="love-script love3">Happy 6 months, my love</div>
-    <div class="love-script love4">Best Boyfriend in the world</div>
+    <div class="love-script love4">This is for the best Boyfriend in the world</div>
     """, unsafe_allow_html=True)
 
     st.markdown(f"""
@@ -276,6 +276,7 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
