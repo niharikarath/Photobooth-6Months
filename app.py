@@ -6,7 +6,7 @@ import random
 import base64
 
 # ---------- Page Config ----------
-st.set_page_config(page_title="Photobooth for Niharika and Aditya", page_icon="💕", layout="wide")
+st.set_page_config(page_title="Photobooth", page_icon="💕", layout="wide")
 
 # ---------- Styling ----------
 st.markdown("""
@@ -192,13 +192,13 @@ elif st.session_state.stage == "done":
             new_img.paste(bw, (0,0))
             strip_images.append(new_img)
 
-        messages = ["Happy 6 months!", "Niharika loves Aditya", "Adi baby ❤️ Nihoo baby"]
+        messages = ["Happy 6 months My Love!", "Niharika loves Aditya", "Adi baby ❤️ Nihoo baby", "Aditya ❤️ Niharika", "Happy 6 Crazy Months Together", "Bandar Baby 🐒 ❤️ Sundar Baby 🐰"]
         last_message = random.choice(messages)
         last_img = strip_images[-1]
         if extra_bottom > 0:
             draw = ImageDraw.Draw(last_img)
             try:
-                font = ImageFont.truetype("DejaVuSans.ttf", 28)
+               font = ImageFont.truetype("PinyonScript-Regular.ttf", 40)  # bigger + script font
             except:
                 font = ImageFont.load_default()
             bbox = draw.textbbox((0,0), last_message, font=font)
@@ -233,21 +233,22 @@ elif st.session_state.stage == "done":
                 st.session_state.photos = []
                 st.session_state.last_camera_image = None
                 st.session_state.stage = "capture"
-                st.experimental_rerun()
+                st.rerun()
         with col2:
             if st.button("Add a New Strip (Keep these)"):
                 st.session_state.last_camera_image = None
                 st.session_state.stage = "capture"
-                st.experimental_rerun()
+                st.rerun()
 
         if st.button("🏠 Back to Home"):
             st.session_state.photos = []
             st.session_state.last_camera_image = None
             st.session_state.stage = "landing"
-            st.experimental_rerun()
+            st.rerun()
 
     except Exception as e:
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
