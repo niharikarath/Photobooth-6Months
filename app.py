@@ -68,7 +68,7 @@ if st.session_state.stage == "landing":
     .love2 { top: 100px; right: 100px; transform: rotate(0deg); }
     .love3 { top: 200px; right: 100px; transform: rotate(0deg); }
     .love4 { top: 100px; right: 100px; transform: rotate(0deg); }
-    .polaroid-img { width: 175px; height: 125px; position: relative; box-shadow: 0 5px 10px rgba(0,0,0,0.5); }
+    .polaroid-img { width: 400px; height: 200px; position: relative; box-shadow: 0 5px 10px rgba(0,0,0,0.5); }
     </style>
     """, unsafe_allow_html=True)
 
@@ -278,6 +278,7 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
