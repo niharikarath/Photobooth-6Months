@@ -97,10 +97,10 @@ if st.session_state.stage == "landing":
         st.session_state.last_camera_image = None
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
-
-    # ---------- Capture Page ----------
+    
+# ---------- Capture Page ----------
 elif st.session_state.stage == "capture":
-    st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
+    st.markdown('<div class="photobooth-card" style="text-align: center;">', unsafe_allow_html=True)
     st.markdown("<h2>Photobooth — Take 4 photos</h2>", unsafe_allow_html=True)
 
     # ---------- Photo Strip Preview ----------
@@ -125,7 +125,7 @@ elif st.session_state.stage == "capture":
         """
         for count in ["3","2","1","📸"]:
             countdown_placeholder.markdown(overlay_style.format(count), unsafe_allow_html=True)
-            time.sleep(1)
+            time.sleep(0.8)
         countdown_placeholder.empty()
         st.info("Countdown finished! Click the camera button to take a photo.")
 
@@ -134,22 +134,19 @@ elif st.session_state.stage == "capture":
 
     # ---------- Smaller Camera Input (Centered) ----------
     st.markdown("""
-    <div style="text-align: center;">
-        <style>
-        div[data-testid="stCamera"] {
-            display: inline-block !important;  /* shrink to content */
-            margin: center!important;         /* center horizontally */
-        }
-        </style>
+    <style>
+    div[data-testid="stCamera"] {
+        display: inline-block !important;  /* shrink to content */
+        margin: 0 auto !important;         /* center horizontally */
+    }
+    </style>
     """, unsafe_allow_html=True)
 
     cam_file = st.camera_input(
         "Smile Baby! Click the camera button to take a photo.",
         key="camera_input",
-        width=1500  # adjust preview size
+        width=250  # adjust preview size
     )
-
-    st.markdown("</div>", unsafe_allow_html=True)  # close centering div
 
     if cam_file:
         st.session_state.last_camera_image = pil_from_streamlit_uploaded(cam_file)
@@ -297,4 +294,5 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
