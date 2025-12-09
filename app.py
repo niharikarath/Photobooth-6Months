@@ -43,15 +43,15 @@ st.markdown("""
 
 /* Polaroid images */
 .polaroid-img {
-    width: 100px;  /* 35% bigger than before */
-    height: 100px;
+    width: 150px;  /* 35% bigger than before */
+    height: 135px;
     position: absolute;
-    box-shadow: 0 4px 8px rgba(0.4,0,0,0.4);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.8);
 }
 
 /* Enter button container */
 .enter-container {
-    margin-top: 500px;
+    margin-top: 50px;
 }
 
 /* Buttons */
@@ -321,3 +321,4 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
