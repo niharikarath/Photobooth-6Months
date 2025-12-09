@@ -18,19 +18,6 @@ st.markdown("""
     font-family: 'Times New Roman', 'Times', serif;
 }
 
-/* Central photobooth card */
-.photobooth-card {
-    background-color: #f3e5d0; /* cream */
-    border: 4px solid #a71d2a; /* deep red frame */
-    border-radius: 4px;
-    padding: 40px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-    max-width: 780px;
-    margin: 60px auto;
-    text-align: center;
-    position: relative;
-}
-
 /* Container for spreading the romantic text nicely */
 .love-container {
     display: flex;
@@ -100,41 +87,29 @@ if st.session_state.stage == "landing":
 
     st.markdown("""
     <style>
-    /* Red card in center */
-    .photobooth-card {
-        background-color: #a71d2a;
-        border-radius: 150px;
-        padding: 60px 40px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-        max-width: 800px;
-        margin: 120px auto;
-        text-align: center;
-        position: relative;
-        overflow: visible;
-    }
 
     /* Romantic text scattered */
     .love-script {
         font-family: 'Pinyon Script', cursive;
         color: #a71d2a;
-        font-size: 3rem;
+        font-size: 4rem;
         display: inline-block;
         position: absolute;
         white-space: nowrap;
     }
 
     /* Positions for each love line */
-    .love1 { top: 200px; left: 40px; transform: rotate(-3deg); }
-    .love2 { top: 100px; right: 70px; transform: rotate(3deg); }
-    .love3 { top: 250px; left: 100px; transform: rotate(-5deg); }
-    .love4 { top: 180px; right: 130px; transform: rotate(5deg); }
+    .love1 { top: 200px; left: 7000px; transform: rotate(0deg); }
+    .love2 { top: 100px; right: 100px; transform: rotate(0deg); }
+    .love3 { top: 200px; left: 700px; transform: rotate(0deg); }
+    .love4 { top: 100px; right: 100px; transform: rotate(0deg); }
 
     /* Scattered landing images */
     .polaroid-img {
-        width: 135px;
-        height: 135px;
-        position: absolute;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        width: 100px;
+        height: 100px;
+        position: relative;
+        box-shadow: 0 5px 10px rgba(0,0,0,0.5);
     }
 
     </style>
@@ -148,31 +123,18 @@ if st.session_state.stage == "landing":
 
     # Images surrounding the card
     st.markdown(f"""
-    <img src="{img_to_datauri('1.png')}" style="width:160px; top:40px; left:-140px; transform:rotate(-5deg);" />
-    <img src="{img_to_datauri('2.png')}" style="width:160px; top:20px; right:-140px; transform:rotate(5deg);" />
-    <img src="{img_to_datauri('3.png')}" style="width:160px; top:180px; left:-160px; transform:rotate(-3deg);" />
-    <img src="{img_to_datauri('4.png')}" style="width:160px; top:180px; right:-160px; transform:rotate(3deg);" />
-    <img src="{img_to_datauri('5.png')}" style="width:160px; bottom:60px; left:-120px; transform:rotate(4deg);" />
-    <img src="{img_to_datauri('6.png')}" style="width:160px; bottom:60px; right:-120px; transform:rotate(-4deg);" />
+    <img src="{img_to_datauri('1.png')}" style="width:100px; top:40px; left:-140px; transform:rotate(-5deg);" />
+    <img src="{img_to_datauri('2.png')}" style="width:100px; top:20px; right:140px; transform:rotate(5deg);" />
+    <img src="{img_to_datauri('3.png')}" style="width:100px; top:180px; left:-160px; transform:rotate(-3deg);" />
+    <img src="{img_to_datauri('4.png')}" style="width:100px; top:180px; right:160px; transform:rotate(3deg);" />
+    <img src="{img_to_datauri('5.png')}" style="width:100px; bottom:60px; left:-120px; transform:rotate(4deg);" />
+    <img src="{img_to_datauri('6.png')}" style="width:100px; bottom:60px; right:120px; transform:rotate(-4deg);" />
     """, unsafe_allow_html=True)
 
     # Last two love lines (below images)
     st.markdown("""
     <div class="love-script love3">Best boyfriend</div>
     <div class="love-script love4">Happy 6 months, my love</div>
-    """, unsafe_allow_html=True)
-
-    # Red card with button inside
-    st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
-
-    st.markdown("""
-    <style>
-    .enter-container {
-        display: flex;
-        justify-content: center;
-        margin-top: 40px;
-    }
-    </style>
     """, unsafe_allow_html=True)
 
     st.markdown('<div class="enter-container">', unsafe_allow_html=True)
@@ -321,6 +283,7 @@ elif st.session_state.stage == "done":
         st.error(f"Error creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
