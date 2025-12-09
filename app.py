@@ -18,7 +18,7 @@ st.markdown("""
     font-family: 'Times New Roman', 'Times', serif;
 }
 .love-container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 25px; padding: 10px 0; }
-.polaroid-img { width: 200px; height: 175px; position: absolute; box-shadow: 0 5px 10px rgba(0,0,0,0.5); }
+.polaroid-img { width: 400px; height: 200px; position: absolute; box-shadow: 0 5px 10px rgba(0,0,0,0.5); }
 .enter-container { margin-top: 200px; }
 div.stButton > button, div.stDownloadButton > button {
     background-color: #a71d2a !important;
@@ -278,6 +278,7 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
