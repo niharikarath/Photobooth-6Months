@@ -98,41 +98,25 @@ if st.session_state.stage == "landing":
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # ---------- Capture Page ----------
+# ---------- Capture Page ----------
 elif st.session_state.stage == "capture":
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
     st.markdown("<h2>Photobooth — Take 4 photos</h2>", unsafe_allow_html=True)
 
-    # ---------- Smaller Camera Preview ----------
+    # ---------- WORKING CAMERA SHRINK ----------
     st.markdown("""
     <style>
-    .small-camera .stCamera > div {
-        transform: scale(0.55);
-        transform-origin: top left;
+    .camera-zoom {
+        zoom: 0.45;                 /* <— CHANGE THIS VALUE */
+        -moz-transform: scale(0.45);
+        -moz-transform-origin: top left;
     }
     </style>
     """, unsafe_allow_html=True)
 
-    # ---------- TRUE global camera scaling (AFTER small-wrapper CSS) ----------
-    st.markdown("""
-    <style>
-    /* Shrink the entire camera component */
-    div[data-testid="stCamera"] video,
-    div[data-testid="stCamera"] canvas {
-        transform: scale(0.35) !important;   /* adjust size here */
-        transform-origin: top left !important;
-    }
+    st.markdown('<div class="camera-zoom">', unsafe_allow_html=True)
 
-    /* Fix wrapper height so layout doesn't stretch */
-    div[data-testid="stCamera"] {
-        height: 240px !important;
-        overflow: hidden !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
-    st.markdown('<div class="small-camera">', unsafe_allow_html=True)
-
+    # ---------- Small preview boxes ----------
     cols = st.columns(4)
     for i in range(4):
         with cols[i]:
@@ -160,13 +144,19 @@ elif st.session_state.stage == "capture":
     if st.button("📸 Camera and Smile Check", key="countdown_btn"):
         start_countdown()
 
-    cam_file = st.camera_input("Smile Baby! Click the camera button to take a photo.", key="camera_input")
+    # ---------- Camera input (inside zoom wrapper) ----------
+    cam_file = st.camera_input(
+        "Smile Baby! Click the camera button to take a photo.",
+        key="camera_input"
+    )
 
-    st.markdown('</div>', unsafe_allow_html=True)  # close small-camera wrapper
+    st.markdown("</div>", unsafe_allow_html=True)  # close .camera-zoom wrapper
 
+    # ---------- Save last photo ----------
     if cam_file:
         st.session_state.last_camera_image = pil_from_streamlit_uploaded(cam_file)
 
+    # ---------- Controls ----------
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
@@ -314,6 +304,7 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
