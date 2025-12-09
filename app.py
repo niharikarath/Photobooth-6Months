@@ -37,7 +37,7 @@ st.markdown("""
     color: #a71d2a;
     font-size: 2.0rem;
     margin: 8px 0;
-    transform: rotate(-3deg);
+    transform: rotate(0deg);
     display: inline-block;
 }
 
@@ -320,4 +320,5 @@ elif st.session_state.stage == "done":
         st.error(f"Error creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
