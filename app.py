@@ -137,7 +137,7 @@ elif st.session_state.stage == "capture":
     <style>
     div[data-testid="stCamera"] {
         display: inline-block !important;  /* makes camera shrink to content */
-        margin: 100 auto !important;         /* center it horizontally */
+        margin: 100  !important;         /* center it horizontally */
     }
     </style>
     """, unsafe_allow_html=True)
@@ -297,6 +297,7 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
