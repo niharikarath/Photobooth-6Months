@@ -95,7 +95,7 @@ if st.session_state.stage == "landing":
         position: absolute;
         white-space: nowrap;
     }
-    .love1 { top: 200px; left: 7000px; transform: rotate(0deg); }
+    .love1 { top: 200px; left: 700px; transform: rotate(0deg); }
     .love2 { top: 100px; right: 100px; transform: rotate(0deg); }
     .love3 { top: 200px; left: 700px; transform: rotate(0deg); }
     .love4 { top: 100px; right: 100px; transform: rotate(0deg); }
@@ -109,12 +109,12 @@ if st.session_state.stage == "landing":
     """, unsafe_allow_html=True)
 
     st.markdown(f"""
-    <img src="{img_to_datauri('1.png')}" style="width:100px; top:40px; left:-140px; transform:rotate(-5deg);" />
-    <img src="{img_to_datauri('2.png')}" style="width:100px; top:20px; right:140px; transform:rotate(5deg);" />
-    <img src="{img_to_datauri('3.png')}" style="width:100px; top:180px; left:-160px; transform:rotate(-3deg);" />
-    <img src="{img_to_datauri('4.png')}" style="width:100px; top:180px; right:160px; transform:rotate(3deg);" />
-    <img src="{img_to_datauri('5.png')}" style="width:100px; bottom:60px; left:-120px; transform:rotate(4deg);" />
-    <img src="{img_to_datauri('6.png')}" style="width:100px; bottom:60px; right:120px; transform:rotate(-4deg);" />
+    <img src="{img_to_datauri('1.png')}" style="width:150px; top:40px; left:-140px; transform:rotate(-5deg);" />
+    <img src="{img_to_datauri('2.png')}" style="width:150px; top:20px; right:140px; transform:rotate(5deg);" />
+    <img src="{img_to_datauri('3.png')}" style="width:150px; top:180px; left:-160px; transform:rotate(-3deg);" />
+    <img src="{img_to_datauri('4.png')}" style="width:150px; top:180px; right:160px; transform:rotate(3deg);" />
+    <img src="{img_to_datauri('5.png')}" style="width:150px; bottom:60px; left:-120px; transform:rotate(4deg);" />
+    <img src="{img_to_datauri('6.png')}" style="width:150px; bottom:60px; right:120px; transform:rotate(-4deg);" />
     """, unsafe_allow_html=True)
 
     st.markdown("""
@@ -123,7 +123,7 @@ if st.session_state.stage == "landing":
     """, unsafe_allow_html=True)
 
     st.markdown('<div class="enter-container">', unsafe_allow_html=True)
-    if st.button("📸Enter the Photobooth"):
+    if st.button("📸Enter the Photobooth (with Niharika)"):
         st.session_state.stage = "capture"
         st.session_state.photos = []
         st.session_state.last_camera_image = None
@@ -144,7 +144,7 @@ elif st.session_state.stage == "capture":
             else:
                 st.image(Image.new("RGB",(500,500),(200,200,200)), width=140, caption=f"#{i+1}")
 
-    cam_file = st.camera_input("Smile! Click the camera button to take a photo.", key="camera_input")
+    cam_file = st.camera_input("Smile Baby! Click the camera button to take a photo.", key="camera_input")
     if cam_file is not None:
         st.session_state.last_camera_image = pil_from_streamlit_uploaded(cam_file)
 
@@ -180,7 +180,7 @@ elif st.session_state.stage == "capture":
                 st.rerun()
 
     with col4:
-        if st.button("🏠 Return to Home"):
+        if st.button("🏠 Return to Home Page"):
             st.session_state.photos = []
             st.session_state.last_camera_image = None
             st.session_state.stage = "landing"
@@ -192,7 +192,7 @@ elif st.session_state.stage == "capture":
 elif st.session_state.stage == "done":
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
     st.markdown("<h2>✨ Your Photobooth Strip</h2>", unsafe_allow_html=True)
-    st.markdown("<p class='muted'>Here is your strip, just printed! Download it, or keep taking more photos.</p>", unsafe_allow_html=True)
+    st.markdown("<p class='muted'>Your strip was just printed! Download it, or keep taking more photos (Don't forget to send these to Niharika).</p>", unsafe_allow_html=True)
 
     try:
         strip_images = []
@@ -213,7 +213,7 @@ elif st.session_state.stage == "done":
         if extra_bottom > 0:
             draw = ImageDraw.Draw(last_img)
             try:
-                font = ImageFont.truetype("DejaVuSans.ttf", 28)
+                font = ImageFont.truetype("Pinyon Script.ttf", 30)
             except:
                 font = ImageFont.load_default()
             bbox = draw.textbbox((0,0), last_message, font=font)
@@ -258,7 +258,7 @@ elif st.session_state.stage == "done":
             mime="image/png"
         )
 
-        col1, col2, col3 = st.columns([1,1,1])
+         col1, col2, col3 = st.columns([1,1,1])
         with col1:
             if st.button("Retake All"):
                 st.session_state.photos = []
