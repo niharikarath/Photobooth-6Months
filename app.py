@@ -65,7 +65,7 @@ if st.session_state.stage == "landing":
     <style>
     .love-script { font-family: 'Pinyon Script', cursive; color: #a71d2a; font-size: 4rem; display: inline-block; position: absolute; white-space: nowrap; }
     .love1 { top: 200px; right: 100px; transform: rotate(0deg); }
-    .love2 { top: 100px; right: 100px; transform: rotate(0deg); }
+    .love2 { top: 100px; left: 300px; transform: rotate(0deg); }
     .love3 { top: 200px; left: 700px; transform: rotate(0deg); }
     .love4 { top: 100px; right: 100px; transform: rotate(0deg); }
     .polaroid-img { width: 100px; height: 100px; position: relative; box-shadow: 0 5px 10px rgba(0,0,0,0.5); }
@@ -254,6 +254,7 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
