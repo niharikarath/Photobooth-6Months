@@ -98,7 +98,7 @@ if st.session_state.stage == "landing":
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ---------- Capture Page ----------
+    # ---------- Capture Page ----------
 elif st.session_state.stage == "capture":
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
     st.markdown("<h2>Photobooth — Take 4 photos</h2>", unsafe_allow_html=True)
@@ -112,6 +112,25 @@ elif st.session_state.stage == "capture":
     }
     </style>
     """, unsafe_allow_html=True)
+
+    # ---------- TRUE global camera scaling (AFTER small-wrapper CSS) ----------
+    st.markdown("""
+    <style>
+    /* Shrink the entire camera component */
+    div[data-testid="stCamera"] video,
+    div[data-testid="stCamera"] canvas {
+        transform: scale(0.55) !important;   /* adjust size here */
+        transform-origin: top left !important;
+    }
+
+    /* Fix wrapper height so layout doesn't stretch */
+    div[data-testid="stCamera"] {
+        height: 240px !important;
+        overflow: hidden !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
     st.markdown('<div class="small-camera">', unsafe_allow_html=True)
 
     cols = st.columns(4)
@@ -120,7 +139,7 @@ elif st.session_state.stage == "capture":
             if i < len(st.session_state.photos):
                 st.image(st.session_state.photos[i], width=110, caption=f"#{i+1}")
             else:
-                st.image(Image.new("RGB",(500,500),(200,200,200)), width=110, caption=f"#{i+1}")
+                st.image(Image.new("RGB", (500,500), (200,200,200)), width=110, caption=f"#{i+1}")
 
     countdown_placeholder = st.empty()
 
@@ -142,25 +161,8 @@ elif st.session_state.stage == "capture":
         start_countdown()
 
     cam_file = st.camera_input("Smile Baby! Click the camera button to take a photo.", key="camera_input")
-    st.markdown('</div>', unsafe_allow_html=True)  # close camera scaling wrapper
 
-    # --- TRUE camera scaling (works on all Streamlit versions) ---
-st.markdown("""
-<style>
-/* Shrink the entire camera component */
-div[data-testid="stCamera"] video,
-div[data-testid="stCamera"] canvas {
-    transform: scale(0.55) !important;   /* change to 0.45 or 0.35 if needed */
-    transform-origin: top left !important;
-}
-
-/* Reduce the wrapper height so no extra blank space appears */
-div[data-testid="stCamera"] {
-    height: 240px !important;   /* lower this if you want even smaller preview */
-    overflow: hidden !important;
-}
-</style>
-""", unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)  # close small-camera wrapper
 
     if cam_file:
         st.session_state.last_camera_image = pil_from_streamlit_uploaded(cam_file)
@@ -312,4 +314,5 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
