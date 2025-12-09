@@ -105,7 +105,7 @@ if st.session_state.stage == "landing":
     /* Red card in center */
     .photobooth-card {
         background-color: #a71d2a;
-        border-radius: 20px;
+        border-radius: 50px;
         padding: 60px 40px;
         box-shadow: 0 8px 25px rgba(0,0,0,0.3);
         max-width: 800px;
@@ -119,7 +119,7 @@ if st.session_state.stage == "landing":
     /* Romantic text scattered */
     .love-script {
         font-family: 'Pinyon Script', cursive;
-        color: #f3e5d0;
+        color: #a71d2a;
         font-size: 6rem;
         display: inline-block;
         position: absolute;
@@ -320,3 +320,4 @@ elif st.session_state.stage == "done":
         st.error(f"Error creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
