@@ -6,7 +6,7 @@ import random
 import base64
 
 # ---------- Page Config ----------
-st.set_page_config(page_title="Photobooth", page_icon="💕", layout="wide")
+st.set_page_config(page_title="Photobooth", page_icon="💕", layout="centered")
 
 # ---------- Styling ----------
 st.markdown("""
@@ -319,4 +319,5 @@ elif st.session_state.stage == "done":
         st.error(f"Error creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
