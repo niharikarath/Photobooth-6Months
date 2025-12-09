@@ -64,11 +64,11 @@ if st.session_state.stage == "landing":
     st.markdown("""
     <style>
     .love-script { font-family: 'Pinyon Script', cursive; color: #a71d2a; font-size: 4rem; display: inline-block; position: absolute; white-space: nowrap; }
-    .love1 { top: 200px; right: 100px; transform: rotate(0deg); }
-    .love2 { top: 100px; left: 300px; transform: rotate(0deg); }
-    .love3 { top: 200px; left: 700px; transform: rotate(0deg); }
-    .love4 { top: 100px; right: 100px; transform: rotate(0deg); }
-    .polaroid-img { width: 100px; height: 100px; position: relative; box-shadow: 0 5px 10px rgba(0,0,0,0.5); }
+    .love1 { top: 200px; right: 700px; transform: rotate(0deg); }
+    .love2 { top: 100px; right: 300px; transform: rotate(0deg); }
+    .love3 { top: 200px; right: 400px; transform: rotate(0deg); }
+    .love4 { top: 100px; right: 500px; transform: rotate(0deg); }
+    .polaroid-img { width: 125px; height: 175px; position: relative; box-shadow: 0 5px 10px rgba(0,0,0,0.5); }
     </style>
     """, unsafe_allow_html=True)
 
@@ -79,12 +79,12 @@ if st.session_state.stage == "landing":
 
       # Images
     st.markdown(f"""
-    <img src="{img_to_datauri('1.png')}" style="width:150px; top:40px; left:-140px; transform:rotate(0deg);" />
-    <img src="{img_to_datauri('2.png')}" style="width:150px; top:20px; right:140px; transform:rotate(0deg);" />
-    <img src="{img_to_datauri('3.png')}" style="width:150px; top:180px; left:-160px; transform:rotate(0deg);" />
-    <img src="{img_to_datauri('4.png')}" style="width:150px; top:180px; right:160px; transform:rotate(0deg);" />
-    <img src="{img_to_datauri('5.png')}" style="width:150px; bottom:60px; left:-120px; transform:rotate(0deg);" />
-    <img src="{img_to_datauri('6.png')}" style="width:150px; bottom:60px; right:120px; transform:rotate(0deg);" />
+    <img src="{img_to_datauri('1.png')}" style="width:150px; top:40px; left:-140px; transform:rotate(2deg);" />
+    <img src="{img_to_datauri('2.png')}" style="width:150px; top:20px; right:140px; transform:rotate(-2deg);" />
+    <img src="{img_to_datauri('3.png')}" style="width:150px; top:180px; left:-160px; transform:rotate(2deg);" />
+    <img src="{img_to_datauri('4.png')}" style="width:150px; top:180px; right:160px; transform:rotate(-2deg);" />
+    <img src="{img_to_datauri('5.png')}" style="width:150px; bottom:60px; left:-120px; transform:rotate(2deg);" />
+    <img src="{img_to_datauri('6.png')}" style="width:150px; bottom:60px; right:120px; transform:rotate(-2deg);" />
     """, unsafe_allow_html=True)
 
     st.markdown("""
@@ -254,6 +254,7 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
