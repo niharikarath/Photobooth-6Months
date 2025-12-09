@@ -64,10 +64,10 @@ if st.session_state.stage == "landing":
     st.markdown("""
     <style>
     .love-script { font-family: 'Pinyon Script', cursive; color: #a71d2a; font-size: 3rem; display: inline-block; position: absolute; white-space: nowrap; }
-    .love1 { top: 200px; right: 75px; transform: rotate(0deg); }
-    .love2 { top: 100px; right: 100px; transform: rotate(0deg); }
-    .love3 { top: 200px; right: 100px; transform: rotate(0deg); }
-    .love4 { top: 100px; right: 100px; transform: rotate(0deg); }
+    .love1 { top: 100px; right: 75px; transform: rotate(0deg); }
+    .love2 { top: 200px; right: 100px; transform: rotate(0deg); }
+    .love3 { top: 300px; right: 100px; transform: rotate(0deg); }
+    .love4 { top: 400px; right: 100px; transform: rotate(0deg); }
     .polaroid-img { width: 400px; height: 200px; position: relative; box-shadow: 0 5px 10px rgba(0,0,0,0.5); }
     </style>
     """, unsafe_allow_html=True)
@@ -83,12 +83,11 @@ if st.session_state.stage == "landing":
     """, unsafe_allow_html=True)
 
     st.markdown(f"""
-    <img src="{img_to_datauri('1.png')}" style="width:200px; top:40px; left:-140px; transform:rotate(3deg);" />
-    <img src="{img_to_datauri('2.png')}" style="width:175px; top:20px; right:140px; transform:rotate(-3deg);" />
+    <img src="{img_to_datauri('2.png')}" style="width:200px; top:20px; right:140px; transform:rotate(-3deg);" />
     <img src="{img_to_datauri('3.png')}" style="width:200px; top:180px; left:-160px; transform:rotate(5deg);" />
-    <img src="{img_to_datauri('4.png')}" style="width:175px; top:180px; right:160px; transform:rotate(-4deg);" />
+    <img src="{img_to_datauri('4.png')}" style="width:200px; top:180px; right:160px; transform:rotate(-4deg);" />
     <img src="{img_to_datauri('5.png')}" style="width:200px; bottom:60px; left:-120px; transform:rotate(6deg);" />
-    <img src="{img_to_datauri('6.png')}" style="width:175px; bottom:60px; right:120px; transform:rotate(-4deg);" />
+    <img src="{img_to_datauri('6.png')}" style="width:200px; bottom:60px; right:120px; transform:rotate(-4deg);" />
     """, unsafe_allow_html=True)
 
     st.markdown('<div class="enter-container">', unsafe_allow_html=True)
@@ -277,6 +276,7 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
