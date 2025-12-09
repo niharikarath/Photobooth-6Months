@@ -195,7 +195,7 @@ elif st.session_state.stage == "capture":
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ---------- Done Page ----------
+    # ---------- Done Page ----------
 elif st.session_state.stage == "done":
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
     st.markdown("<h2>✨ Your Photobooth Strip is Ready</h2>", unsafe_allow_html=True)
@@ -205,10 +205,6 @@ elif st.session_state.stage == "done":
         strip_images = []
         for i, p in enumerate(st.session_state.photos):
             bw = bw_transform(p, contrast=1.15, sharpness=1.05)
-
-            # ---------- NEW: shrink strip photos ----------
-            bw = bw.resize((int(bw.width * 0.7), int(bw.height * 0.7)))
-
             extra_bottom = 80 if i == len(st.session_state.photos) - 1 else 0
 
             img_w, img_h = bw.size
@@ -280,8 +276,7 @@ elif st.session_state.stage == "done":
                 label="Download This Photobooth Strip (PNG)",
                 data=buf.getvalue(),
                 file_name="photobooth_strip.png",
-                mime="image/png",
-                key="download_strip"
+                mime="image/png"
             )
 
         with col2:
@@ -302,26 +297,4 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
