@@ -43,15 +43,15 @@ st.markdown("""
 
 /* Polaroid images */
 .polaroid-img {
-    width: 135px;  /* 35% bigger than before */
-    height: 135px;
+    width: 100px;  /* 35% bigger than before */
+    height: 100px;
     position: absolute;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+    box-shadow: 0 4px 8px rgba(0.4,0,0,0.4);
 }
 
 /* Enter button container */
 .enter-container {
-    margin-top: 260px;
+    margin-top: 500px;
 }
 
 /* Buttons */
@@ -61,7 +61,7 @@ div.stButton > button, div.stDownloadButton > button {
     border-radius: 14px !important;
     font-weight: 700 !important;
     padding: 25px 60px !important;
-    font-size: 24px !important;
+    font-size: 85px !important;
 }
 div.stButton > button:hover {
     background-color: #c8323b !important;
@@ -100,32 +100,99 @@ def bw_transform(img: Image.Image, contrast=1.1, sharpness=1.1):
 if st.session_state.stage == "landing":
 
     st.markdown("""
-    <div class="love-container">
-        <div class="love-script">I can’t wait to kiss you in a photobooth one day</div>
-        <div class="love-script">I love you so much, Aditya</div>
-        <div class="love-script">Best boyfriend</div>
-        <div class="love-script">Happy 6 months, my love</div>
-    </div>
+    <style>
+    /* Central photobooth card */
+    .photobooth-card {
+        background-color: #f3e5d0; /* cream */
+        border: 4px solid #a71d2a; /* deep red frame */
+        border-radius: 16px;
+        padding: 60px 40px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        max-width: 900px;
+        margin: 60px auto;
+        text-align: center;
+        position: relative;
+        overflow: visible;
+    }
+
+    /* Romantic text scattered */
+    .love-script {
+        font-family: 'Pinyon Script', cursive;
+        color: #a71d2a;
+        font-size: 2rem;
+        display: inline-block;
+        position: absolute;
+        white-space: nowrap;
+    }
+
+    /* Positions for each love line */
+    .love1 { top: 20px; left: 30px; transform: rotate(-3deg); }
+    .love2 { top: 60px; right: 40px; transform: rotate(2deg); }
+    .love3 { top: 110px; left: 50px; transform: rotate(-5deg); }
+    .love4 { top: 150px; right: 60px; transform: rotate(4deg); }
+
+    /* Polaroid images scattered */
+    .polaroid-img {
+        width: 135px;  /* 35% bigger */
+        height: 135px;
+        position: absolute;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+    }
+
+    /* Center Enter button container */
+    .enter-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    /* Button styling */
+    div.stButton > button {
+        background-color: #a71d2a !important;
+        color: #f5e7dc !important;
+        border-radius: 14px !important;
+        font-weight: 700 !important;
+        padding: 25px 60px !important;
+        font-size: 24px !important;
+    }
+    div.stButton > button:hover {
+        background-color: #c8323b !important;
+    }
+
+    </style>
     """, unsafe_allow_html=True)
 
-    # Scattered PNGs
+    # Start photobooth card
+    st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
+
+    # Romantic text lines
     st.markdown(f"""
-    <img src="{img_to_datauri('1.png')}" class="polaroid-img" style="top:20px; left:20px; transform:rotate(-6deg);" />
-    <img src="{img_to_datauri('2.png')}" class="polaroid-img" style="top:40px; right:20px; transform:rotate(6deg);" />
-    <img src="{img_to_datauri('3.png')}" class="polaroid-img" style="bottom:40px; left:30px; transform:rotate(-10deg);" />
-    <img src="{img_to_datauri('4.png')}" class="polaroid-img" style="bottom:50px; right:40px; transform:rotate(8deg);" />
-    <img src="{img_to_datauri('5.png')}" class="polaroid-img" style="top:150px; left:-15px; transform:rotate(4deg);" />
-    <img src="{img_to_datauri('6.png')}" class="polaroid-img" style="top:170px; right:-10px; transform:rotate(-4deg);" />
+    <div class="love-script love1">I can’t wait to kiss you in a photobooth one day</div>
+    <div class="love-script love2">I love you so much, Aditya</div>
+    <div class="love-script love3">Best boyfriend</div>
+    <div class="love-script love4">Happy 6 months, my love</div>
     """, unsafe_allow_html=True)
 
-    st.markdown('<div class="enter-container"></div>', unsafe_allow_html=True)
+    # Polaroid images scattered
+    st.markdown(f"""
+    <img src="{img_to_datauri('1.png')}" class="polaroid-img" style="top:10px; left:-10px; transform:rotate(-6deg);" />
+    <img src="{img_to_datauri('2.png')}" class="polaroid-img" style="top:50px; right:-20px; transform:rotate(6deg);" />
+    <img src="{img_to_datauri('3.png')}" class="polaroid-img" style="bottom:40px; left:20px; transform:rotate(-10deg);" />
+    <img src="{img_to_datauri('4.png')}" class="polaroid-img" style="bottom:50px; right:30px; transform:rotate(8deg);" />
+    <img src="{img_to_datauri('5.png')}" class="polaroid-img" style="top:180px; left:0px; transform:rotate(4deg);" />
+    <img src="{img_to_datauri('6.png')}" class="polaroid-img" style="top:200px; right:10px; transform:rotate(-4deg);" />
+    """, unsafe_allow_html=True)
 
+    # Centered Enter button
+    st.markdown('<div class="enter-container"></div>', unsafe_allow_html=True)
     if st.button("📸 Enter the Photobooth"):
         st.session_state.stage = "capture"
         st.session_state.photos = []
         st.session_state.last_camera_image = None
-        st.rerun()  # fixed to correct rerun
+        st.rerun()
 
+    # End photobooth card
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------- Capture Page ----------
@@ -196,7 +263,7 @@ elif st.session_state.stage == "done":
             new_img.paste(bw, (0,0))
             strip_images.append(new_img)
 
-        messages = ["Happy 6 months My Love!", "Niharika loves Aditya", "Adi baby ❤️ Nihoo baby", "Aditya ❤️ Niharika", "Happy 6 Crazy Months Together", "Bandar Baby 🐒 ❤️ Sundar Baby 🐰"]
+        messages = ["Happy 6 months My Love!", "Niharika loves Aditya", "Adi baby <3 Nihoo baby", "Aditya loves Niharika", "Happy 6 Crazy Months Together", "Bandar Baby 🐒 ❤️ Sundar Baby 🐰"]
         last_message = random.choice(messages)
         last_img = strip_images[-1]
         if extra_bottom > 0:
@@ -254,4 +321,3 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
-
