@@ -97,12 +97,15 @@ def bw_transform(img: Image.Image, contrast=1.1, sharpness=1.1):
     return rgb
 
 # ---------- Landing Page ----------
-if st.session_state.stage == "landing":
-    st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
-    st.markdown('<div class="love-script">I can’t wait to kiss you in a photobooth one day</div>', unsafe_allow_html=True)
-    st.markdown('<div class="love-script">I love you so much, Aditya</div>', unsafe_allow_html=True)
-    st.markdown('<div class="love-script">Best boyfriend</div>', unsafe_allow_html=True)
-    st.markdown('<div class="love-script">Happy 6 months, my love</div>', unsafe_allow_html=True)
+st.markdown("""
+<div class="love-container">
+    <div class="love-script">I can’t wait to kiss you in a photobooth one day</div>
+    <div class="love-script">I love you so much, Aditya</div>
+    <div class="love-script">Best boyfriend</div>
+    <div class="love-script">Happy 6 months, my love</div>
+</div>
+""", unsafe_allow_html=True)
+
 
     # Scattered PNGs
     st.markdown(f"""
@@ -116,11 +119,11 @@ if st.session_state.stage == "landing":
 
     st.markdown('<div class="enter-container"></div>', unsafe_allow_html=True)
 
-    if st.button("📸 Enter Photobooth"):
+    if st.button("📸 Enter the Photobooth"):
         st.session_state.stage = "capture"
         st.session_state.photos = []
         st.session_state.last_camera_image = None
-        st.experimental_rerun()  # fixed to correct rerun
+        st.rerun()  # fixed to correct rerun
 
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -151,7 +154,7 @@ elif st.session_state.stage == "capture":
             else:
                 st.session_state.photos.append(st.session_state.last_camera_image.copy())
                 st.session_state.last_camera_image = None
-                st.experimental_rerun()
+                st.rerun()
     with col2:
         if st.button("Retake Last Photo", key="retake"):
             if st.session_state.photos:
@@ -160,20 +163,20 @@ elif st.session_state.stage == "capture":
             else:
                 st.warning("No photos in the strip yet. Take a new photo using the camera above.")
             st.session_state.last_camera_image = None
-            st.experimental_rerun()
+            st.rerun()
     with col3:
         if st.button("Create Polaroid Strip", key="create_strip"):
             if len(st.session_state.photos) < 4:
                 st.warning(f"Take {4 - len(st.session_state.photos)} more photo(s).")
             else:
                 st.session_state.stage = "done"
-                st.experimental_rerun()
+                st.rerun()
 
     if st.button("🏠 Back to Home"):
         st.session_state.photos = []
         st.session_state.last_camera_image = None
         st.session_state.stage = "landing"
-        st.experimental_rerun()
+        st.rerun()
 
     st.markdown("</div>", unsafe_allow_html=True)
 
@@ -250,6 +253,3 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
-
-
-
