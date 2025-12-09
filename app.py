@@ -133,13 +133,13 @@ elif st.session_state.stage == "capture":
         start_countdown()
 
     # ---------- Smaller Camera Input (Centered) ----------
-st.markdown('<div style="text-align: center;">', unsafe_allow_html=True)
-cam_file = st.camera_input(
-    "Smile Baby! Click the camera button to take a photo.",
-    key="camera_input",
-    width=250  # adjust size here
-)
-st.markdown('</div>', unsafe_allow_html=True)  # close the centering div
+    st.markdown('<div style="text-align: center;">', unsafe_allow_html=True)
+    cam_file = st.camera_input(
+        "Smile Baby! Click the camera button to take a photo.",
+        key="camera_input",
+        width=250  # adjust size here
+    )
+    st.markdown('</div>', unsafe_allow_html=True)  # close the centering div
 
     # ---------- Action Buttons ----------
     col1, col2, col3, col4 = st.columns(4)
@@ -289,6 +289,7 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
