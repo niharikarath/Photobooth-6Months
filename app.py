@@ -77,9 +77,15 @@ if st.session_state.stage == "landing":
     <div class="love-script love2">I love you so much, Aditya</div>
     """, unsafe_allow_html=True)
 
-    # Display images
-    for i in range(1,7):
-        st.markdown(f'<img src="{img_to_datauri(f"{i}.png")}" style="width:150px;" />', unsafe_allow_html=True)
+      # Images
+    st.markdown(f"""
+    <img src="{img_to_datauri('1.png')}" style="width:100px; top:40px; left:-140px; transform:rotate(-5deg);" />
+    <img src="{img_to_datauri('2.png')}" style="width:100px; top:20px; right:140px; transform:rotate(5deg);" />
+    <img src="{img_to_datauri('3.png')}" style="width:100px; top:180px; left:-160px; transform:rotate(-3deg);" />
+    <img src="{img_to_datauri('4.png')}" style="width:100px; top:180px; right:160px; transform:rotate(3deg);" />
+    <img src="{img_to_datauri('5.png')}" style="width:100px; bottom:60px; left:-120px; transform:rotate(4deg);" />
+    <img src="{img_to_datauri('6.png')}" style="width:100px; bottom:60px; right:120px; transform:rotate(-4deg);" />
+    """, unsafe_allow_html=True)
 
     st.markdown("""
     <div class="love-script love3">Happy 6 months, my love</div>
@@ -248,3 +254,4 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
