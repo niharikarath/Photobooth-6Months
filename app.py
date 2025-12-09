@@ -98,7 +98,7 @@ def bw_transform(img: Image.Image, contrast=1.1, sharpness=1.1):
 
 # ---------- Landing Page ----------
     
-    if st.session_state.stage == "landing":
+   if st.session_state.stage == "landing":
 
     st.markdown("""
     <style>
@@ -109,7 +109,7 @@ def bw_transform(img: Image.Image, contrast=1.1, sharpness=1.1):
         padding: 60px 40px;
         box-shadow: 0 8px 25px rgba(0,0,0,0.3);
         max-width: 400px;
-        margin: 120px auto;   /* center horizontally + some top margin */
+        margin: 120px auto;
         text-align: center;
         position: relative;
     }
@@ -154,7 +154,7 @@ def bw_transform(img: Image.Image, contrast=1.1, sharpness=1.1):
     </style>
     """, unsafe_allow_html=True)
 
-    # Love texts (outside red card)
+    # Love texts
     st.markdown("""
     <div class="love-script love1">I can’t wait to kiss you in a photobooth one day</div>
     <div class="love-script love2">I love you so much, Aditya</div>
@@ -162,7 +162,7 @@ def bw_transform(img: Image.Image, contrast=1.1, sharpness=1.1):
     <div class="love-script love4">Happy 6 months, my love</div>
     """, unsafe_allow_html=True)
 
-    # Images (outside red card)
+    # Images
     st.markdown(f"""
     <img class="decor-img img1" src="{img_to_datauri('1.png')}" />
     <img class="decor-img img2" src="{img_to_datauri('2.png')}" />
@@ -180,61 +180,6 @@ def bw_transform(img: Image.Image, contrast=1.1, sharpness=1.1):
         st.rerun()
 
     st.markdown('</div>', unsafe_allow_html=True)
-
-# ---------- Capture Page ----------
-elif st.session_state.stage == "capture":
-    st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
-    st.markdown("<h2>Photobooth — Take 4 photos</h2>", unsafe_allow_html=True)
-
-    cols = st.columns(4)
-    for i in range(4):
-        with cols[i]:
-            if i < len(st.session_state.photos):
-                st.image(st.session_state.photos[i], width=140, caption=f"#{i+1}")
-            else:
-                st.image(Image.new("RGB",(500,500),(200,200,200)), width=140, caption=f"#{i+1}")
-
-    cam_file = st.camera_input("Smile! Click the camera button to take a photo.", key="camera_input")
-    if cam_file is not None:
-        st.session_state.last_camera_image = pil_from_streamlit_uploaded(cam_file)
-
-    col1, col2, col3 = st.columns([1,1,1])
-    with col1:
-        if st.button("Add Photo to Strip", key="add_photo"):
-            if st.session_state.last_camera_image is None:
-                st.warning("Take a photo first using the camera above.")
-            elif len(st.session_state.photos) >= 4:
-                st.info("You already have 4 photos. Click 'Create Your Strip'.")
-            else:
-                st.session_state.photos.append(st.session_state.last_camera_image.copy())
-                st.session_state.last_camera_image = None
-                st.rerun()
-
-    with col2:
-        if st.button("Retake Last Photo", key="retake"):
-            if st.session_state.photos:
-                st.session_state.photos.pop()
-                st.warning("Removed last photo.")
-            else:
-                st.warning("No photos yet.")
-            st.session_state.last_camera_image = None
-            st.rerun()
-
-    with col3:
-        if st.button("Create Your Strip", key="create_strip"):
-            if len(st.session_state.photos) < 4:
-                st.warning(f"Take {4 - len(st.session_state.photos)} more photo(s).")
-            else:
-                st.session_state.stage = "done"
-                st.rerun()
-
-    if st.button("🏠 Return to Home"):
-        st.session_state.photos = []
-        st.session_state.last_camera_image = None
-        st.session_state.stage = "landing"
-        st.rerun()
-
-    st.markdown("</div>", unsafe_allow_html=True)
 
 # ---------- Done Page ----------
 elif st.session_state.stage == "done":
@@ -315,6 +260,7 @@ elif st.session_state.stage == "done":
         st.error(f"Error creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
