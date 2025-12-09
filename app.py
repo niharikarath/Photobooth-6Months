@@ -6,7 +6,7 @@ import random
 import base64
 
 # ---------- Page Config ----------
-st.set_page_config(page_title="Photobooth — 6 Monthiversary", page_icon="📸", layout="centered")
+st.set_page_config(page_title="Photobooth for Niharika and Aditya", page_icon="💕", layout="wide")
 
 # ---------- Styling ----------
 st.markdown("""
@@ -14,8 +14,8 @@ st.markdown("""
 /* Page background & central card */
 .stApp {
     background-color: #f3e5d0;  /* cream background */
-    color: #111;                 
-    font-family: 'Helvetica', 'Arial', sans-serif;
+    color: #730e0e;                 
+    font-family: 'Times New Roman', 'Times', serif;
 }
 
 /* Central photobooth card */
@@ -35,7 +35,7 @@ st.markdown("""
 .love-script {
     font-family: 'Pinyon Script', cursive;
     color: #a71d2a;
-    font-size: 1.6rem;
+    font-size: 2.0rem;
     margin: 8px 0;
     transform: rotate(-3deg);
     display: inline-block;
@@ -250,3 +250,4 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
