@@ -14,7 +14,7 @@ st.markdown("""
 /* Page background & central card */
 .stApp {
     background-color: #f3e5d0;  /* cream background */
-    color: #730e0e;                 
+    color: #111;                 
     font-family: 'Times New Roman', 'Times', serif;
 }
 
@@ -250,5 +250,6 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
