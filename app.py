@@ -133,13 +133,13 @@ elif st.session_state.stage == "capture":
         start_countdown()
 
    # ---------- Smaller Camera Input (Centered) ----------
-st.markdown("""
-<style>
-div[data-testid="stCamera"] {
-    display: inline-block !important;  /* makes camera shrink to content */
-    margin: 0 auto !important;         /* center it horizontally */
+    st.markdown("""
+        <style>
+    div[data-testid="stCamera"] {
+        display: inline-block !important;  /* makes camera shrink to content */
+        margin: 0 auto !important;         /* center it horizontally */
 }
-</style>
+        </style>
 """, unsafe_allow_html=True)
 
 cam_file = st.camera_input(
@@ -296,6 +296,7 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
