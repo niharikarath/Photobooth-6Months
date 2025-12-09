@@ -125,7 +125,7 @@ elif st.session_state.stage == "capture":
         """
         for count in ["3","2","1","📸"]:
             countdown_placeholder.markdown(overlay_style.format(count), unsafe_allow_html=True)
-            time.sleep(1.5)
+            time.sleep(1)
         countdown_placeholder.empty()
         st.info("Countdown finished! Click the camera button to take a photo.")
 
@@ -138,7 +138,7 @@ elif st.session_state.stage == "capture":
         <style>
         div[data-testid="stCamera"] {
             display: inline-block !important;  /* shrink to content */
-            margin: 0 auto !important;         /* center horizontally */
+            margin: center!important;         /* center horizontally */
         }
         </style>
     """, unsafe_allow_html=True)
@@ -302,6 +302,7 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
