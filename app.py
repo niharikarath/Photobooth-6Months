@@ -13,8 +13,8 @@ st.markdown("""
 <style>
 /* Page background & central card */
 .stApp {
-    background-color: #f3e5d0;  /* cream background */
-    color: #111;                 
+    background-color: #f3e5d0;
+    color: #111;
     font-family: 'Times New Roman', 'Times', serif;
 }
 
@@ -58,7 +58,7 @@ div.stButton > button:hover {
 
 # ---------- Session State ----------
 if "stage" not in st.session_state:
-    st.session_state.stage = "landing"  # landing, capture, done
+    st.session_state.stage = "landing"
 if "photos" not in st.session_state:
     st.session_state.photos = []
 if "last_camera_image" not in st.session_state:
@@ -87,8 +87,6 @@ if st.session_state.stage == "landing":
 
     st.markdown("""
     <style>
-
-    /* Romantic text scattered */
     .love-script {
         font-family: 'Pinyon Script', cursive;
         color: #a71d2a;
@@ -97,31 +95,26 @@ if st.session_state.stage == "landing":
         position: absolute;
         white-space: nowrap;
     }
-
-    /* Positions for each love line */
     .love1 { top: 200px; left: 7000px; transform: rotate(0deg); }
     .love2 { top: 100px; right: 100px; transform: rotate(0deg); }
     .love3 { top: 200px; left: 700px; transform: rotate(0deg); }
     .love4 { top: 100px; right: 100px; transform: rotate(0deg); }
-
-    /* Scattered landing images */
     .polaroid-img {
         width: 100px;
         height: 100px;
         position: relative;
         box-shadow: 0 5px 10px rgba(0,0,0,0.5);
     }
-
     </style>
     """, unsafe_allow_html=True)
 
-    # First two love lines (above images)
+    # Love lines above images
     st.markdown("""
     <div class="love-script love1">I can’t wait to kiss you in a photobooth</div>
     <div class="love-script love2">I love you so much, Aditya</div>
     """, unsafe_allow_html=True)
 
-    # Images surrounding the card
+    # Images
     st.markdown(f"""
     <img src="{img_to_datauri('1.png')}" style="width:100px; top:40px; left:-140px; transform:rotate(-5deg);" />
     <img src="{img_to_datauri('2.png')}" style="width:100px; top:20px; right:140px; transform:rotate(5deg);" />
@@ -131,23 +124,20 @@ if st.session_state.stage == "landing":
     <img src="{img_to_datauri('6.png')}" style="width:100px; bottom:60px; right:120px; transform:rotate(-4deg);" />
     """, unsafe_allow_html=True)
 
-    # Last two love lines (below images)
+    # Love lines below images
     st.markdown("""
     <div class="love-script love3">Happy 6 months, my love</div>
     <div class="love-script love4">Best Boyfriend in the world</div>
     """, unsafe_allow_html=True)
 
+    # Button
     st.markdown('<div class="enter-container">', unsafe_allow_html=True)
-    if st.button("📸Enter the Photobooth"):
+    if st.button("📸 Enter the Photobooth"):
         st.session_state.stage = "capture"
         st.session_state.photos = []
         st.session_state.last_camera_image = None
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown('</div>', unsafe_allow_html=True)  
-    
-    # End photobooth card
 
 # ---------- Capture Page ----------
 elif st.session_state.stage == "capture":
@@ -198,36 +188,30 @@ elif st.session_state.stage == "capture":
 
     with col4:
         if st.button("🏠 Return to Home"):
-        st.session_state.photos = []
-        st.session_state.last_camera_image = None
-        st.session_state.stage = "landing"
-        st.rerun()
-
+            st.session_state.photos = []
+            st.session_state.last_camera_image = None
+            st.session_state.stage = "landing"
+            st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ---------- UI: Done ----------
+# ---------- Done Page ----------
 elif st.session_state.stage == "done":
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
     st.markdown("<h2>✨ Your Photobooth Strip</h2>", unsafe_allow_html=True)
-    st.markdown("<p class='muted'>Here is your strip, just printed! Download it, or keep taking more photos.</p>", unsafe_allow_html=True)
 
     try:
         strip_images = []
         for i, p in enumerate(st.session_state.photos):
             bw = bw_transform(p, contrast=1.15, sharpness=1.05)
-            # For the last photo, add extra space at bottom for message
-            if i == len(st.session_state.photos) - 1:
-                extra_bottom = 80
-            else:
-                extra_bottom = 0
+            extra_bottom = 80 if i == len(st.session_state.photos) - 1 else 0
             img_w, img_h = bw.size
             new_img = Image.new("RGB", (img_w, img_h + extra_bottom), (0,0,0))
             new_img.paste(bw, (0,0))
             strip_images.append(new_img)
 
-        # Add a random message on the extra bottom of the last photo
         messages = ["Happy 6 months, my love!", "Niharika loves Aditya", "Adi baby ❤️ Nihoo baby", "Bandar baby ❤️ Sundar baby", "Big Kissies Big Huggies"]
         last_message = random.choice(messages)
+
         last_img = strip_images[-1]
         if extra_bottom > 0:
             draw = ImageDraw.Draw(last_img)
@@ -241,7 +225,6 @@ elif st.session_state.stage == "done":
             draw.text(((last_img.width - w)//2, last_img.height - extra_bottom + (extra_bottom - h)//2),
                       last_message, fill=(245,235,220), font=font)
 
-        # Combine all images vertically into a strip
         total_h = sum(im.height for im in strip_images)
         strip_w = max(im.width for im in strip_images)
         final_strip = Image.new("RGB", (strip_w, total_h), (0,0,0))
@@ -250,39 +233,12 @@ elif st.session_state.stage == "done":
             final_strip.paste(im, (0, y))
             y += im.height
 
-        # Convert to Base64 for slide-down animation
         buf = io.BytesIO()
         final_strip.save(buf, format="PNG")
-        base64_img = base64.b64encode(buf.getvalue()).decode()
+        st.image(final_strip, use_column_width=True)
 
-        html_code = f"""
-        <div style="position: relative; width: fit-content; margin: auto; overflow: hidden; height: {final_strip.height}px; background-color: #000;">
-            <img src="data:image/png;base64,{base64_img}" 
-                 style="
-                    display: block; 
-                    width: auto; 
-                    animation: slideDown 1.2s ease-out forwards;
-                    transform: translateY(-{final_strip.height}px);
-                 "/>
-        </div>
-        <style>
-        @keyframes slideDown {{
-            0% {{ transform: translateY(-{final_strip.height}px); }}
-            100% {{ transform: translateY(0); }}
-        }}
-        </style>
-        """
-        st.markdown(html_code, unsafe_allow_html=True)
+        st.download_button("Download Photobooth Strip (PNG)", buf.getvalue(), "photobooth_strip.png", "image/png")
 
-        # Download button
-        st.download_button(
-            label="Download Photobooth Strip (PNG)",
-            data=buf.getvalue(),
-            file_name="photobooth_strip.png",
-            mime="image/png"
-        )
-
-        # Buttons
         col1, col2, col3 = st.columns([1,1,1])
         with col1:
             if st.button("Retake All"):
@@ -296,14 +252,12 @@ elif st.session_state.stage == "done":
                 st.session_state.last_camera_image = None
                 st.session_state.stage = "capture"
                 st.rerun()
-
-        # Back to Home
-         with col3:
-        if st.button("🏠 Back to Home"):
-            st.session_state.photos = []
-            st.session_state.last_camera_image = None
-            st.session_state.stage = "landing"
-            st.rerun()
+        with col3:
+            if st.button("🏠 Back to Home"):
+                st.session_state.photos = []
+                st.session_state.last_camera_image = None
+                st.session_state.stage = "landing"
+                st.rerun()
 
     except Exception as e:
         st.error(f"Something went wrong while creating the strip: {e}")
