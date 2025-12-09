@@ -145,36 +145,26 @@ if st.session_state.stage == "landing":
     # Photobooth Card Begin
     st.markdown('<div class="photobooth-card">', unsafe_allow_html=True)
 
-    # Romantic Text
-    st.markdown("""
-<div class="love-container">
-    <div class="love-script">I can’t wait to kiss you in a photobooth one day</div>
-    <div class="love-script">I love you so much, Aditya</div>
-    <div class="love-script">Best boyfriend</div>
-    <div class="love-script">Happy 6 months, my love</div>
-</div>
+  # First two love lines (appear above or alongside images)
+st.markdown("""
+<div class="love-script love1">I can’t wait to kiss you in a photobooth one day</div>
+<div class="love-script love2">I love you so much, Aditya</div>
 """, unsafe_allow_html=True)
 
-    # Scattered Images
-
-  st.markdown(f"""
-  <!-- Top-left image -->
+# Images
+st.markdown(f"""
 <img src="{img_to_datauri('1.png')}" style="width:160px; top:40px; left:-140px; transform:rotate(-5deg);" />
-
-<!-- Top-right image -->
 <img src="{img_to_datauri('2.png')}" style="width:160px; top:20px; right:-140px; transform:rotate(5deg);" />
-
-<!-- Middle-left image -->
 <img src="{img_to_datauri('3.png')}" style="width:160px; top:180px; left:-160px; transform:rotate(-3deg);" />
-
-<!-- Middle-right image -->
 <img src="{img_to_datauri('4.png')}" style="width:160px; top:180px; right:-160px; transform:rotate(3deg);" />
-
-<!-- Bottom-left image -->
 <img src="{img_to_datauri('5.png')}" style="width:160px; bottom:60px; left:-120px; transform:rotate(4deg);" />
-
-<!-- Bottom-right image -->
 <img src="{img_to_datauri('6.png')}" style="width:160px; bottom:60px; right:-120px; transform:rotate(-4deg);" />
+""", unsafe_allow_html=True)
+
+# Last two love lines (appear visually “after” images)
+st.markdown("""
+<div class="love-script love3">Best boyfriend</div>
+<div class="love-script love4">Happy 6 months, my love</div>
 """, unsafe_allow_html=True)
 
 
@@ -334,6 +324,7 @@ elif st.session_state.stage == "done":
         st.error(f"Error creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
