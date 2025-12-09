@@ -64,10 +64,10 @@ if st.session_state.stage == "landing":
     st.markdown("""
     <style>
     .love-script { font-family: 'Pinyon Script', cursive; color: #a71d2a; font-size: 4rem; display: inline-block; position: absolute; white-space: nowrap; }
-    .love1 { top: 200px; left: 700px; transform: rotate(0deg); }
-    .love2 { top: 100px; left: 300px; transform: rotate(0deg); }
-    .love3 { top: 200px; left: 400px; transform: rotate(0deg); }
-    .love4 { top: 100px; left: 500px; transform: rotate(0deg); }
+    .love1 { top: 200px; right: 200px; transform: rotate(0deg); }
+    .love2 { top: 100px; right: 300px; transform: rotate(0deg); }
+    .love3 { top: 200px; right: 400px; transform: rotate(0deg); }
+    .love4 { top: 100px; right: 500px; transform: rotate(0deg); }
     .polaroid-img { width: 125px; height: 175px; position: relative; box-shadow: 0 5px 10px rgba(0,0,0,0.5); }
     </style>
     """, unsafe_allow_html=True)
@@ -217,7 +217,7 @@ elif st.session_state.stage == "done":
         html_code = f"""
         <div style="position: relative; width: fit-content; margin: auto; overflow: hidden; height: {final_strip.height}px; background-color: #000;">
             <img src="data:image/png;base64,{base64_img}" 
-                 style="display: block; width: auto; animation: slideDown 1.2s ease-out forwards;
+                 style="display: block; width: auto; animation: slideDown 2.5s ease-out forwards;
                         transform: translateY(-{final_strip.height}px);"/>
         </div>
         <style>
@@ -236,14 +236,24 @@ elif st.session_state.stage == "done":
             mime="image/png"
         )
 
-        col1, col2 = st.columns(2)
-        with col1:
+        col1, col2, col3 = st.columns(3)
+        
+       with col1:  
+        st.download_button(
+            label="Download Photobooth Strip (PNG)",
+            data=buf.getvalue(),
+            file_name="photobooth_strip.png",
+            mime="image/png"
+        )
+        
+        with col2:
             if st.button("Make Another?"):
                 st.session_state.photos = []
                 st.session_state.last_camera_image = None
                 st.session_state.stage = "capture"
                 st.rerun()
-        with col2:
+       
+        with col3:
             if st.button("🏠 Back to Home"):
                 st.session_state.photos = []
                 st.session_state.last_camera_image = None
@@ -254,11 +264,3 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
-
-
-
-
-
-
-
-
