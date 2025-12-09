@@ -132,21 +132,21 @@ elif st.session_state.stage == "capture":
     if st.button("📸 Camera and Smile Check", key="countdown_btn"):
         start_countdown()
 
-   # ---------- Smaller Camera Input (Centered) ----------
+    # ---------- Smaller Camera Input (Centered) ----------
     st.markdown("""
-        <style>
+    <style>
     div[data-testid="stCamera"] {
         display: inline-block !important;  /* makes camera shrink to content */
         margin: 0 auto !important;         /* center it horizontally */
-}
-        </style>
-""", unsafe_allow_html=True)
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
-cam_file = st.camera_input(
-    "Smile Baby! Click the camera button to take a photo.",
-    key="camera_input",
-    width=250  # adjust preview size
-)
+    cam_file = st.camera_input(
+        "Smile Baby! Click the camera button to take a photo.",
+        key="camera_input",
+        width=250  # adjust preview size
+    )
 
     # ---------- Action Buttons ----------
     col1, col2, col3, col4 = st.columns(4)
@@ -188,6 +188,7 @@ cam_file = st.camera_input(
             st.rerun()
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 # ---------- Done Page ----------
 elif st.session_state.stage == "done":
@@ -296,6 +297,7 @@ elif st.session_state.stage == "done":
         st.error(f"Something went wrong while creating the strip: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
